@@ -1,0 +1,9 @@
+plugin Media 
+PhotoPicker 0.1 PhotoPicker.qml
+VideoPicker 0.1 VideoPicker.qml
+MusicPicker 0.1 MusicPicker.qml
+MediaGridView 0.1 MediaGridView.qml
+MediaMultiBar 0.1 MediaMultiBar.qml
+MediaToolbar 0.1 MediaToolbar.qml
+MediaToolbarButton 0.1 MediaToolbarButton.qml
+MediaPreviewStrip 0.1 MediaPreviewStrip.qml

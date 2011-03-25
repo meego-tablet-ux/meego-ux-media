@@ -1,0 +1,8 @@
+Makefile
+*.pro.user
+libmeegouxmedia.so*
+libMedia.so
+*/.moc
+*/.obj
+meego-ux-media-*.tar.bz2
+libmediaplugin.so

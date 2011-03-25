@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include/meegouxmedia
+
+Name: meego-ux-media
+Description: MeeGo Media library
+Version: 0.1.1
+Libs: -L${libdir} -lmeegouxmedia
+Cflags: -I${includedir}
