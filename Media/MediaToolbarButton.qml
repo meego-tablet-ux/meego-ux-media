@@ -15,6 +15,8 @@ Item{
     property bool show: true
     width: (show)?(image.width):0
     height: (show)?(image.height):0
+    property alias iwidth: image.width
+    property alias iheight: image.height
 
     signal clicked()
     clip:true

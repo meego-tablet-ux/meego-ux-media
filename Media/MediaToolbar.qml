@@ -52,10 +52,6 @@ Item {
     property bool isfavorite: false
     signal favoritePressed()
 
-    property bool showcropped: false
-    property bool iscropped: false
-    signal cropPressed()
-
     property bool showshuffle: false
     property bool isshuffle: false
     signal shufflePressed()
@@ -63,6 +59,9 @@ Item {
     property bool showrepeat: false
     property bool isrepeat: false
     signal repeatPressed()
+
+    property int buttoncount: showprev + showrecord + showstop + showplay + shownext + showvolume + showfavorite + showshuffle + showrepeat
+    property int buttonwidth: (buttoncount > 0)?(background.width/buttoncount):background.width
 
     Loader {
         id: volumeLoader
@@ -89,6 +88,7 @@ Item {
             anchors.left: parent.left
             anchors.top: parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://theme/media/icn_back_up"
             bgSourceDn: "image://theme/media/icn_back_dn"
             onClicked: container.prevPressed()
@@ -99,6 +99,7 @@ Item {
             anchors.left: btRewind.right
             anchors.top:parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disablerecord)?"image://theme/icn_record_disabled":((ispauserecord)?"image://theme/icn_pause_up":"image://theme/icn_record_up")
             bgSourceDn: (disablerecord)?"image://theme/icn_record_disabled":((ispauserecord)?"image://theme/icn_pause_dn":"image://theme/icn_record_dn")
             onClicked: {
@@ -117,6 +118,7 @@ Item {
             anchors.left: btRecord.right
             anchors.top:parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disablestop)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_up"
             bgSourceDn: (disablestop)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_dn"
             onClicked: {
@@ -130,6 +132,7 @@ Item {
             anchors.left: btStop.right
             anchors.top:parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disableplay)?"image://theme/icn_play_disabled":((ispause)?"image://theme/icn_pause_up":"image://theme/icn_play_up")
             bgSourceDn: (disableplay)?"image://theme/icn_play_disabled":((ispause)?"image://theme/icn_pause_dn":"image://theme/icn_play_dn")
             onClicked: {
@@ -148,6 +151,7 @@ Item {
             anchors.left: btPlay.right
             anchors.top:parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://theme/media/icn_forward_up"
             bgSourceDn: "image://theme/media/icn_forward_dn"
             onClicked: container.nextPressed()
@@ -272,6 +276,7 @@ Item {
             anchors.right: favoriteButton.left
             anchors.top: parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://theme/icn_volume_up"
             bgSourceDn: "image://theme/icn_volume_dn"
             onClicked: {
@@ -294,6 +299,7 @@ Item {
             anchors.right: shuffleBt.left
             anchors.top: parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (isfavorite)?"image://theme/media/icn_favourite_active":"image://theme/media/icn_favourite_up"
             bgSourceDn: "image://theme/media/icn_favourite_dn"
             onClicked: {
@@ -307,6 +313,7 @@ Item {
             anchors.right: repeatBt.left
             anchors.top: parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (isshuffle)?"image://theme/icn_shuffle_dn":"image://theme/icn_shuffle_up"
             bgSourceDn: "image://theme/icn_shuffle_dn"
             onClicked: {
@@ -320,6 +327,7 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             height: parent.height
+            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (isrepeat)?"image://theme/icn_repeat_dn":"image://theme/icn_repeat_up"
             bgSourceDn: "image://theme/icn_repeat_dn"
             onClicked: {
