@@ -27,6 +27,7 @@ Item {
     signal pauseRecordPressed()
 
     property bool showstop: false
+    property bool disablestop: false
     signal stopPressed()
 
     property bool showplay: false
@@ -116,10 +117,10 @@ Item {
             anchors.left: btRecord.right
             anchors.top:parent.top
             height: parent.height
-            bgSourceUp: (disablerecord)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_up"
-            bgSourceDn: (disablerecord)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_dn"
+            bgSourceUp: (disablestop)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_up"
+            bgSourceDn: (disablestop)?"image://theme/icn_stop_disabled":"image://theme/icn_stop_dn"
             onClicked: {
-                if(!disablerecord)
+                if(!disablestop)
                     container.stopPressed();
             }
         }
