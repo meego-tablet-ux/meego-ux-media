@@ -63,19 +63,21 @@ Item {
     property int buttoncount: showprev + showrecord + showstop + showplay + shownext + showvolume + showfavorite + showshuffle + showrepeat
     property int buttonwidth: (buttoncount > 0)?(background.width/buttoncount):background.width
 
+    VolumeControl {
+        id: volumeControl
+    }
+
     Loader {
         id: volumeLoader
     }
+
     Component {
         id: volumeControlComponent
-        VolumeController{
+        VolumeSlider{
             onClose: {
                 volumeLoader.sourceComponent = undefined;
             }
         }
-    }
-    VolumeControl {
-        id: volumeControl
     }
 
     BorderImage {
@@ -199,7 +201,7 @@ Item {
                 Image {
                     id: progressBarSlider
                     anchors.verticalCenter:progressBar.verticalCenter
-                    source:"image://theme/scrub_head_sm"
+                    source:"image://theme/scrub_head_lrg"
                     x: -width/2
                     z:10
                 }
@@ -234,7 +236,7 @@ Item {
                     id: progressBarConnection
                     target: container
                     onSliderPositionChanged: {
-                        progressBarSlider.x = sliderPosition * (progressBar.width - progressBarSlider.width) - progressBarSlider.width/2;
+                        progressBarSlider.x = (sliderPosition * progressBar.width) - progressBarSlider.width/2;
                     }
                 }
                 MouseArea {
@@ -247,7 +249,7 @@ Item {
                         progressBarSlider.x = pos - (progressBarSlider.width/2);
                     }
                     onReleased: {
-                        sliderPosition = (progressBarSlider.x + (progressBarSlider.width/2))/(progressBar.width - progressBarSlider.width);
+                        sliderPosition = (progressBarSlider.x + (progressBarSlider.width/2))/(progressBar.width);
                         container.sliderMoved(sliderPosition);
                         progressBarConnection.target = container
                     }
@@ -277,7 +279,7 @@ Item {
             anchors.top: parent.top
             height: parent.height
             width: (show)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: "image://theme/icn_volume_up"
+            bgSourceUp: (volumeControl.volume < 50)?"image://theme/icn_volume_min":"image://theme/icn_volume_up"
             bgSourceDn: "image://theme/icn_volume_dn"
             onClicked: {
                 if (volumeLoader.sourceComponent != null ) {
@@ -286,9 +288,10 @@ Item {
                     volumeLoader.sourceComponent = volumeControlComponent;
                     volumeLoader.item.parent = volumeParent;
                     volumeLoader.item.z = 1000;
-                    volumeLoader.item.volumeControlXmid = btVolume.x + btVolume.width/2
                     volumeLoader.item.volumeControl = volumeControl;
-                    volumeLoader.item.closeTimer.interval = 2000;
+                    volumeLoader.item.volumeControlX = btVolume.x + (btVolume.width - volumeLoader.item.volumeWidth)/2
+                    volumeLoader.item.volumeControlY = volumeParent.height - container.height - volumeLoader.item.volumeHeight;
+                    volumeLoader.item.closeTimer.interval = 3000;
                     volumeLoader.item.closeTimer.restart();
                 }
             }
