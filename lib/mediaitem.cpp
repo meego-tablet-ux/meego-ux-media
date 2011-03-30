@@ -26,6 +26,8 @@ MediaItem::MediaItem(int type, QDateTime recenttime, QStringList args, QObject *
     m_isvirtual = false;
     m_playstatus = 0;
     m_sid = 0;
+    m_width = 0;
+    m_height = 0;
     changeData(recenttime, args);
 }
 
@@ -46,6 +48,8 @@ MediaItem::MediaItem(int type, QString uri, QObject *parent) :
     m_isvirtual = true;
     m_playstatus = 0;
     m_sid = 0;
+    m_width = 0;
+    m_height = 0;
 
     if(isAnyVideoType())
     {
@@ -96,6 +100,8 @@ MediaItem::MediaItem(int type, QObject *parent) :
     m_isvirtual = true;
     m_playstatus = 0;
     m_sid = 0;
+    m_width = 0;
+    m_height = 0;
 }
 
 void MediaItem::changeData(QDateTime recenttime, QStringList args)
@@ -221,6 +227,10 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
         m_creationtime = args.at(IDX_PHO_CTIME);
         m_mimetype = args.at(IDX_PHO_MIME);
         m_title = args.at(IDX_PHO_TITLE);
+        if(!args.at(IDX_PHO_WIDTH).isEmpty())
+            m_width = args.at(IDX_PHO_WIDTH).toInt();
+        if(!args.at(IDX_PHO_HEIGHT).isEmpty())
+            m_height = args.at(IDX_PHO_HEIGHT).toInt();
         if(!m_uri.isEmpty())
         {
             if(m_title.isEmpty())

@@ -27,25 +27,29 @@
 /* PHOTO */
 
 #define TRACKER_ALLPHOTOS  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
-        "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
+        "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo) " \
+        "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
         "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
         "ORDER BY desc(?_added) LIMIT %1 OFFSET %2"
 #define TRACKER_PHOTO  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
+        "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
         "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (str(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_PHOTO_URL  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
+        "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
         "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (nie:url(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_PHOTO_SID  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
+        "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
         "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (tracker:id(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
@@ -55,7 +59,9 @@
 #define IDX_PHO_CTIME IDX_CUSTOM_BEGIN + 1
 #define IDX_PHO_MIME  IDX_CUSTOM_BEGIN + 2
 #define IDX_PHO_TITLE IDX_CUSTOM_BEGIN + 3
-#define PHO_ARGS      IDX_PHO_TITLE + 1
+#define IDX_PHO_WIDTH IDX_CUSTOM_BEGIN + 4
+#define IDX_PHO_HEIGHT IDX_CUSTOM_BEGIN + 5
+#define PHO_ARGS      IDX_PHO_HEIGHT + 1
 
 /* PHOTO ALBUM */
 
@@ -268,6 +274,8 @@ class MediaItem: public QObject {
     Q_PROPERTY(bool recentlyadded READ getRecentlyAdded);
     Q_PROPERTY(bool recentlyviewed READ getRecentlyViewed);
     Q_PROPERTY(bool isvirtual READ isVirtual);
+    Q_PROPERTY(int width READ getWidth);
+    Q_PROPERTY(int height READ getHeight);
 
 public:
     /* create a mediaitem using tracker data */
@@ -299,7 +307,9 @@ public:
         Index = Qt::UserRole + 19,
         Virtual = Qt::UserRole + 20,
         PlayStatus = Qt::UserRole + 21,
-        URN = Qt::UserRole + 22
+        URN = Qt::UserRole + 22,
+        Width = Qt::UserRole + 23,
+        Height = Qt::UserRole + 24
     };
 
     enum ItemType {
@@ -388,6 +398,10 @@ public:
         { return m_addedtime; }
     QString getLastPlayedTime() const
         { return m_lastplayedtime; }
+    int getWidth() const
+        { return m_width; }
+    int getHeight() const
+        { return m_height; }
 
     void setRecentlyViewed(const QString &timestamp);
     void setFavorite(const bool &favorite);
@@ -403,6 +417,8 @@ public:
     QStringList m_artist;
     int m_tracknum;
     int m_length;
+    int m_width;
+    int m_height;
     QString m_camera;
     int m_type;
     QString m_uri;

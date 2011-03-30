@@ -31,6 +31,8 @@ PhotoListModel::PhotoListModel(QObject *parent)
     roles.insert(MediaItem::RecentlyViewed, "recentlyviewed");
     roles.insert(MediaItem::Virtual, "isvirtual");
     roles.insert(MediaItem::Index, "index");
+    roles.insert(MediaItem::Width, "width");
+    roles.insert(MediaItem::Height, "height");
     setRoleNames(roles);
 
     m_type = -1;
@@ -602,6 +604,12 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::Index)
         return index.row();
+
+    if (role == MediaItem::Width)
+        return mediaItemsDisplay[index.row()]->getWidth();
+
+    if (role == MediaItem::Height)
+        return mediaItemsDisplay[index.row()]->getHeight();
 
     return QVariant();
 }
