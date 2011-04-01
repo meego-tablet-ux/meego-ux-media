@@ -134,6 +134,7 @@ GridView {
         property string malbum: (type == 0)?album:""
         property string muri: uri
         property string murn: urn
+        property int mlength: length
 
         property bool misvirtual: (type != 1)?isvirtual:false
 

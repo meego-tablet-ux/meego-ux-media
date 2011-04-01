@@ -114,6 +114,7 @@ void MusicDatabase::processSong(MediaItem *item)
         /* this song's artist has already been pulled in */
         item->artistitem = mediaItemsUrnHash[item->m_artist_urn.first()];
         item->artistitem->m_tracknum++;
+        item->artistitem->m_length += item->m_length;
     }
     else if(!item->m_artist_urn.isEmpty()&&
        !mediaItemsUrnHash.contains(item->m_artist_urn.first()))
@@ -134,6 +135,7 @@ void MusicDatabase::processSong(MediaItem *item)
                     //qDebug() << "new MusicArtistItem " << (*i);
                     item->artistitem = new MediaItem(MediaItem::MusicArtistItem, recenttime, *i);
                     item->artistitem->m_tracknum++;
+                    item->artistitem->m_length += item->m_length;
                     mediaItemsList << item->artistitem;
 
                     if(!disable_mediaart&&(!item->artistitem->m_thumburi_exists)&&
@@ -159,6 +161,7 @@ void MusicDatabase::processSong(MediaItem *item)
         /* this song's album has already been pulled in */
         item->albumitem = mediaItemsUrnHash[item->m_album_urn];
         item->albumitem->m_tracknum++;
+        item->albumitem->m_length += item->m_length;
     }
     else if(!item->m_album_urn.isEmpty()&&
        !mediaItemsUrnHash.contains(item->m_album_urn))
@@ -187,6 +190,7 @@ void MusicDatabase::processSong(MediaItem *item)
                 {
                     item->albumitem = new MediaItem(MediaItem::MusicAlbumItem, recenttime, args);
                     item->albumitem->m_tracknum++;
+                    item->albumitem->m_length += item->m_length;
                     mediaItemsList << item->albumitem;
 
                     if(!disable_mediaart&&(((!item->albumitem->m_thumburi_exists)&&
@@ -220,6 +224,7 @@ void MusicDatabase::processSong(MediaItem *item)
             item->albumitem->m_artist_urn << item->m_artist_urn.first();
             item->albumitem->m_title = "Unknown Album";
             item->albumitem->m_tracknum = 1;
+            item->albumitem->m_length = item->m_length;
             item->albumitem->artistitem = item->artistitem;
             mediaItemsIdHash.insert(item->albumitem->m_id, item->albumitem);
             itemAdded(item->albumitem);
@@ -228,6 +233,7 @@ void MusicDatabase::processSong(MediaItem *item)
         {
             //qDebug() << "Adding a song to Unknown Album for " << item->m_artist.first() << " SONG: " << item->m_title;
             item->albumitem->m_tracknum++;
+            item->albumitem->m_length += item->m_length;
         }
     }
 }
