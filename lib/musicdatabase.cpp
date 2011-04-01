@@ -115,6 +115,7 @@ void MusicDatabase::processSong(MediaItem *item)
         item->artistitem = mediaItemsUrnHash[item->m_artist_urn.first()];
         item->artistitem->m_tracknum++;
         item->artistitem->m_length += item->m_length;
+        itemChanged(item->artistitem, Other);
     }
     else if(!item->m_artist_urn.isEmpty()&&
        !mediaItemsUrnHash.contains(item->m_artist_urn.first()))
@@ -162,6 +163,7 @@ void MusicDatabase::processSong(MediaItem *item)
         item->albumitem = mediaItemsUrnHash[item->m_album_urn];
         item->albumitem->m_tracknum++;
         item->albumitem->m_length += item->m_length;
+        itemChanged(item->albumitem, Other);
     }
     else if(!item->m_album_urn.isEmpty()&&
        !mediaItemsUrnHash.contains(item->m_album_urn))
@@ -234,6 +236,7 @@ void MusicDatabase::processSong(MediaItem *item)
             //qDebug() << "Adding a song to Unknown Album for " << item->m_artist.first() << " SONG: " << item->m_title;
             item->albumitem->m_tracknum++;
             item->albumitem->m_length += item->m_length;
+            itemChanged(item->albumitem, Other);
         }
     }
 }

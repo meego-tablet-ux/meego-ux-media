@@ -110,6 +110,7 @@ protected:
     QHash<int, MediaItem *> mediaItemsSidHash;
     QList<MediaItem *> needThumbList;
     void itemAdded(MediaItem *item);
+    void itemChanged(MediaItem *item, int reason);
 
     /* data for handling a playlist edit */
     void setPlayStatus(MediaItem *item, int playstatus);

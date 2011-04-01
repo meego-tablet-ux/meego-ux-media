@@ -727,3 +727,10 @@ void MediaDatabase::itemAdded(MediaItem *item)
     newItemsList << item;
     emit itemsAdded(&newItemsList);
 }
+
+void MediaDatabase::itemChanged(MediaItem *item, int reason)
+{
+    QStringList newItemsList;
+    newItemsList << item->m_id;
+    emit itemsChanged(newItemsList, reason);
+}
