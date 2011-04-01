@@ -99,35 +99,31 @@
 #define TRACKER_ALLSONGS  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) nao:prefLabel(?tag3) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . } " \
-        ". OPTIONAL {?song nao:hasTag ?tag3 . ?tag3 nao:identifier 'playstatus' . }} " \
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
         "ORDER BY nie:title(?song) LIMIT %1 OFFSET %2"
 #define TRACKER_SONG  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) nao:prefLabel(?tag3) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (str(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?song nao:hasTag ?tag3 . ?tag3 nao:identifier 'playstatus' . }} "
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
 #define TRACKER_SONG_URL  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) nao:prefLabel(?tag3) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (nie:url(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?song nao:hasTag ?tag3 . ?tag3 nao:identifier 'playstatus' . }} "
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
 #define TRACKER_SONG_SID  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) nao:prefLabel(?tag3) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (tracker:id(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?song nao:hasTag ?tag3 . ?tag3 nao:identifier 'playstatus' . }} "
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
 
 #define IDX_SNG_TITLE      IDX_CUSTOM_BEGIN
 #define IDX_SNG_URI        IDX_CUSTOM_BEGIN + 1
@@ -139,8 +135,7 @@
 #define IDX_SNG_ALBUMNAME  IDX_CUSTOM_BEGIN + 7
 #define IDX_SNG_ALBUMURN   IDX_CUSTOM_BEGIN + 8
 #define IDX_SNG_MIME       IDX_CUSTOM_BEGIN + 9
-#define IDX_SNG_PLAYSTATUS IDX_CUSTOM_BEGIN + 10
-#define SNG_ARGS           IDX_SNG_PLAYSTATUS + 1
+#define SNG_ARGS           IDX_SNG_MIME + 1
 
 /* MUSIC PLAYLIST */
 
@@ -210,39 +205,34 @@
 
 #define TRACKER_ALLVIDEOS "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "nao:prefLabel(?tags) WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". OPTIONAL {?video nao:hasTag ?tagf . ?tagf nao:identifier 'favorite' } " \
-        ". OPTIONAL {?video nao:hasTag ?tagv . ?tagv nao:identifier 'viewed' . } " \
-        ". OPTIONAL {?video nao:hasTag ?tags . ?tags nao:identifier 'playstatus' . }} " \
+        ". OPTIONAL {?video nao:hasTag ?tagv . ?tagv nao:identifier 'viewed' . }} " \
         "ORDER BY nie:url(nie:isStoredAs(?video)) LIMIT %1 OFFSET %2";
 #define TRACKER_VIDEO  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "nao:prefLabel(?tags) WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (str(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?video nao:hasTag ?tags . ?tags nao:identifier 'playstatus' . }}"
+        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_VIDEO_URL  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "nao:prefLabel(?tags) WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (nie:url(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?video nao:hasTag ?tags . ?tags nao:identifier 'playstatus' . }}"
+        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_VIDEO_SID  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "nao:prefLabel(?tags) WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (tracker:id(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
-        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }" \
-        ". OPTIONAL {?video nao:hasTag ?tags . ?tags nao:identifier 'playstatus' . }}"
+        ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 
 #define IDX_VID_URI        IDX_CUSTOM_BEGIN
 #define IDX_VID_TITLE      IDX_CUSTOM_BEGIN + 1
 #define IDX_VID_DURATION   IDX_CUSTOM_BEGIN + 2
 #define IDX_VID_MIME       IDX_CUSTOM_BEGIN + 3
-#define IDX_VID_PLAYSTATUS IDX_CUSTOM_BEGIN + 4
-#define VID_ARGS           IDX_VID_PLAYSTATUS + 1
+#define VID_ARGS           IDX_VID_MIME + 1
 
 #define TRACKER_SERVICE       "org.freedesktop.Tracker1"
 #define TRACKER_PATH          "/org/freedesktop/Tracker1/Resources"
@@ -358,11 +348,6 @@ public:
     bool isVirtual()
         { return m_isvirtual; }
 
-    bool isPlaying()
-        { return (m_playstatus == 2); }
-    bool isPaused()
-        { return (m_playstatus == 1); }
-
     /* properties functions for the photo item */
     QString getURI() const
         { return m_uri; }
@@ -406,7 +391,6 @@ public:
     void setRecentlyViewed(const QString &timestamp);
     void setFavorite(const bool &favorite);
     void setCoverArt(const QString &thumburi);
-    void setPlayStatus(const QString &playstatus);
     bool thumbExists(const QString &name = "");
 
     bool m_isvirtual;

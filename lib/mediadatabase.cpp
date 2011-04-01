@@ -379,22 +379,6 @@ void MediaDatabase::setViewedMulti(const QStringList &ids)
     broadcastMyChanges(ids, MediaDatabase::Viewed);
 }
 
-void MediaDatabase::setPlayStatus(MediaItem *item, int playstatus)
-{
-    if(item->isVirtual())
-        return;
-
-    item->m_playstatus = playstatus;
-    QString SqlCmd =
-        "DELETE {?tag a rdfs:Resource } WHERE {?object nao:hasTag ?tag . ?tag nao:identifier 'playstatus' " \
-        ". { SELECT ?object WHERE {?object a nie:InformationElement . FILTER (str(?object) = '%1') }}} " \
-        "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'playstatus' . ?object nao:hasTag _:tag }" \
-        "WHERE { ?object a nie:InformationElement . FILTER (str(?object) = '%1') }";
-
-    QString sql = QString(SqlCmd).arg(item->m_urn, ((playstatus == 0)?"stopped":((playstatus == 1)?"paused":"playing")));
-    trackerCallAsync(sql);
-}
-
 void MediaDatabase::setPlayStatus(const QString &id, int playstatus)
 {
     QList<MediaItem *> removedItemsList;
@@ -416,7 +400,7 @@ void MediaDatabase::setPlayStatus(const QString &id, int playstatus)
         return;
 
     /* set the target play status */
-    setPlayStatus(item, playstatus);
+    item->m_playstatus = playstatus;
     ids << item->m_id;
 
     /* if target status is pause or play, stop everything else */
@@ -424,7 +408,7 @@ void MediaDatabase::setPlayStatus(const QString &id, int playstatus)
     {
         for(int i = 0; i < removedItemsList.count(); i++)
         {
-            setPlayStatus(removedItemsList[i], 0);
+            removedItemsList[i]->m_playstatus = 0;
             ids << removedItemsList[i]->m_id;
         }
     }
@@ -642,11 +626,6 @@ void MediaDatabase::trackerUpdates(QString classname, QVector<Quad> deletes, QVe
                             {
                                 reason = Thumbnail;
                                 item->setCoverArt(tagvalue);
-                            }
-                            else if((tagname == "playstatus")&&(item->isSong()||item->isAnyVideoType()))
-                            {
-                                reason = PlayStatus;
-                                item->setPlayStatus(tagvalue);
                             }
                         }
                     }

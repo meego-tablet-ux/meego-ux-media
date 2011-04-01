@@ -112,9 +112,6 @@ protected:
     void itemAdded(MediaItem *item);
     void itemChanged(MediaItem *item, int reason);
 
-    /* data for handling a playlist edit */
-    void setPlayStatus(MediaItem *item, int playstatus);
-
     /* tracker calls */
     QDBusInterface *trackerinterface;
     bool fileExists(const QString &name);

@@ -130,13 +130,6 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
         m_album_urn = args.at(IDX_SNG_ALBUMURN);
         m_mimetype = args.at(IDX_SNG_MIME);
 
-        if(args.at(IDX_SNG_PLAYSTATUS) == "playing")
-            m_playstatus = 2;
-        else if(args.at(IDX_SNG_PLAYSTATUS) == "paused")
-            m_playstatus = 1;
-        else
-            m_playstatus = 0;
-
         if(!m_artist.isEmpty()&&!m_album.isEmpty())
         {
             m_thumbtype = AlbumThumb;
@@ -266,13 +259,6 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
         if(!args.at(IDX_VID_DURATION).isEmpty())
             m_length = args.at(IDX_VID_DURATION).toInt();
         m_mimetype = args.at(IDX_VID_MIME);
-
-        if(args.at(IDX_VID_PLAYSTATUS) == "playing")
-            m_playstatus = 2;
-        else if(args.at(IDX_VID_PLAYSTATUS) == "paused")
-            m_playstatus = 1;
-        else
-            m_playstatus = 0;
 
         if(!m_uri.isEmpty())
         {
@@ -438,16 +424,6 @@ void MediaItem::setCoverArt(const QString &thumburi)
     m_thumburi_ignore = false;
     if(thumbExists())
         m_thumburi_exists = true;
-}
-
-void MediaItem::setPlayStatus(const QString &playstatus)
-{
-    if(playstatus == "stopped")
-        m_playstatus = 0;
-    else if(playstatus == "paused")
-        m_playstatus = 1;
-    else
-        m_playstatus = 2;
 }
 
 bool MediaItem::thumbExists(const QString &name)
