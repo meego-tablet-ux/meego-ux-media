@@ -32,7 +32,8 @@ public:
                       ListofAll = 3,
                       ListofUnwatched = 4,
                       ListofRecentlyViewed = 5,
-                      Editor = 6
+                      Editor = 6,
+                      ListofUserVideos = 7
                    };
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

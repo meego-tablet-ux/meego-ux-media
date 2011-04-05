@@ -36,6 +36,7 @@ MusicListModel::MusicListModel(QObject *parent)
     roles.insert(MediaItem::Index, "index");
     roles.insert(MediaItem::Virtual, "isvirtual");
     roles.insert(MediaItem::PlayStatus, "playstatus");
+    roles.insert(MediaItem::UserContent, "usercontent");
     setRoleNames(roles);
 
     m_type = -1;
@@ -129,6 +130,12 @@ void MusicListModel::setType(const int type)
     {
         for(int i = 0; i < tempList.count(); i++)
             if(tempList[i]->isSong())
+                newItemList << tempList[i];
+    }
+    else if(m_type == ListofUserSongs)
+    {
+        for(int i = 0; i < tempList.count(); i++)
+            if(tempList[i]->isSong()&&tempList[i]->m_isusercontent)
                 newItemList << tempList[i];
     }
     else if(m_type == ListofAlbums)
@@ -470,6 +477,12 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(list->at(i)->isSong())
+                newItemList << list->at(i);
+    }
+    else if(m_type == ListofUserSongs)
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(list->at(i)->isSong()&&list->at(i)->m_isusercontent)
                 newItemList << list->at(i);
     }
     else if(m_type == ListofAlbums)
@@ -900,6 +913,9 @@ QVariant MusicListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::PlayStatus)
         return mediaItemsDisplay[index.row()]->m_playstatus;
+
+    if (role == MediaItem::UserContent)
+        return mediaItemsDisplay[index.row()]->m_isusercontent;
 
     return QVariant();
 }

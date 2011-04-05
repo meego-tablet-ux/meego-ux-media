@@ -30,6 +30,7 @@ VideoListModel::VideoListModel(QObject *parent)
     roles.insert(MediaItem::RecentlyViewed, "recentlyviewed");
     roles.insert(MediaItem::Index, "index");
     roles.insert(MediaItem::PlayStatus, "playstatus");
+    roles.insert(MediaItem::UserContent, "usercontent");
     setRoleNames(roles);
 
     m_type = -1;
@@ -95,6 +96,12 @@ void VideoListModel::setType(const int type)
             if(tempList[i]->isVideo())
                 newItemList << tempList[i];
     }
+    else if(m_type == ListofUserVideos)
+    {
+        for(int i = 0; i < tempList.count(); i++)
+            if(tempList[i]->isAnyVideoType()&&tempList[i]->m_isusercontent)
+                newItemList << tempList[i];
+    }
     else if(m_type == ListofTVShows)
     {
         for(int i = 0; i < tempList.count(); i++)
@@ -156,6 +163,12 @@ void VideoListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(list->at(i)->isVideo())
+                newItemList << list->at(i);
+    }
+    else if(m_type == ListofUserVideos)
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(list->at(i)->isAnyVideoType()&&list->at(i)->m_isusercontent)
                 newItemList << list->at(i);
     }
     else if(m_type == ListofTVShows)
@@ -379,6 +392,9 @@ QVariant VideoListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::PlayStatus)
         return mediaItemsDisplay[index.row()]->m_playstatus;
+
+    if (role == MediaItem::UserContent)
+        return mediaItemsDisplay[index.row()]->m_isusercontent;
 
     return QVariant();
 }

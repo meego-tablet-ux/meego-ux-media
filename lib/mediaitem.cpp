@@ -28,6 +28,7 @@ MediaItem::MediaItem(int type, QDateTime recenttime, QStringList args, QObject *
     m_sid = 0;
     m_width = 0;
     m_height = 0;
+    m_isusercontent = false;
     changeData(recenttime, args);
 }
 
@@ -50,6 +51,7 @@ MediaItem::MediaItem(int type, QString uri, QObject *parent) :
     m_sid = 0;
     m_width = 0;
     m_height = 0;
+    m_isusercontent = false;
 
     if(isAnyVideoType())
     {
@@ -102,6 +104,7 @@ MediaItem::MediaItem(int type, QObject *parent) :
     m_sid = 0;
     m_width = 0;
     m_height = 0;
+    m_isusercontent = false;
 }
 
 void MediaItem::changeData(QDateTime recenttime, QStringList args)
@@ -129,6 +132,8 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
         m_album = args.at(IDX_SNG_ALBUMNAME);
         m_album_urn = args.at(IDX_SNG_ALBUMURN);
         m_mimetype = args.at(IDX_SNG_MIME);
+        if(args.at(IDX_SNG_USER) == USER_CONTENT_STRING)
+            m_isusercontent = true;
 
         if(!m_artist.isEmpty()&&!m_album.isEmpty())
         {
@@ -224,6 +229,8 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
             m_width = args.at(IDX_PHO_WIDTH).toInt();
         if(!args.at(IDX_PHO_HEIGHT).isEmpty())
             m_height = args.at(IDX_PHO_HEIGHT).toInt();
+        if(args.at(IDX_PHO_USER) == USER_CONTENT_STRING)
+            m_isusercontent = true;
         if(!m_uri.isEmpty())
         {
             if(m_title.isEmpty())
@@ -259,6 +266,8 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
         if(!args.at(IDX_VID_DURATION).isEmpty())
             m_length = args.at(IDX_VID_DURATION).toInt();
         m_mimetype = args.at(IDX_VID_MIME);
+        if(args.at(IDX_VID_USER) == USER_CONTENT_STRING)
+            m_isusercontent = true;
 
         if(!m_uri.isEmpty())
         {

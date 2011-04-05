@@ -29,28 +29,28 @@
 #define TRACKER_ALLPHOTOS  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo) " \
         "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
-        "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
+        "nie:comment(?photo) WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
         "ORDER BY desc(?_added) LIMIT %1 OFFSET %2"
 #define TRACKER_PHOTO  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
         "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
-        "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
+        "nie:comment(?photo) WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (str(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_PHOTO_URL  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
         "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
-        "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
+        "nie:comment(?photo) WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (nie:url(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_PHOTO_SID  "SELECT ?photo tracker:id(?photo) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) " \
         "nie:url(nie:isStoredAs(?photo)) nie:contentCreated(?photo) nie:mimeType(?photo) nie:title(?photo)" \
         "nfo:horizontalResolution(?photo) nfo:verticalResolution(?photo) " \
-        "WHERE{?photo a nmm:Photo;tracker:added ?_added " \
+        "nie:comment(?photo) WHERE{?photo a nmm:Photo;tracker:added ?_added " \
         ". FILTER (tracker:id(?photo) = '%1') " \
         ". OPTIONAL {?photo nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?photo nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
@@ -61,7 +61,8 @@
 #define IDX_PHO_TITLE IDX_CUSTOM_BEGIN + 3
 #define IDX_PHO_WIDTH IDX_CUSTOM_BEGIN + 4
 #define IDX_PHO_HEIGHT IDX_CUSTOM_BEGIN + 5
-#define PHO_ARGS      IDX_PHO_HEIGHT + 1
+#define IDX_PHO_USER  IDX_CUSTOM_BEGIN + 6
+#define PHO_ARGS      IDX_PHO_USER + 1
 
 /* PHOTO ALBUM */
 
@@ -99,28 +100,28 @@
 #define TRACKER_ALLSONGS  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) nfo:encodedBy(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
         "ORDER BY nie:title(?song) LIMIT %1 OFFSET %2"
 #define TRACKER_SONG  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) nfo:encodedBy(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (str(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
 #define TRACKER_SONG_URL  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) nfo:encodedBy(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (nie:url(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
 #define TRACKER_SONG_SID  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(nmm:performer(?song)) nmm:performer(?song) nmm:albumTitle(nmm:musicAlbum(?song)) " \
-        "nmm:musicAlbum(?song) nie:mimeType(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        "nmm:musicAlbum(?song) nie:mimeType(?song) nfo:encodedBy(?song) WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". FILTER (tracker:id(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
@@ -135,7 +136,8 @@
 #define IDX_SNG_ALBUMNAME  IDX_CUSTOM_BEGIN + 7
 #define IDX_SNG_ALBUMURN   IDX_CUSTOM_BEGIN + 8
 #define IDX_SNG_MIME       IDX_CUSTOM_BEGIN + 9
-#define SNG_ARGS           IDX_SNG_MIME + 1
+#define IDX_SNG_USER       IDX_CUSTOM_BEGIN + 10
+#define SNG_ARGS           IDX_SNG_USER + 1
 
 /* MUSIC PLAYLIST */
 
@@ -205,25 +207,25 @@
 
 #define TRACKER_ALLVIDEOS "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "nie:comment(?video) WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". OPTIONAL {?video nao:hasTag ?tagf . ?tagf nao:identifier 'favorite' } " \
         ". OPTIONAL {?video nao:hasTag ?tagv . ?tagv nao:identifier 'viewed' . }} " \
         "ORDER BY nie:url(nie:isStoredAs(?video)) LIMIT %1 OFFSET %2";
 #define TRACKER_VIDEO  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "nie:comment(?video) WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (str(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_VIDEO_URL  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "nie:comment(?video) WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (nie:url(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
 #define TRACKER_VIDEO_SID  "SELECT ?video tracker:id(?video) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
         "nie:url(nie:isStoredAs(?video)) nie:title(?video) nfo:duration(?video) nie:mimeType(?video) " \
-        "WHERE{?video a nmm:Video;tracker:added ?_added " \
+        "nie:comment(?video) WHERE{?video a nmm:Video;tracker:added ?_added " \
         ". FILTER (tracker:id(?video) = '%1') " \
         ". OPTIONAL {?video nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?video nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
@@ -232,7 +234,8 @@
 #define IDX_VID_TITLE      IDX_CUSTOM_BEGIN + 1
 #define IDX_VID_DURATION   IDX_CUSTOM_BEGIN + 2
 #define IDX_VID_MIME       IDX_CUSTOM_BEGIN + 3
-#define VID_ARGS           IDX_VID_MIME + 1
+#define IDX_VID_USER       IDX_CUSTOM_BEGIN + 4
+#define VID_ARGS           IDX_VID_USER + 1
 
 #define TRACKER_SERVICE       "org.freedesktop.Tracker1"
 #define TRACKER_PATH          "/org/freedesktop/Tracker1/Resources"
@@ -243,6 +246,7 @@
 #define VIEWEDTAG "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'viewed' . ?object nao:hasTag _:tag } " \
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
 #define DEFAULT_FLAVOR        "large"
+#define USER_CONTENT_STRING "MeeGo User Generated Content"
 
 class MediaItem: public QObject {
     Q_OBJECT
@@ -299,7 +303,8 @@ public:
         PlayStatus = Qt::UserRole + 21,
         URN = Qt::UserRole + 22,
         Width = Qt::UserRole + 23,
-        Height = Qt::UserRole + 24
+        Height = Qt::UserRole + 24,
+        UserContent = Qt::UserRole + 25
     };
 
     enum ItemType {
@@ -418,6 +423,7 @@ public:
     QStringList m_artist_urn;
     QString m_album_urn;
     QString m_urn;
+    bool m_isusercontent;
     int m_playstatus;
     int m_sid;
 

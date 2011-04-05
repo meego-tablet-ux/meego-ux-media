@@ -44,7 +44,8 @@ public:
                       MusicPlaylist = 9,
                       NowPlaying = 10,
                       Editor = 11,
-                      MixedList = 12
+                      MixedList = 12,
+                      ListofUserSongs = 13
                    };
 
     enum MixedType {  Songs = 1,
