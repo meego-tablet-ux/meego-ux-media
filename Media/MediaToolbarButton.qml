@@ -13,9 +13,9 @@ Item{
     property string bgSourceUp:""
     property string bgSourceDn:""
     property bool show: true
-    width: (show)?(image.width):0
+    width: (show)?((image.height*1.4)+divider.width):0
     height: (show)?(image.height):0
-    property alias iwidth: image.width
+    property int iwidth: (image.height*1.4)+divider.width
     property alias iheight: image.height
 
     signal clicked()
@@ -26,6 +26,14 @@ Item{
         source: bgSourceUp
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectCrop
+    }
+
+    Image{
+        id: divider
+        visible: show
+        anchors.right: parent.right
+        source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+        height: parent.height
     }
 
     states: [

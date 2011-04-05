@@ -65,7 +65,7 @@ Item {
         }
         Image {
             id: maxVolumeBt
-            source: "image://theme/icn_volume_max"
+            source: "image://meegotheme/icons/actionbar/media-volume-max"
             anchors.top:parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
@@ -146,7 +146,7 @@ Item {
 
         Image {
             id: muteBt
-            source: "image://theme/icn_volume_min"
+            source: "image://meegotheme/icons/actionbar/media-volume-mute"
             anchors.bottom:parent.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             fillMode: Image.PreserveAspectFit
