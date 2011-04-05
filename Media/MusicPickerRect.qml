@@ -44,6 +44,7 @@ BorderImage {
                                     ( showAlbums ? qsTr("Pick an album") :  qsTr("Pick a song") ) ) )
     property string okLabel: qsTr("OK")
     property string cancelLabel: qsTr("Cancel")
+    property string newLabel: qsTr("New Playlist")
     property variant model: ( showAlbums ? (showPlaylists ? musicAlbumsAndPlaylistsMixed : musicAlbumsOnly) :
                               (showPlaylists ? musicPlaylistsOnly : allSongs) )
     property variant currentAlbumOrPlaylist: undefined
@@ -54,6 +55,7 @@ BorderImage {
     signal songSelected (string title, string uri)
     signal albumOrPlaylistSelected (string albumOrPlaylist, int type)
     signal cancelSongSelection()
+    signal newPlaylist()
 
     function updateWidth() {
         var w = topItem.topItem.width
@@ -106,6 +108,7 @@ BorderImage {
 
         visible: true
         selectionMode: true
+        defaultThumbnail: "image://theme/media/music_thumb_med"
 
         anchors {
             margins: 10;
@@ -223,6 +226,19 @@ BorderImage {
             onClicked: {
                 musicPickerRect.model.setSelected( musicGridView.selectedItem, false )
                 cancelSongSelection()
+            }
+        }
+        Button {
+            id: newButton
+            title: newLabel
+            visible: (showPlaylists && !showAlbums)
+            enabled: true;
+            height: 60
+            width: Math.min( ( musicPickerRect.width / 3) , 210 ) //ckra should be done in dialog
+            bgSourceUp: "image://theme/btn_grey_up"
+            bgSourceDn: "image://theme/btn_grey_dn"
+            onClicked: {
+                newPlaylist();
             }
         }
     }

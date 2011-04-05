@@ -45,6 +45,7 @@ Fog {
     signal songSelected(string title, string uri)
     signal albumOrPlaylistSelected (string albumOrPlaylist, int type)
     signal cancel
+    signal newPlaylist()
 
     closeOnFogClick: false
     autoCenter: true
@@ -72,6 +73,9 @@ Fog {
         onCancelSongSelection:  {
             musicPicker.cancel()
             musicPicker.forceClose()
+        }
+        onNewPlaylist:  {
+            musicPicker.newPlaylist();
         }
     }
 }

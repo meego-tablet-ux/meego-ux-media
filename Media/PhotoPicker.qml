@@ -131,6 +131,7 @@ ModalSurface {
                     anchors.fill: parent;
                     spacing: 2
                     clip: true
+                    defaultThumbnail: "image://theme/media/photo_thumb_default"
 
                     cellWidth: {
                         var w = topItem.topItem.width
