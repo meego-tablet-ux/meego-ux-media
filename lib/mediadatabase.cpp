@@ -515,6 +515,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         f.remove();
     }
 
+    /* remove the thumbnail as well */
+    if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+    {
+        QFile f(item->m_thumburi);
+        f.remove();
+    }
+
     removedItemsList << item;
     ids << item->m_id;
 

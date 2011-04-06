@@ -118,6 +118,17 @@ GridView {
                 return 0;
             }
         }
+        property int mlength
+        mlength: {
+            try
+            {
+                return length;
+            }
+            catch(err)
+            {
+                return 0;
+            }
+        }
         property string martist
         martist: {
             var a;
@@ -134,7 +145,6 @@ GridView {
         property string malbum: (type == 0)?album:""
         property string muri: uri
         property string murn: urn
-        property int mlength: length
 
         property bool misvirtual: (type != 1)?isvirtual:false
 
