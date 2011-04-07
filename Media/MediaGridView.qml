@@ -153,23 +153,37 @@ GridView {
             anchors.fill:parent
             z: -10
 
-            Image {
-                id: thumbnail
-                anchors.fill: parent
-                fillMode: Image.PreserveAspectCrop
-                source: mthumburi
-                smooth: true
-                clip: true
-                z: 0
 
-                Rectangle {
-                    id: fog
+            Item {
+                id: wrapper
+                anchors.fill: parent
+                transformOrigin: Item.Center
+                rotation: extension.orientation * 90
+
+                Image {
+                    id: thumbnail
                     anchors.fill: parent
-                    color: "white"
-                    opacity: 0.25
-                    visible: false
+                    fillMode: Image.PreserveAspectCrop
+                    source: mthumburi
+                    smooth: true
+                    clip: true
+                    z: 0
+
+                    Rectangle {
+                        id: fog
+                        anchors.fill: parent
+                        color: "white"
+                        opacity: 0.25
+                        visible: false
+                    }
+                }
+
+                ImageExtension {
+                    id: extension
+                    source: muri
                 }
             }
+
             BorderImage {
                 id: textBackground
                 source: "image://theme/media/music_text_bg_med"
