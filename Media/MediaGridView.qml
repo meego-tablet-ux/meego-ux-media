@@ -80,7 +80,7 @@ Item {
         header: headerComponent
         footer: footerComponent
         anchors.fill: parent
-
+        boundsBehavior: Flickable.StopAtBounds
         delegate: BorderImage {
             id: dinstance
             width: gridView.cellWidth-spacing
