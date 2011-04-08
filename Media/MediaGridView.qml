@@ -33,6 +33,9 @@ Item {
     property alias model: gridView.model
     property alias header: gridView.header
     property alias footer: gridView.footer
+    property alias currentItem: gridView.currentItem
+    property alias currentIndex: gridView.currentIndex
+    property alias theGridView: gridView
 
     signal clicked(real mouseX, real mouseY, variant payload)
     signal longPressAndHold(real mouseX, real mouseY, variant payload)
