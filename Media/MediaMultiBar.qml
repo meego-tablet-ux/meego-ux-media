@@ -17,10 +17,10 @@ Item {
     signal addPressed()
     property int itemwidth: background.width/((showadd)?4:3)
 
-    BorderImage {
+    Image {
         id: background
         anchors.fill: parent
-        source: (landscape)?"image://theme/navigationBar_l":"image://theme/navigationBar_p"
+        source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
         Item {
             id: btShare
             anchors.left: parent.left
@@ -31,48 +31,45 @@ Item {
                 id: shareIcon
                 anchors.horizontalCenter: parent.horizontalCenter
             }
+            Image{
+                id: divider
+                anchors.right: parent.right
+                source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                height: parent.height
+            }
         }
-        Item {
+        MediaToolbarButton {
             id: btAdd
             anchors.left: btShare.right
             anchors.top:parent.top
             height: parent.height
             width: (showadd)?itemwidth:0
-            MediaToolbarButton {
-                show: showadd
-                anchors.horizontalCenter: parent.horizontalCenter
-                bgSourceUp: "image://theme/media/icn_addtoalbum_up"
-                bgSourceDn: "image://theme/media/icn_addtoalbum_dn"
-                onClicked: container.addPressed()
-            }
+            visible: showadd
+            bgSourceUp: "image://theme/media/icn_addtoalbum_up"
+            bgSourceDn: "image://theme/media/icn_addtoalbum_dn"
+            onClicked: container.addPressed()
         }
-        Item {
+        MediaToolbarButton {
             id: btDelete
             anchors.left: btAdd.right
             anchors.top: parent.top
             height: parent.height
             width: itemwidth
-            MediaToolbarButton {
-                show: true
-                anchors.horizontalCenter: parent.horizontalCenter
-                bgSourceUp: "image://theme/media/icn_trash_up"
-                bgSourceDn: "image://theme/media/icn_trash_dn"
-                onClicked: container.deletePressed()
-            }
+            visible: true
+            bgSourceUp: "image://theme/media/icn_trash_up"
+            bgSourceDn: "image://theme/media/icn_trash_dn"
+            onClicked: container.deletePressed()
         }
-        Item {
+        MediaToolbarButton {
             id: cancelButton
             anchors.right: parent.right
             anchors.top: parent.top
             height: parent.height
             width: itemwidth
-            MediaToolbarButton {
-                show: true
-                anchors.horizontalCenter: parent.horizontalCenter
-                bgSourceUp: "image://theme/media/icn_cancel_ms_up"
-                bgSourceDn: "image://theme/media/icn_cancel_ms_dn"
-                onClicked: container.cancelPressed()
-            }
+            visible: true
+            bgSourceUp: "image://theme/media/icn_cancel_ms_up"
+            bgSourceDn: "image://theme/media/icn_cancel_ms_dn"
+            onClicked: container.cancelPressed()
         }
     }
 }

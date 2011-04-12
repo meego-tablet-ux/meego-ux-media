@@ -86,22 +86,22 @@ Item {
         source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
         MediaToolbarButton {
             id: btRewind
-            show: showprev
+            visible: showprev
             anchors.left: parent.left
             anchors.top: parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://meegotheme/icons/actionbar/media-backward"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-backward-active"
             onClicked: container.prevPressed()
         }
         MediaToolbarButton {
             id: btRecord
-            show: showrecord
+            visible: showrecord
             anchors.left: btRewind.right
             anchors.top:parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disablerecord)?"image://meegotheme/icons/actionbar/media-record-disabled":
                     ((ispauserecord)?"image://meegotheme/icons/actionbar/media-pause":"image://meegotheme/icons/actionbar/media-record")
             bgSourceDn: (disablerecord)?"image://meegotheme/icons/actionbar/media-record-disabled":
@@ -118,11 +118,11 @@ Item {
         }
         MediaToolbarButton {
             id: btStop
-            show: showstop
+            visible: showstop
             anchors.left: btRecord.right
             anchors.top:parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop"
             bgSourceDn: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop-active"
             onClicked: {
@@ -132,11 +132,11 @@ Item {
         }
         MediaToolbarButton {
             id: btPlay
-            show: showplay
+            visible: showplay
             anchors.left: btStop.right
             anchors.top:parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (disableplay)?"image://meegotheme/icons/actionbar/media-play":
                     ((ispause)?"image://meegotheme/icons/actionbar/media-pause":"image://meegotheme/icons/actionbar/media-play")
             bgSourceDn: (disableplay)?"image://meegotheme/icons/actionbar/media-play":
@@ -153,11 +153,11 @@ Item {
         }
         MediaToolbarButton {
             id: btForward
-            show: shownext
+            visible: shownext
             anchors.left: btPlay.right
             anchors.top:parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://meegotheme/icons/actionbar/media-forward"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-forward-active"
             onClicked: container.nextPressed()
@@ -285,11 +285,11 @@ Item {
         }
         MediaToolbarButton {
             id: btVolume
-            show: showvolume
+            visible: showvolume
             anchors.right: favoriteButton.left
             anchors.top: parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: (volumeControl.volume < 2)?"image://meegotheme/icons/actionbar/media-volume-mute":
                         (volumeControl.volume < 33)?"image://meegotheme/icons/actionbar/media-volume-1":
                         (volumeControl.volume < 67)?"image://meegotheme/icons/actionbar/media-volume-2":
@@ -315,12 +315,14 @@ Item {
         }
         MediaToolbarButton {
             id: favoriteButton
-            show: showfavorite
+            visible: showfavorite
             anchors.right: shuffleBt.left
             anchors.top: parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (isfavorite)?"image://meegotheme/icons/toolbar/contact-favorite-selected":"image://meegotheme/icons/toolbar/contact-favorite"
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
+            toggled: isfavorite
+            bgSourceUp: "image://meegotheme/icons/toolbar/contact-favorite"
+            bgSourceUpToggled: "image://meegotheme/icons/toolbar/contact-favorite-selected"
             bgSourceDn: (isfavorite)?"image://meegotheme/icons/toolbar/contact-favorite-selected-active":"image://meegotheme/icons/toolbar/contact-favorite-active"
             onClicked: {
                 isfavorite = !isfavorite;
@@ -329,12 +331,14 @@ Item {
         }
         MediaToolbarButton {
             id: shuffleBt
-            show: showshuffle
+            visible: showshuffle
             anchors.right: repeatBt.left
             anchors.top: parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (isshuffle)?"image://meegotheme/icons/actionbar/media-shuffle-selected":"image://meegotheme/icons/actionbar/media-shuffle"
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
+            toggled: isshuffle
+            bgSourceUp: "image://meegotheme/icons/actionbar/media-shuffle"
+            bgSourceUpToggled: "image://meegotheme/icons/actionbar/media-shuffle-selected"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-shuffle-active"
             onClicked: {
                 isshuffle = !isshuffle;
@@ -343,12 +347,14 @@ Item {
         }
         MediaToolbarButton {
             id: repeatBt
-            show: showrepeat
+            visible: showrepeat
             anchors.right: parent.right
             anchors.top: parent.top
             height: parent.height
-            width: (show)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (isrepeat)?"image://meegotheme/icons/actionbar/media-repeat-active-selected":"image://meegotheme/icons/actionbar/media-repeat"
+            width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
+            toggled: isrepeat
+            bgSourceUp: "image://meegotheme/icons/actionbar/media-repeat"
+            bgSourceUpToggled: "image://meegotheme/icons/actionbar/media-repeat-active-selected"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-repeat-active"
             onClicked: {
                 isrepeat = !isrepeat;

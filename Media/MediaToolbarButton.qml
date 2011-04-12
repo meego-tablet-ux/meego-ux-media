@@ -10,27 +10,46 @@ import Qt 4.7
 
 Item{
     id: button
+    visible: false
+    width: (visible)?((image.height*1.4)+divider.width):0
+    height: (visible)?(image.height):0
     property string bgSourceUp:""
+    property string bgSourceUpToggled:""
     property string bgSourceDn:""
-    property bool show: true
-    width: (show)?((image.height*1.4)+divider.width):0
-    height: (show)?(image.height):0
+    property bool toggled: false
     property int iwidth: (image.height*1.4)+divider.width
     property alias iheight: image.height
 
     signal clicked()
     clip:true
+
     Image{
         id: image
-        visible: show
-        source: bgSourceUp
+        source: (toggled)?bgSourceUpToggled:bgSourceUp
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectCrop
     }
 
     Image{
+        id: toggledBackground
+        z: -1
+        visible: toggled
+        anchors.fill: parent
+        source: "image://meegotheme/widgets/common/menu/menu-item-selected"
+        fillMode: Image.PreserveAspectCrop
+    }
+
+    Image{
+        id: activeBackground
+        z: -1
+        visible: false
+        anchors.fill: parent
+        source: "image://meegotheme/widgets/common/menu/menu-item-active"
+        fillMode: Image.PreserveAspectCrop
+    }
+
+    Image{
         id: divider
-        visible: show
         anchors.right: parent.right
         source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
         height: parent.height
@@ -43,6 +62,10 @@ Item{
             PropertyChanges {
                 target: image
                 source: bgSourceDn
+            }
+            PropertyChanges {
+                target: activeBackground
+                visible: true
             }
         }
     ]
