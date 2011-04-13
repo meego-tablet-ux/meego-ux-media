@@ -20,7 +20,7 @@ Item{
     property int iwidth: (image.height*1.4)+divider.width
     property alias iheight: image.height
 
-    signal clicked()
+    signal clicked(real mouseX, real mouseY)
     clip:true
 
     Image{
@@ -74,7 +74,7 @@ Item{
         id: mouseArea
         anchors.fill: parent
         onClicked: {
-            button.clicked()
+            button.clicked(mouseX, mouseY)
         }
     }
 }

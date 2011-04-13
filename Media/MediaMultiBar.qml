@@ -1,5 +1,5 @@
 import Qt 4.7
-import MeeGo.Labs.Components 0.1
+import MeeGo.Components 0.1
 import MeeGo.Sharing 0.1
 import MeeGo.Media 0.1
 
@@ -9,7 +9,7 @@ Item {
     height: background.height
 
     property bool landscape: false
-    property alias sharing: shareIcon
+    property variant sharing
 
     signal cancelPressed()
     signal deletePressed()
@@ -17,25 +17,47 @@ Item {
     signal addPressed()
     property int itemwidth: background.width/((showadd)?4:3)
 
+    ModalContextMenu {
+        id: contextMenu
+        property alias model: contextActionMenu.model
+        content: ActionMenu {
+            id: contextActionMenu
+            onTriggered: {
+                // Share
+                var svcTypes = sharing.serviceTypes;
+                for (x in svcTypes) {
+                    if (model[index] == svcTypes[x]) {
+                        sharing.showContext(model[index], contextMenu.x, contextMenu.y);
+                        break;
+                    }
+                }
+                contextMenu.hide();
+            }
+        }
+    }
+
     Image {
         id: background
         anchors.fill: parent
         source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
-        Item {
+        MediaToolbarButton {
             id: btShare
             anchors.left: parent.left
             anchors.top:parent.top
             height: parent.height
             width: itemwidth
-            ShareIcon {
-                id: shareIcon
-                anchors.horizontalCenter: parent.horizontalCenter
-            }
-            Image{
-                id: divider
-                anchors.right: parent.right
-                source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
-                height: parent.height
+            visible: true
+            bgSourceUp: "image://meegotheme/images/media/icn_share_up"
+            bgSourceDn: "image://meegotheme/images/media/icn_share_up"
+            onClicked: {
+                if((sharing != undefined)&&(sharing.shareCount > 0))
+                {
+                    var map = mapToItem(topItem.topItem, btShare.x + btShare.width/2, btShare.y);
+                    contextMenu.model = sharing.serviceTypes;
+                    topItem.calcTopParent()
+                    contextMenu.setPosition( map.x, map.y );
+                    contextMenu.show();
+                }
             }
         }
         MediaToolbarButton {
@@ -69,8 +91,13 @@ Item {
             visible: true
             bgSourceUp: "image://theme/media/icn_cancel_ms_up"
             bgSourceDn: "image://theme/media/icn_cancel_ms_dn"
-            onClicked: container.cancelPressed()
+            onClicked: {
+                if(sharing != undefined)
+                    sharing.clearItems();
+                container.cancelPressed();
+            }
         }
     }
+    TopItem { id: topItem }
 }
 
