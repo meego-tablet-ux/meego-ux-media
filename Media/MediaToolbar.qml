@@ -12,8 +12,6 @@ import MeeGo.Media 0.1
 
 Item {
     id: container
-    width: background.width
-    height: background.height
 
     property bool landscape: false
 
