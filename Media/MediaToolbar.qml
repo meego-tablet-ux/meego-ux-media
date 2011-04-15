@@ -220,7 +220,6 @@ Item {
                     anchors.left: elapsedHead.right
                     anchors.right: elapsedTail.left
                     anchors.verticalCenter:progressBar.verticalCenter
-                   // width: 100
                     border.left: 1; border.top: 1
                     border.right: 1; border.bottom: 1
                     z:1
@@ -234,11 +233,21 @@ Item {
                     z:1
                 }
 
+                function updateSliderPosition() {
+                    progressBarSlider.x = (sliderPosition * progressBar.width) - progressBarSlider.width/2;
+                }
+
                 Connections {
                     id: progressBarConnection
                     target: container
                     onSliderPositionChanged: {
-                        progressBarSlider.x = (sliderPosition * progressBar.width) - progressBarSlider.width/2;
+                        progressBarRect.updateSliderPosition();
+                    }
+                }
+                Connections {
+                    target: progressBarRect
+                    onWidthChanged: {
+                        progressBarRect.updateSliderPosition();
                     }
                 }
                 MouseArea {
