@@ -81,14 +81,12 @@ Item {
         footer: footerComponent
         anchors.fill: parent
         boundsBehavior: Flickable.StopAtBounds
-        delegate: BorderImage {
+        delegate: Image {
             id: dinstance
             width: gridView.cellWidth-spacing
             height: gridView.cellHeight-spacing
             source: "image://theme/media/photos_thumb_med"
             clip: true
-
-            Component.onCompleted: gridView.currentIndex = 0
 
             function formatMinutes(time)
             {
@@ -201,7 +199,6 @@ Item {
                 anchors.fill:parent
                 z: -10
 
-
                 Item {
                     id: wrapper
                     anchors.fill: parent
@@ -232,11 +229,9 @@ Item {
                     }
                 }
 
-                BorderImage {
+                Image {
                     id: textBackground
                     source: "image://theme/media/music_text_bg_med"
-                    border.left: 3; border.top: 3
-                    border.right: 3; border.bottom: 3
                     width: parent.width
                     height: 63
                     anchors.bottom: parent.bottom
@@ -270,7 +265,7 @@ Item {
                         visible: text
                     }
                 }
-                BorderImage {
+                Image {
                     id: frame
                     anchors.centerIn: parent
                     width: parent.width - 2 * frameBorderWidth
