@@ -13,28 +13,10 @@ Item {
 
     signal cancelPressed()
     signal deletePressed()
+    signal sharePressed(real fingerX, real fingerY)
     property bool showadd: false
     signal addPressed()
     property int itemwidth: background.width/((showadd)?4:3)
-
-    ModalContextMenu {
-        id: contextMenu
-        property alias model: contextActionMenu.model
-        content: ActionMenu {
-            id: contextActionMenu
-            onTriggered: {
-                // Share
-                var svcTypes = sharing.serviceTypes;
-                for (x in svcTypes) {
-                    if (model[index] == svcTypes[x]) {
-                        sharing.showContext(model[index], contextMenu.x, contextMenu.y);
-                        break;
-                    }
-                }
-                contextMenu.hide();
-            }
-        }
-    }
 
     Image {
         id: background
@@ -49,16 +31,7 @@ Item {
             visible: true
             bgSourceUp: "image://meegotheme/images/media/icn_share_up"
             bgSourceDn: "image://meegotheme/images/media/icn_share_up"
-            onClicked: {
-                if((sharing != undefined)&&(sharing.shareCount > 0))
-                {
-                    var map = mapToItem(topItem.topItem, btShare.x + btShare.width/2, btShare.y);
-                    contextMenu.model = sharing.serviceTypes;
-                    topItem.calcTopParent()
-                    contextMenu.setPosition( map.x, map.y );
-                    contextMenu.show();
-                }
-            }
+            onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
         }
         MediaToolbarButton {
             id: btAdd
