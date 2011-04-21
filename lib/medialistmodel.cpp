@@ -43,6 +43,120 @@ int MediaListModel::itemIndex(const QString &id)
     return -1;
 }
 
+QVariant MediaListModel::datafromItem(MediaItem *item, int role)
+{
+    if(item == NULL)
+        return QVariant();
+
+    if (role == MediaItem::ID)
+        return item->getID();
+
+    if (role == MediaItem::ItemType)
+        return item->getType();
+
+    if (role == MediaItem::URI)
+        return item->getURI();
+
+    if (role == MediaItem::ThumbURI)
+    {
+        if(item->m_thumburi_exists)
+        {
+            return item->getThumbURI();
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    if (role == MediaItem::Title)
+        return item->getTitle();
+
+    if (role == MediaItem::Artist)
+        return item->getArtist();
+
+    if (role == MediaItem::Album)
+        return item->getAlbum();
+
+    if (role == MediaItem::TrackNum)
+        return item->getTrackNum();
+
+    if (role == MediaItem::Length)
+        return item->getLength();
+
+    if (role == MediaItem::CreationTime)
+        return item->getCreationTime();
+
+    if (role == MediaItem::AddedTime)
+        return item->getAddedTime();
+
+    if (role == MediaItem::LastPlayedTime)
+        return item->getLastPlayedTime();
+
+    if (role == MediaItem::Favorite)
+        return item->getFavorite();
+
+    if (role == MediaItem::RecentlyAdded)
+        return item->getRecentlyAdded();
+
+    if (role == MediaItem::RecentlyViewed)
+        return item->getRecentlyViewed();
+
+    if (role == MediaItem::Virtual)
+        return item->isVirtual();
+
+    if (role == MediaItem::PlayStatus)
+        return item->m_playstatus;
+
+    if (role == MediaItem::UserContent)
+        return item->m_isusercontent;
+
+    if (role == MediaItem::Camera)
+        return item->getCamera();
+
+    if (role == MediaItem::Width)
+        return item->getWidth();
+
+    if (role == MediaItem::Height)
+        return item->getHeight();
+
+    return QVariant();
+}
+
+QVariant MediaListModel::datafromURN(const QString &urn, int role)
+{
+    MediaItem *item = NULL;
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->m_urn == urn)
+            item = mediaItemsList[i];
+
+    if(item == NULL)
+        return QVariant();
+
+    return datafromItem(item, role);
+}
+
+QVariant MediaListModel::datafromID(const QString &id, int role)
+{
+    MediaItem *item = NULL;
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->m_id == id)
+            item = mediaItemsList[i];
+
+    if(item == NULL)
+        return QVariant();
+
+    return datafromItem(item, role);
+}
+
+QVariant MediaListModel::datafromIndex(const int index, int role)
+{
+    if((index >= 0)&&(index < mediaItemsDisplay.count()))
+        return datafromItem(mediaItemsDisplay[index], role);
+
+    return QVariant();
+}
+
 QString MediaListModel::getURIfromIndex(const int index)
 {
     if((index >= 0)&&(index < mediaItemsDisplay.count()))
@@ -283,9 +397,6 @@ void MediaListModel::setLimit(const int limit)
 
 void MediaListModel::setSort(const int sort)
 {
-    if(m_sort == sort)
-        return;
-
     switch(sort) {
     case SortByDefault:
         m_sort = m_default_sort;
@@ -298,6 +409,7 @@ void MediaListModel::setSort(const int sort)
     case SortByUnwatched:
     case SortByFavorite:
     case SortByTrackNum:
+    case SortByURNList:
     case SortAsIs:
         m_sort = sort;
         redisplay();
@@ -608,6 +720,13 @@ bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
         ytrack = y->m_tracknum;
         return(ytrack < xtrack);
     }
+    else if(m_sort == SortByURNList)
+    {
+        int xidx, yidx;
+        xidx = urnSortList.indexOf(x->m_urn);
+        yidx = urnSortList.indexOf(y->m_urn);
+        return(yidx < xidx);
+    }
     return false;
 }
 
@@ -704,6 +823,27 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
         for(int i = 0; i < list.count(); i++)
         {
             map.insertMulti(list[i]->m_tracknum, list[i]);
+        }
+
+        /* pull a list of the unique keys, in case two items have the same tracknum */
+        QList<int> tracks = map.uniqueKeys();
+        qSort( tracks );
+        list.clear();
+
+        /* pop the values for each sorted key */
+        for(int i = 0; i < tracks.count(); i++)
+        {
+            list << map.values(tracks[i]);
+        }
+    }
+    else if(sort == SortByURNList)
+    {
+        QMap<int, MediaItem *> map;
+
+        /* create a QMap of all the items mapped to their list indexs */
+        for(int i = 0; i < list.count(); i++)
+        {
+            map.insertMulti(urnSortList.indexOf(list[i]->m_urn), list[i]);
         }
 
         /* pull a list of the unique keys, in case two items have the same tracknum */

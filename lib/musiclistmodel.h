@@ -129,8 +129,6 @@ protected:
     QStringList m_urns;
     QList<int> shuffler;
     int shuffleindex;
-    QString qmlimagereloadhack;
-    bool qmlhack(int index);
 };
 
 #endif // MUSICLISTMODEL_H

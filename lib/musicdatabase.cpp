@@ -519,9 +519,9 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
     }
 }
 
-QList<MediaItem *> MusicDatabase::loadPlaylist(const QString &title)
+QStringList MusicDatabase::loadPlaylist(const QString &title)
 {
-    QList<MediaItem *> playlistItems;
+    QStringList playlistItems;
     QString SqlCmd =
         "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryContent " \
         "?item { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }";
@@ -535,14 +535,7 @@ QList<MediaItem *> MusicDatabase::loadPlaylist(const QString &title)
         {
             QString urn = (*j)[0];
             if(!urn.isEmpty())
-            {
-                for(int j = 0; j < mediaItemsList.count(); j++)
-                    if(mediaItemsList[j]->m_urn == urn)
-                    {
-                        playlistItems << mediaItemsList[j];
-                        break;
-                    }
-            }
+                playlistItems << urn;
         }
     }
 

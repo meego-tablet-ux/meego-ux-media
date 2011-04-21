@@ -88,13 +88,6 @@ void MusicListModel::setType(const int type)
     emit typeChanged(m_type);
     m_default_sort = SortAsIs;
 
-    /* a playlist can start empty, so we need signals now */
-    if((m_type == MusicPlaylist)||(m_type == NowPlaying))
-    {
-        setSort(SortByDefault);
-        connectSignals(false, true, true);
-    }
-
     /* for these items we need further input to proceed */
     switch(m_type) {
     case ListofSongsForAlbum:
@@ -110,6 +103,9 @@ void MusicListModel::setType(const int type)
             setArtist(m_artist);
         return;
     case MusicPlaylist:
+        m_default_sort = SortByURNList;
+        setSort(SortByDefault);
+        connectSignals(false, true, true);
         if(!m_playlist.isEmpty())
             setPlaylist(m_playlist);
         return;
@@ -118,6 +114,9 @@ void MusicListModel::setType(const int type)
             setMix(m_mix);
         return;
     case NowPlaying:
+        setSort(SortByDefault);
+        connectSignals(false, true, true);
+        return;
     case Editor:
         return;
     }
@@ -276,7 +275,8 @@ void MusicListModel::setPlaylist(const QString playlist)
 
     if(!playlist.isEmpty())
     {
-        QList<MediaItem *> newItemList = MusicDatabase::instance()->loadPlaylist(m_playlist);
+        urnSortList = MusicDatabase::instance()->loadPlaylist(m_playlist);
+        QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByURN(urnSortList);
 
         if(!newItemList.isEmpty())
         {
@@ -285,7 +285,7 @@ void MusicListModel::setPlaylist(const QString playlist)
         }
     }
 
-    connectSignals(false, true, true);
+    connectSignals(true, true, true);
     emit playlistChanged(m_playlist);
 }
 
@@ -408,7 +408,9 @@ QList<MediaItem *> MusicListModel::unwrapItem(const QList<MediaItem *> &snapshot
         /* recursively unwrap any albums or artists so that the output */
         /* list is just songs */
         QList<MediaItem *> playlistItems;
-        playlistItems = MusicDatabase::instance()->loadPlaylist(item->m_title);
+        QStringList playlistURNs;
+        playlistURNs = MusicDatabase::instance()->loadPlaylist(item->m_title);
+        playlistItems = MusicDatabase::instance()->getItemsByURN(playlistURNs);
         for(int i = 0; i < playlistItems.count(); i++)
             if(playlistItems[i]->isSong())
                 newItemList << playlistItems[i];
@@ -555,6 +557,12 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(list->at(i)->m_recentlyviewed&&!list->at(i)->isVirtual())
+                newItemList << list->at(i);
+    }
+    else if(m_type == MusicPlaylist)
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(urnSortList.contains(list->at(i)->m_urn))
                 newItemList << list->at(i);
     }
     else

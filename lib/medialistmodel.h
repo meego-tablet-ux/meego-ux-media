@@ -20,7 +20,6 @@ class MediaListModel : public QAbstractListModel
     Q_ENUMS(FilterType)
     Q_ENUMS(SortType)
     Q_ENUMS(PlayType)
-    Q_ENUMS(MediaItem::ItemType)
     Q_PROPERTY(int filter READ getFilter WRITE setFilter NOTIFY filterChanged);
     Q_PROPERTY(int limit READ getLimit WRITE setLimit NOTIFY limitChanged);
     Q_PROPERTY(int sort READ getSort WRITE setSort NOTIFY sortChanged);
@@ -49,7 +48,8 @@ public:
                     SortByUnwatched = 5,
                     SortByFavorite = 6,
                     SortByTrackNum = 7,
-                    SortAsIs = 8 };
+                    SortByURNList = 8,
+                    SortAsIs = 9 };
 
     enum PlayType  {  Stopped = 0,
                       Paused = 1,
@@ -85,6 +85,9 @@ public:
 
 public slots:
     int itemIndex(const QString &id);
+    QVariant datafromURN(const QString &urn, int role);
+    QVariant datafromID(const QString &id, int role);
+    QVariant datafromIndex(const int index, int role);
     QString getIDfromURN(const QString &urn);
     QString getTitlefromURN(const QString &urn);
     QString getURIfromURN(const QString &urn);
@@ -133,6 +136,7 @@ protected:
     MediaDatabase *database;
     QHash<QString, MediaItem *> selectedItemsHash;
     QStringList hiddenURNsList;
+    QStringList urnSortList;
 
     void notifyChanged(const QStringList &ids);
     void redisplay(const QModelIndex &parent = QModelIndex());
@@ -144,6 +148,7 @@ protected:
     QList<MediaItem *> filterItems(const QList<MediaItem *> list);
     void hideItems(QList<MediaItem *> &list);
     void filterDuplicates(QList<MediaItem *> &currentList, QList<MediaItem *> &additionList);
+    QVariant datafromItem(MediaItem *item, int role);
 
     /* the master list contains all the photos found through tracker */
     QList<MediaItem *> mediaItemsList;

@@ -14,6 +14,7 @@
 
 void MediaQML::registerTypes(const char *uri)
 {
+    qmlRegisterType<MediaItem>(uri, 0, 0, "MediaItem");
     qmlRegisterType<MusicListModel>(uri, 0, 0, "MusicListModel");
     qmlRegisterType<PhotoListModel>(uri, 0, 0, "PhotoListModel");
     qmlRegisterType<VideoListModel>(uri, 0, 0, "VideoListModel");

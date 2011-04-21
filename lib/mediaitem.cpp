@@ -107,6 +107,29 @@ MediaItem::MediaItem(int type, QObject *parent) :
     m_isusercontent = false;
 }
 
+MediaItem::MediaItem(QObject *parent) :
+    QObject(parent)
+{
+    m_type = PhotoItem;
+    m_favorite = false;
+    m_recentlyadded = false;
+    m_recentlyviewed = false;
+    m_id = QString().sprintf("0x%08lX", (uintptr_t)this);
+    m_thumburi_exists = false;
+    m_thumburi_ignore = true;
+    m_thumbtype = NoThumb;
+    artistitem = NULL;
+    albumitem = NULL;
+    m_tracknum = 0;
+    m_length = 0;
+    m_isvirtual = true;
+    m_playstatus = 0;
+    m_sid = 0;
+    m_width = 0;
+    m_height = 0;
+    m_isusercontent = false;
+}
+
 void MediaItem::changeData(QDateTime recenttime, QStringList args)
 {
     m_urn = args.at(IDX_URN);

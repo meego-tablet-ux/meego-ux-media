@@ -24,7 +24,7 @@ public:
     void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void savePlaylist(QList<MediaItem *> &list, const QString &title);
-    QList<MediaItem *> loadPlaylist(const QString &title);
+    QStringList loadPlaylist(const QString &title);
     MediaItem* getArtistItem(const QString &title);
 
 public slots:

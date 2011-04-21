@@ -250,6 +250,8 @@
 
 class MediaItem: public QObject {
     Q_OBJECT
+    Q_ENUMS(Role);
+    Q_ENUMS(ItemType);
     Q_PROPERTY(QString itemid READ getID);
     Q_PROPERTY(int itemtype READ getType);
     Q_PROPERTY(QString uri READ getURI);
@@ -278,6 +280,8 @@ public:
     explicit MediaItem(int type, QString uri, QObject *parent = 0);
     /* create a completely virtual media item filled with non-tracker data */
     explicit MediaItem(int type, QObject *parent = 0);
+    /* create a completely uninitialized item */
+    explicit MediaItem(QObject *parent = 0);
 
     enum Role {
         ID = Qt::UserRole + 1,
