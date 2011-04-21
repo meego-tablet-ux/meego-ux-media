@@ -9,7 +9,6 @@ Item {
     height: background.height
 
     property bool landscape: false
-    property variant sharing
 
     signal cancelPressed()
     signal deletePressed()
@@ -65,8 +64,6 @@ Item {
             bgSourceUp: "image://theme/media/icn_cancel_ms_up"
             bgSourceDn: "image://theme/media/icn_cancel_ms_dn"
             onClicked: {
-                if(sharing != undefined)
-                    sharing.clearItems();
                 container.cancelPressed();
             }
         }
