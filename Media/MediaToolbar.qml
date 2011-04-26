@@ -61,6 +61,22 @@ Item {
     property int buttoncount: showprev + showrecord + showstop + showplay + shownext + showvolume + showfavorite + showshuffle + showrepeat
     property int buttonwidth: (buttoncount > 0)?(background.width/buttoncount):background.width
 
+    property alias delay: busyTimer.interval
+    property bool busy: false
+    Timer {
+        id: busyTimer
+        interval: 500
+        repeat: false
+        onTriggered: {
+            busy = false;
+        }
+    }
+    onBusyChanged: {
+        if(busy) {
+            busyTimer.restart();
+        }
+    }
+
     VolumeControl {
         id: volumeControl
     }
@@ -91,7 +107,13 @@ Item {
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://meegotheme/icons/actionbar/media-backward"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-backward-active"
-            onClicked: container.prevPressed()
+            onClicked: {
+                if(!busy)
+                {
+                    busy = true;
+                    container.prevPressed();
+                }
+            }
         }
         MediaToolbarButton {
             id: btRecord
@@ -105,8 +127,9 @@ Item {
             bgSourceDn: (disablerecord)?"image://meegotheme/icons/actionbar/media-record-disabled":
                     ((ispauserecord)?"image://meegotheme/icons/actionbar/media-pause-active":"image://meegotheme/icons/actionbar/media-record-active")
             onClicked: {
-                if(!disablerecord)
+                if(!busy && !disablerecord)
                 {
+                    busy = true;
                     if (ispauserecord)
                         container.pauseRecordPressed();
                     else
@@ -124,8 +147,11 @@ Item {
             bgSourceUp: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop"
             bgSourceDn: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop-active"
             onClicked: {
-                if(!disablestop)
+                if(!busy && !disablestop)
+                {
+                    busy = true;
                     container.stopPressed();
+                }
             }
         }
         MediaToolbarButton {
@@ -140,8 +166,9 @@ Item {
             bgSourceDn: (disableplay)?"image://meegotheme/icons/actionbar/media-play":
                     ((ispause)?"image://meegotheme/icons/actionbar/media-pause-active":"image://meegotheme/icons/actionbar/media-play-active")
             onClicked: {
-                if(!disableplay)
+                if(!busy && !disableplay)
                 {
+                    busy = true;
                     if (ispause)
                         container.pausePressed();
                     else
@@ -158,7 +185,13 @@ Item {
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             bgSourceUp: "image://meegotheme/icons/actionbar/media-forward"
             bgSourceDn: "image://meegotheme/icons/actionbar/media-forward-active"
-            onClicked: container.nextPressed()
+            onClicked: {
+                if(!busy)
+                {
+                    busy = true;
+                    container.nextPressed();
+                }
+            }
         }
         Item {
             id: progressBarItem
