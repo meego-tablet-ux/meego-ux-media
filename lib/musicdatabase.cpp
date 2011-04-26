@@ -462,7 +462,7 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
 
     /* create a new playlist */
     QString SqlInsertBegin = "INSERT { _:a a nmm:Playlist; nie:title '%1' ; nfo:entryCounter %2 ";
-    QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryContent '%1'; nfo:listPosition %2 ] ";
+    QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition %2 ] ";
     sql += QString(SqlInsertBegin).arg(title).arg(list.count());
 
     int j = 0;
@@ -523,7 +523,7 @@ QStringList MusicDatabase::loadPlaylist(const QString &title)
 {
     QStringList playlistItems;
     QString SqlCmd =
-        "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryContent " \
+        "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
         "?item { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }";
 
     QString sql = QString(SqlCmd).arg(title);

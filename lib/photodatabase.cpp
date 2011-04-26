@@ -13,7 +13,7 @@
 #include "photodatabase.h"
 
 #define TRACKER_ALBUMPHOTOS "SELECT ?image " \
-        "WHERE { ?imagelist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryContent ?image " \
+        "WHERE { ?imagelist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?image " \
         "{ SELECT ?imagelist WHERE {?imagelist a nmm:ImageList ; nie:title '%1'} } }"
 #define COVERARTTAG "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'coverart' . ?object nao:hasTag _:tag } " \
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
@@ -389,7 +389,7 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
 
     /* create a new album */
     QString SqlInsertBegin = "INSERT { _:a a nmm:ImageList; nie:title '%1' ; nfo:entryCounter %2 ";
-    QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryContent '%1'; nfo:listPosition %2 ] ";
+    QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition %2 ] ";
     sql += QString(SqlInsertBegin).arg(title).arg(list.count());
 
     int j = 0;

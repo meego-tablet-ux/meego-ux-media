@@ -35,7 +35,7 @@ Item {
 
     function setVolume(volume)
     {
-        volumeTimer.interval = 1000;
+        volumeTimer.interval = 3000;
         volumeTimer.restart();
         if (volumeControl && volumeControl.volume != volume){
             volumeControl.volume = volume;
