@@ -169,8 +169,8 @@
 /* MUSIC ALBUM */
 
 #define TRACKER_MUSICALBUM "SELECT ?album tracker:id(?album) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nmm:albumTitle(?album) " \
-        "nmm:albumTrackCount(?album) nmm:artistName(nmm:albumArtist(?album)) nmm:albumArtist(?album) " \
-        "WHERE{?album a nmm:MusicAlbum;tracker:added ?_added " \
+        "nmm:albumTrackCount(?album) nmm:artistName(?artist) ?artist " \
+        "WHERE{?album a nmm:MusicAlbum;tracker:added ?_added . ?album nmm:albumArtist ?artist " \
         ". FILTER (str(?album) = '%1') " \
         ". OPTIONAL {?album nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?album nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"

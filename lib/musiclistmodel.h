@@ -127,6 +127,7 @@ protected:
     QString m_album;
     QString m_playlist;
     QStringList m_urns;
+    QStringList m_albums;
     QList<int> shuffler;
     int shuffleindex;
 };

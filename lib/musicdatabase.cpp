@@ -277,7 +277,10 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          if(mediaItemsUrnHash.contains((*i)[IDX_URN]))
          {
             if(priority)
+            {
                 emit itemAvailable((*i)[IDX_URN]);
+                break;
+            }
             continue;
          }
 
@@ -318,7 +321,10 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
 
          /* if this data was specifically requested, send an alert */
          if(priority)
+         {
              emit itemAvailable(item->m_urn);
+             break;
+         }
 
          if(type == MediaItem::SongItem)
          {

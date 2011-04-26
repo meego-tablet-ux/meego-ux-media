@@ -70,6 +70,7 @@ void MusicListModel::clearData()
     disconnect(MusicDatabase::instance(),SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(itemsChanged(const QStringList &, int)));
     disconnect(MusicDatabase::instance(),SIGNAL(itemsRemoved(const QStringList &)),this,SLOT(itemsRemoved(const QStringList &)));
 
+    m_albums.clear();
     if(!mediaItemsDisplay.isEmpty())
     {
         /* formally remove all the items from the list */
@@ -208,16 +209,15 @@ void MusicListModel::setArtist(const QString artist)
     }
     else
     {
-        QStringList albumlist;
         for(int i = 0; i < tempList.count(); i++)
             if((tempList[i]->isSong())&&
                (tempList[i]->m_artist.contains(m_artist))&&
-                !albumlist.contains(tempList[i]->m_album))
-                albumlist << tempList[i]->m_album;
+                !m_albums.contains(tempList[i]->m_album))
+                m_albums << tempList[i]->m_album;
 
         for(int i = 0; i < tempList.count(); i++)
             if((tempList[i]->isMusicAlbum())&&
-               ((albumlist.contains(tempList[i]->m_title))||
+               ((m_albums.contains(tempList[i]->m_title))||
                 tempList[i]->m_artist.contains(m_artist)))
                 newItemList << tempList[i];
     }
@@ -521,18 +521,22 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     }
     else if((m_type == ListofAlbumsForArtist)&&(!m_artist.isEmpty()))
     {
-        QStringList albumlist;
+        /* We need a full snapshot because we could discover we need an */
+        /* album that's already been added to the list */
+        QList<MediaItem *> tempList = MusicDatabase::instance()->getSnapshot();
+
         for(int i = 0; i < list->count(); i++)
             if((list->at(i)->isSong())&&
                (list->at(i)->m_artist.contains(m_artist))&&
-                !albumlist.contains(list->at(i)->m_album))
-                albumlist << list->at(i)->m_album;
+                !m_albums.contains(list->at(i)->m_album))
+                m_albums << list->at(i)->m_album;
 
-        for(int i = 0; i < list->count(); i++)
-            if((list->at(i)->isMusicAlbum())&&
-               ((albumlist.contains(list->at(i)->m_title))||
-                list->at(i)->m_artist.contains(m_artist)))
-                newItemList << list->at(i);
+        for(int i = 0; i < tempList.count(); i++)
+            if((tempList[i]->isMusicAlbum())&&
+               ((m_albums.contains(tempList[i]->m_title))||
+                tempList[i]->m_artist.contains(m_artist))&&
+                !mediaItemsList.contains(tempList[i]))
+                newItemList << tempList[i];
     }
     else if((m_type == ListofSongsForAlbum)&&(!m_album.isEmpty()))
     {
@@ -704,7 +708,6 @@ void MusicListModel::removeItems(const QStringList &ids)
         return;
     }
 
-    //qDebug() << "removing items " << ids;
     QList<MediaItem *> deleteItemList;
 
     for (int i = 0; i < mediaItemsList.count(); i++)
@@ -713,11 +716,9 @@ void MusicListModel::removeItems(const QStringList &ids)
 
     for (int i = 0; i < deleteItemList.count(); i++)
     {
-        qDebug() << "removing item " << deleteItemList[i]->m_title;
         int index = mediaItemsDisplay.indexOf(deleteItemList[i]);
         if(index >= 0)
         {
-            qDebug() << "removing index " << index;
             removeRows(index, 1);
         }
         mediaItemsList.removeAll(deleteItemList[i]);
