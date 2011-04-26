@@ -563,7 +563,8 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(urnSortList.contains(list->at(i)->m_urn))
-                newItemList << list->at(i);
+                for(int j = 0; j < urnSortList.count(list->at(i)->m_urn); j++)
+                    newItemList << list->at(i);
     }
     else
     {
