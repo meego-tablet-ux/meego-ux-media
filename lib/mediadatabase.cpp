@@ -434,6 +434,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         QString sql = QString(SqlCmd).arg(item->m_urn);
         qDebug() << sql;
         trackerCallAsync(sql);
+
+        /* remove the thumbnail as well */
+        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+        {
+            QFile f(item->m_thumburi);
+            f.remove();
+        }
     }
     else if(item->m_type == MediaItem::SongItem)
     {
@@ -465,6 +472,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         QString SqlCmd = "DELETE { ?item a nmm:MusicAlbum } WHERE { ?item a nmm:MusicAlbum . FILTER (str(?item) = '%1')} ";
         QString sql = QString(SqlCmd).arg(item->m_urn);
         trackerCallAsync(sql);
+
+        /* remove the thumbnail as well */
+        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi)&&(item->m_thumbtype == MediaItem::AlbumThumb))
+        {
+            QFile f(item->m_thumburi);
+            f.remove();
+        }
     }
     else if(item->m_type == MediaItem::MusicArtistItem)
     {
@@ -485,6 +499,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         QString SqlCmd = "DELETE { ?item a nmm:Artist } WHERE { ?item a nmm:Artist . FILTER (str(?item) = '%1')} ";
         QString sql = QString(SqlCmd).arg(item->m_urn);
         trackerCallAsync(sql);
+
+        /* remove the thumbnail as well */
+        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+        {
+            QFile f(item->m_thumburi);
+            f.remove();
+        }
     }
     else if(item->m_type == MediaItem::PhotoAlbumItem)
     {
@@ -502,6 +523,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         /* Are you sure? (y/n) */
         QFile f(url.toLocalFile());
         f.remove();
+
+        /* remove the thumbnail as well */
+        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+        {
+            QFile f(item->m_thumburi);
+            f.remove();
+        }
     }
     else if(item->m_type == MediaItem::VideoItem)
     {
@@ -513,13 +541,13 @@ void MediaDatabase::destroyItem(MediaItem *item)
         /* Are you sure? (y/n) */
         QFile f(url.toLocalFile());
         f.remove();
-    }
 
-    /* remove the thumbnail as well */
-    if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
-    {
-        QFile f(item->m_thumburi);
-        f.remove();
+        /* remove the thumbnail as well */
+        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+        {
+            QFile f(item->m_thumburi);
+            f.remove();
+        }
     }
 
     removedItemsList << item;

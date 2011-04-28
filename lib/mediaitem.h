@@ -125,6 +125,36 @@
         ". FILTER (tracker:id(?song) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} "
+#define TRACKER_SONGS_BYALBUM  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
+        "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
+        "nmm:artistName(?artist) ?artist nmm:albumTitle(?album) ?album nie:mimeType(?song) nfo:encodedBy(?song) " \
+        "WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        ". ?song nmm:musicAlbum ?album . ?song nmm:performer ?artist " \
+        ". FILTER (str(?album) = '%1') " \
+        ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
+        "ORDER BY nmm:trackNumber(?song)"
+#define TRACKER_SONGS_BYARTIST  "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
+        "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
+        "nmm:artistName(?artist) ?artist nmm:albumTitle(?album) ?album nie:mimeType(?song) nfo:encodedBy(?song) " \
+        "WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        ". ?song nmm:musicAlbum ?album . ?song nmm:performer ?artist " \
+        ". FILTER (str(?artist) = '%1') " \
+        ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
+        "ORDER BY nmm:trackNumber(?song)"
+#define TRACKER_SONGS_BYPLAYLIST "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
+        "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
+        "nmm:artistName(?artist) ?artist nmm:albumTitle(?album) ?album nie:mimeType(?song) nfo:encodedBy(?song) " \
+        "WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
+        ". ?song nmm:musicAlbum ?album . ?song nmm:performer ?artist " \
+        ". FILTER (str(?song) = ?item) " \
+        ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . } " \
+        ". { SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?item " \
+        ". ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . " \
+        "FILTER (str(?playlist) = '%1')} } } " \
+        "ORDER BY ?index }}"
 
 #define IDX_SNG_TITLE      IDX_CUSTOM_BEGIN
 #define IDX_SNG_URI        IDX_CUSTOM_BEGIN + 1

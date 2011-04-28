@@ -67,6 +67,11 @@ public:
                         Other = 7
                       };
 
+    enum PrioritySignal { None = 0,
+                          MainItem = 1,
+                          AssociatedSongs = 2,
+                        };
+
     QList<MediaItem *> getSnapshot();
     QList<MediaItem *> getItemsByID(const QStringList &ids);
     QList<MediaItem *> getItemsByURN(const QStringList &urns);
@@ -101,6 +106,7 @@ signals:
     void playlistItemAdded(int subjectid);
     void videoItemAdded(int subjectid);
     void itemAvailable(const QString identifier);
+    void songItemAvailable(const QString identifier);
 
 protected:
     /* the master list contains all music items found through tracker */

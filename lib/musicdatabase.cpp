@@ -268,7 +268,7 @@ void MusicDatabase::trackerGetMusic(const int offset, const int limit)
                      this, SLOT(trackerGetMusicFinished(QDBusPendingCallWatcher*)));
 }
 
-void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority)
+void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, int priority)
 {
     /* organize new items into musics and albums */
     for (QVector<QStringList>::iterator i = trackerreply.begin(); i != trackerreply.end(); i++)
@@ -276,10 +276,14 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          /* if this item is already in our list, skip it */
          if(mediaItemsUrnHash.contains((*i)[IDX_URN]))
          {
-            if(priority)
+            if(priority == MainItem)
             {
                 emit itemAvailable((*i)[IDX_URN]);
                 break;
+            }
+            else if((priority == AssociatedSongs)&&(mediaItemsUrnHash[(*i)[IDX_URN]]->isSong()))
+            {
+                emit songItemAvailable((*i)[IDX_URN]);
             }
             continue;
          }
@@ -320,11 +324,15 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          itemAdded(item);
 
          /* if this data was specifically requested, send an alert */
-         if(priority)
+         if(priority == MainItem)
          {
              emit itemAvailable(item->m_urn);
-             break;
          }
+         else if((priority == AssociatedSongs)&&(item->isSong()))
+         {
+             emit songItemAvailable(item->m_urn);
+         }
+
 
          if(type == MediaItem::SongItem)
          {
@@ -530,7 +538,8 @@ QStringList MusicDatabase::loadPlaylist(const QString &title)
     QStringList playlistItems;
     QString SqlCmd =
         "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
-        "?item { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }";
+        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }" \
+        "ORDER BY ?index";
 
     QString sql = QString(SqlCmd).arg(title);
     QVector<QStringList> info;
@@ -727,6 +736,31 @@ void MusicDatabase::startThumbnailerLoop()
     }
 }
 
+void MusicDatabase::requestSongItems(int type, QString identifier)
+{
+    /* get the song items for albums/artists/playlists */
+    QString SqlCmd;
+    switch(type) {
+    case MediaItem::MusicAlbumItem:
+        SqlCmd = TRACKER_SONGS_BYALBUM;
+        break;
+    case MediaItem::MusicArtistItem:
+        SqlCmd = TRACKER_SONGS_BYARTIST;
+        break;
+    case MediaItem::MusicPlaylistItem:
+        SqlCmd = TRACKER_SONGS_BYPLAYLIST;
+        break;
+    default:
+        return;
+    }
+    QString sql = QString(SqlCmd).arg(identifier);
+    QVector<QStringList> info;
+    if(trackerCall(info, sql))
+    {
+        trackerAddItems(MediaItem::SongItem, info, AssociatedSongs);
+    }
+}
+
 void MusicDatabase::requestItem(int type, QString identifier)
 {
     if((type != MediaItem::SongItem)&&(type != MediaItem::MusicAlbumItem)&&
@@ -739,6 +773,7 @@ void MusicDatabase::requestItem(int type, QString identifier)
         if(mediaItemsUrnHash.contains(identifier))
         {
             emit itemAvailable(identifier);
+            requestSongItems(type, identifier);
             return;
         }
     }
@@ -784,7 +819,8 @@ void MusicDatabase::requestItem(int type, QString identifier)
 
     if(trackerCall(info, sql))
     {
-        trackerAddItems(type, info, true);
+        trackerAddItems(type, info, MainItem);
+        requestSongItems(type, identifier);
         return;
     }
 

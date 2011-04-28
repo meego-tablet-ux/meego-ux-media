@@ -44,6 +44,7 @@ MusicListModel::MusicListModel(QObject *parent)
     shuffleindex = 0;
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
+    connect(MusicDatabase::instance(),SIGNAL(songItemAvailable(const QString)),this,SIGNAL(songItemAvailable(const QString)));
 }
 
 MusicListModel::~MusicListModel()

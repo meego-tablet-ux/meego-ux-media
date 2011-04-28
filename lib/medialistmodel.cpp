@@ -10,7 +10,6 @@
 
 #include <QDir>
 #include <QDebug>
-#include "photolistmodel.h"
 
 MediaListModel::MediaListModel(QObject *parent)
     : QAbstractListModel(parent)

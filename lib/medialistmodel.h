@@ -118,6 +118,7 @@ signals:
     void totalChanged(const int total);
     void countChanged(const int count);
     void itemAvailable(const QString identifier);
+    void songItemAvailable(const QString identifier);
 
 protected slots:
     void itemsRemoved(const QStringList &ids);

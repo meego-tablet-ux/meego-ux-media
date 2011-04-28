@@ -47,12 +47,13 @@ private:
     void trackerGetMusic(const int offset, const int limit);
     void processSong(MediaItem *item);
     void enforceUniqueTitles(MediaItem *item);
-    void trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority=false);
+    void trackerAddItems(int type, QVector<QStringList> trackerreply, int priority=0);
     MediaItem* getAlbumItem(QString artist, QString album);
     /* unique title variables */
     QHash<QString, int> titleCountHash;
     void createPlaylistThumb(QList<MediaItem *> &list, const QString &title);
     void generatePlaylistThumbId(MediaItem *item);
+    void requestSongItems(int type, QString identifier);
     int playlistthumbid;
 
     /* music database hashes for easy lookup */
