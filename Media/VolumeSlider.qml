@@ -57,7 +57,7 @@ Item {
         id: volumeControlItem
         width: volumeWidth
         height: volumeHeight
-        source: "image://theme/volume_panel_bg"
+        source: "image://meegotheme/images/volume_panel_bg"
         opacity: 0
 
         MouseArea {
@@ -83,7 +83,7 @@ Item {
             anchors.top: maxVolumeBt.bottom
             anchors.bottom: muteBt.top
             height: parent.height
-            source: "image://theme/volumehead_bg"
+            source: "image://meegotheme/images/volumehead_bg"
             function mapFromPosToVolume(mouseY) {
                 var pos = volumeBar.height -mouseY;
                 pos = pos < volumeSlider.height? volumeSlider.height: pos;
@@ -104,7 +104,7 @@ Item {
 
             Image {
                 id: volumeSlider
-                source: "image://theme/scrub_head_sm"
+                source: "image://meegotheme/images/scrub_head_sm"
                 anchors.horizontalCenter: parent.horizontalCenter
                 y: {
                     if (volumeControl)
@@ -116,7 +116,7 @@ Item {
             }
             Image {
                 id: volumeBody
-                source: "image://theme/volumehead_track_2"
+                source: "image://meegotheme/images/volumehead_track_2"
                 anchors.top: volumeSlider.verticalCenter
                 anchors.bottom: volumeHead.top
                 anchors.horizontalCenter:volumeBar.horizontalCenter
@@ -124,7 +124,7 @@ Item {
             }
             Image {
                 id: volumeHead
-                source: "image://theme/volumehead_track_1"
+                source: "image://meegotheme/images/volumehead_track_1"
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter:volumeBar.horizontalCenter
                 z:1

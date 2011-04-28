@@ -231,25 +231,25 @@ Item {
                     anchors.right: parent.right
                     anchors.left: parent.left
                     anchors.verticalCenter:parent.verticalCenter
-                    source: "image://theme/playhead_bg"
+                    source: "image://meegotheme/images/playhead_bg"
                 }
                 Image {
                     id: progressBarSlider
                     anchors.verticalCenter:progressBar.verticalCenter
-                    source:"image://theme/scrub_head_lrg"
+                    source:"image://meegotheme/images/scrub_head_lrg"
                     x: -width/2
                     z:10
                 }
                 Image {
                     id: elapsedHead
-                    source: "image://theme/media/progress_fill_1"
+                    source: "image://meegotheme/images/media/progress_fill_1"
                     anchors.left: progressBar.left
                     anchors.verticalCenter:progressBar.verticalCenter
                     z:1
                 }
                 BorderImage {
                     id: elapsedBody
-                    source: "image://theme/media/progress_fill_2"
+                    source: "image://meegotheme/images/media/progress_fill_2"
                     anchors.left: elapsedHead.right
                     anchors.right: elapsedTail.left
                     anchors.verticalCenter:progressBar.verticalCenter
@@ -259,7 +259,7 @@ Item {
                 }
                 Image {
                     id: elapsedTail
-                    source: "image://theme/media/progress_fill_3"
+                    source: "image://meegotheme/images/media/progress_fill_3"
                     anchors.right: progressBarSlider.right
                     anchors.rightMargin: progressBarSlider.width/2
                     anchors.verticalCenter:progressBar.verticalCenter

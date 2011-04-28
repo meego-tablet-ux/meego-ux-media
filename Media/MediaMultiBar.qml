@@ -39,8 +39,8 @@ Item {
             height: parent.height
             width: (showadd)?itemwidth:0
             visible: showadd
-            bgSourceUp: "image://theme/media/icn_addtoalbum_up"
-            bgSourceDn: "image://theme/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://meegotheme/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://meegotheme/images/media/icn_addtoalbum_dn"
             onClicked: container.addPressed()
         }
         MediaToolbarButton {
@@ -50,8 +50,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://theme/media/icn_trash_up"
-            bgSourceDn: "image://theme/media/icn_trash_dn"
+            bgSourceUp: "image://meegotheme/images/media/icn_trash_up"
+            bgSourceDn: "image://meegotheme/images/media/icn_trash_dn"
             onClicked: container.deletePressed()
         }
         MediaToolbarButton {
@@ -61,8 +61,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://theme/media/icn_cancel_ms_up"
-            bgSourceDn: "image://theme/media/icn_cancel_ms_dn"
+            bgSourceUp: "image://meegotheme/images/media/icn_cancel_ms_up"
+            bgSourceDn: "image://meegotheme/images/media/icn_cancel_ms_dn"
             onClicked: {
                 container.cancelPressed();
             }

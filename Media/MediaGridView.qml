@@ -85,7 +85,7 @@ Item {
             id: dinstance
             width: gridView.cellWidth-spacing
             height: gridView.cellHeight-spacing
-            source: "image://theme/media/photos_thumb_med"
+            source: "image://meegotheme/images/media/photos_thumb_med"
             clip: true
 
             function formatMinutes(time)
@@ -231,7 +231,7 @@ Item {
 
                 Image {
                     id: textBackground
-                    source: "image://theme/media/music_text_bg_med"
+                    source: "image://meegotheme/images/media/music_text_bg_med"
                     width: parent.width
                     height: 63
                     anchors.bottom: parent.bottom
@@ -300,7 +300,7 @@ Item {
                     when: !selectionMode && !mouseArea.pressed
                     PropertyChanges {
                         target: frame
-                        source: "image://theme/media/photos_thumb_med"
+                        source: "image://meegotheme/images/media/photos_thumb_med"
                     }
                 },
                 State {
@@ -316,7 +316,7 @@ Item {
                     when: selectionMode && !gridView.model.isSelected(itemid)
                     PropertyChanges {
                         target: frame
-                        source: "image://theme/media/photos_thumb_med"
+                        source: "image://meegotheme/images/media/photos_thumb_med"
                     }
                 },
                 State {
@@ -324,7 +324,7 @@ Item {
                     when: selectionMode && gridView.model.isSelected(itemid)
                     PropertyChanges {
                         target: frame
-                        source: "image://theme/media/photos_selected_tick"
+                        source: "image://meegotheme/images/media/photos_selected_tick"
                     }
                 }
             ]
