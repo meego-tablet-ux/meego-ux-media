@@ -933,28 +933,18 @@ QVariant MusicListModel::data(const QModelIndex &index, int role) const
 
 void MusicListModel::changeTitle(QString uri, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_uri == uri)
-            mediaItemsList[i]->m_title = title;
-
+    MusicDatabase::instance()->changeTitle(uri, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_uri == uri)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    MusicDatabase::instance()->changeTitle(uri, title);
 }
 
 void MusicListModel::changeTitleByURN(QString urn, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_urn == urn)
-            mediaItemsList[i]->m_title = title;
-
+    MusicDatabase::instance()->changeTitleByURN(urn, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_urn == urn)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    MusicDatabase::instance()->changeTitleByURN(urn, title);
 }
 
 /* create a random shuffle path for the play queue */

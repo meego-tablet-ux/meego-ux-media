@@ -419,26 +419,16 @@ void VideoListModel::clear()
 
 void VideoListModel::changeTitle(QString uri, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_uri == uri)
-            mediaItemsList[i]->m_title = title;
-
+    VideoDatabase::instance()->changeTitle(uri, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_uri == uri)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    VideoDatabase::instance()->changeTitle(uri, title);
 }
 
 void VideoListModel::changeTitleByURN(QString urn, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_urn == urn)
-            mediaItemsList[i]->m_title = title;
-
+    VideoDatabase::instance()->changeTitleByURN(urn, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_urn == urn)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    VideoDatabase::instance()->changeTitleByURN(urn, title);
 }

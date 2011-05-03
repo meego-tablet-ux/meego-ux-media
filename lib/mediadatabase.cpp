@@ -286,16 +286,34 @@ void MediaDatabase::changeTitleByURN(QString urn, QString title)
     if(urn.isEmpty())
         return;
 
+    MediaItem *item = NULL;
+    QString oldtitle;
+    if(mediaItemsUrnHash.contains(urn))
+    {
+        item = mediaItemsUrnHash[urn];
+        oldtitle = item->m_title;
+    }
+
     QString SqlCmd =
          "DELETE { <%1> nie:title ?title } WHERE { <%1> nie:title ?title } " \
          "INSERT { <%1> nie:title '%2' }";
 
     QString sql = QString(SqlCmd).arg(urn, title);
-    trackerCallAsync(sql);
+    trackerCall(sql);
 
-    for(int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_urn == urn)
-            broadcastMyChanges(mediaItemsList[i]->m_id, MediaDatabase::Title);
+    if(item != NULL)
+    {
+        if(item->isMusicPlaylist())
+        {
+            QString oldthumb = MediaItem::thumbPlaylist(oldtitle);
+            QString newthumb = MediaItem::thumbPlaylist(title);
+            if(!oldtitle.isEmpty()&&QFile::exists(oldthumb))
+                QFile::rename(oldthumb, newthumb);
+            item->m_thumburi = MediaItem::thumbPlaylistImageProvider(title);
+        }
+        item->m_title = title;
+        broadcastMyChanges(item->m_id, MediaDatabase::Title);
+    }
 }
 
 void MediaDatabase::changeTitle(QString uri, QString title)
@@ -312,7 +330,10 @@ void MediaDatabase::changeTitle(QString uri, QString title)
 
     for(int i = 0; i < mediaItemsList.count(); i++)
         if(mediaItemsList[i]->m_uri == uri)
+        {
+            mediaItemsList[i]->m_title = title;
             broadcastMyChanges(mediaItemsList[i]->m_id, MediaDatabase::Title);
+        }
 }
 
 void MediaDatabase::setFavorite(const QString &urn, const bool &favorite)
@@ -436,9 +457,9 @@ void MediaDatabase::destroyItem(MediaItem *item)
         trackerCallAsync(sql);
 
         /* remove the thumbnail as well */
-        if(!item->m_thumburi.isEmpty()&&QFile::exists(item->m_thumburi))
+        if(!item->m_title.isEmpty()&&QFile::exists(MediaItem::thumbPlaylist(item->m_title)))
         {
-            QFile f(item->m_thumburi);
+            QFile f(MediaItem::thumbPlaylist(item->m_title));
             f.remove();
         }
     }

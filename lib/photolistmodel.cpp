@@ -632,26 +632,16 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
 
 void PhotoListModel::changeTitle(QString uri, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_uri == uri)
-            mediaItemsList[i]->m_title = title;
-
+    PhotoDatabase::instance()->changeTitle(uri, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_uri == uri)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    PhotoDatabase::instance()->changeTitle(uri, title);
 }
 
 void PhotoListModel::changeTitleByURN(QString urn, QString title)
 {
-    for (int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->m_urn == urn)
-            mediaItemsList[i]->m_title = title;
-
+    PhotoDatabase::instance()->changeTitleByURN(urn, title);
     for (int i = 0; i < mediaItemsDisplay.count(); i++)
         if(mediaItemsList[i]->m_urn == urn)
             emit dataChanged(index(i, 0), index(i, 0));
-
-    PhotoDatabase::instance()->changeTitleByURN(urn, title);
 }
