@@ -138,6 +138,7 @@ protected:
     QList<MediaItem *> selectedItemsList;
     QStringList hiddenURNsList;
     QStringList urnSortList;
+    bool disable_filter;
 
     void notifyChanged(const QStringList &ids);
     void redisplay(const QModelIndex &parent = QModelIndex());

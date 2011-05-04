@@ -71,7 +71,9 @@ void MusicListModel::clearData()
     disconnect(MusicDatabase::instance(),SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(itemsChanged(const QStringList &, int)));
     disconnect(MusicDatabase::instance(),SIGNAL(itemsRemoved(const QStringList &)),this,SLOT(itemsRemoved(const QStringList &)));
 
+    disable_filter = false;
     m_albums.clear();
+    urnSortList.clear();
     if(!mediaItemsDisplay.isEmpty())
     {
         /* formally remove all the items from the list */
@@ -273,6 +275,8 @@ void MusicListModel::setPlaylist(const QString playlist)
     }
 
     clearData();
+    m_filter = FilterAll;
+    disable_filter = true;
 
     if(!playlist.isEmpty())
     {
@@ -568,8 +572,7 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(urnSortList.contains(list->at(i)->m_urn))
-                for(int j = 0; j < urnSortList.count(list->at(i)->m_urn); j++)
-                    newItemList << list->at(i);
+                newItemList << list->at(i);
     }
     else
     {
@@ -695,8 +698,11 @@ void MusicListModel::addItems(const QStringList &ids)
             }
         }
     }
-    else
+    else if(m_type == MusicPlaylist)
     {
+        for(int i = 0; i < newItemList.count(); i++)
+            urnSortList << newItemList[i]->m_urn;
+
         displayNewItems(newItemList);
     }
 }
@@ -801,6 +807,7 @@ void MusicListModel::clear()
         return;
     }
 
+    urnSortList.clear();
     beginRemoveRows(QModelIndex(), 0, mediaItemsDisplay.count()-1);
     mediaItemsList.clear();
     mediaItemsDisplay.clear();

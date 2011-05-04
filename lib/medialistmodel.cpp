@@ -20,6 +20,7 @@ MediaListModel::MediaListModel(QObject *parent)
     m_default_sort = SortAsIs;
     firstsort = true;
     datesearch = false;
+    disable_filter = false;
 }
 
 MediaListModel::~MediaListModel()
@@ -590,7 +591,7 @@ void MediaListModel::notifyChanged(const QStringList &ids)
 
 void MediaListModel::setFilter(const int filter)
 {
-    if(m_filter == filter)
+    if((m_filter == filter)||(disable_filter))
         return;
 
     m_filter = filter;
@@ -845,31 +846,23 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
     }
     else if(sort == SortByURNList)
     {
-        QMap<int, MediaItem *> map;
-        QList<MediaItem *> newItems;
+        /* the assumption here is that the list given is the entire list */
+        /* we will pay no attention to what's already in mediaItemsList */
+        /* we further assume that the list only contains items that are in */
+        /* urnSortList, though not necessarily in the exact amount */
+        QHash<QString, MediaItem *> hash;
 
-        /* create a QMap of all the items mapped to their list indexs */
+        /* create a hash of items by urn for what we have available */
         for(int i = 0; i < list.count(); i++)
-        {
-            int idx = urnSortList.indexOf(list[i]->m_urn);
-            if(idx < 0)
-                newItems << list[i];
-            else
-                map.insertMulti(urnSortList.indexOf(list[i]->m_urn), list[i]);
-        }
+            if(!hash.contains(list[i]->m_urn))
+                hash.insert(list[i]->m_urn, list[i]);
 
-        /* pull a list of the unique keys, in case two items have the same tracknum */
-        QList<int> tracks = map.uniqueKeys();
-        qSort( tracks );
         list.clear();
 
-        /* pull out the known tracks in order */
-        for(int i = 0; i < tracks.count(); i++)
-            list << map.values(tracks[i]);
-
-        /* add the new tracks at the end */
-        for(int i = 0; i < newItems.count(); i++)
-            list << newItems[i];
+        /* fill out the list with what's available */
+        for(int i = 0; i < urnSortList.count(); i++)
+            if(hash.contains(urnSortList[i]))
+                list << hash[urnSortList[i]];
     }
 }
 
@@ -915,6 +908,8 @@ void MediaListModel::displayNewItems(QList<MediaItem *> &list, const QModelIndex
     }
 
     /* if this is the first sort just do a full redisplay */
+    /* this code causes the entire ListView or GridView to repopulate */
+    /* which can look terrible if it happens more than once */
     if(firstsort)
     {
         if(!list.isEmpty())
@@ -925,11 +920,15 @@ void MediaListModel::displayNewItems(QList<MediaItem *> &list, const QModelIndex
         return;
     }
 
+    /* the code below integrates new items into the existing list in a manner */
+    /* that minimizes changes to what's already on the screen, this makes things */
+    /* look smoother while items are being frequently added or removed */
+
     /* at this point we assume that the existing items have */
-    /* already been sorted and filtered the same we the new items will */
-    /* sort the new items */
+    /* already been sorted and filtered */
     if(m_sort == SortAsIs)
     {
+        /* sorting as-is is easiest, just mash the two lists together */
         mediaItemsList += list;
         QList<MediaItem *> displayList = filterItems(list);
         int lastidx = mediaItemsDisplay.count();
@@ -950,25 +949,77 @@ void MediaListModel::displayNewItems(QList<MediaItem *> &list, const QModelIndex
     }
     else
     {
-        sortItems(list, m_sort);
+        if(m_sort == SortByURNList)
+        {
+            /* sorting by urn list is the hardest, since there can be */
+            /* multiple instances of the same items, which may or may not */
+            /* already be in mediaItemsList */
+            /* the assumption here is that mediaItemsList is what's already */
+            /* on screen, which fills in some portion of urnSortList, and that */
+            /* urnSortList has missing pieces that need to be filled as fully */
+            /* as possible with the items in list */
 
-        int j = 0;
-        for(int i = 0; i < list.count(); i++)
-        {
-            while((j < mediaItemsList.count())&&!isYbeforeX(mediaItemsList[j], list[i])) j++;
-            mediaItemsList.insert(j, list[i]);
-            j++;
+            QHash<QString, MediaItem *> hash;
+
+            /* create a hash of items by urn for what we have available */
+            for(int i = 0; i < mediaItemsList.count(); i++)
+                if(!hash.contains(mediaItemsList[i]->m_urn))
+                    hash.insert(mediaItemsList[i]->m_urn, mediaItemsList[i]);
+
+            for(int i = 0; i < list.count(); i++)
+                if(!hash.contains(list[i]->m_urn))
+                    hash.insert(list[i]->m_urn, list[i]);
+
+            int j = 0;
+            for(int i = 0; i < urnSortList.count(); i++)
+            {
+                /* if this index has the right item, increment and continue */
+                if((j < mediaItemsList.count())&&(mediaItemsList[j]->m_urn == urnSortList[i]))
+                {
+                    j++;
+                    continue;
+                }
+
+                /* if the index has the wrong item, but we have it in the list */
+                /* insert it and continue */
+                if(hash.contains(urnSortList[i]))
+                {
+                    beginInsertRows(parent, j, j);
+                    mediaItemsList.insert(j, hash[urnSortList[i]]);
+                    mediaItemsDisplay.insert(j, hash[urnSortList[i]]);
+                    endInsertRows();
+                    j++;
+                    continue;
+                }
+            }
         }
-        QList<MediaItem *> displayList = filterItems(list);
-        j = 0;
-        for(int i = 0; i < displayList.count(); i++)
+        else
         {
-            while((j < mediaItemsDisplay.count())&&!isYbeforeX(mediaItemsDisplay[j], displayList[i])) j++;
-            beginInsertRows(parent, j, j);
-            mediaItemsDisplay.insert(j, displayList[i]);
-            endInsertRows();
-            j++;
+            /* for all other sort types we can combine the existing and new lists */
+            /* into a single sorted list using simple insertions, this causes */
+            /* the ListView to appear to expand organically on screen as new items */
+            /* are inserted */
+
+            sortItems(list, m_sort);
+            int j = 0;
+            for(int i = 0; i < list.count(); i++)
+            {
+                while((j < mediaItemsList.count())&&!isYbeforeX(mediaItemsList[j], list[i])) j++;
+                mediaItemsList.insert(j, list[i]);
+                j++;
+            }
+            QList<MediaItem *> displayList = filterItems(list);
+            j = 0;
+            for(int i = 0; i < displayList.count(); i++)
+            {
+                while((j < mediaItemsDisplay.count())&&!isYbeforeX(mediaItemsDisplay[j], displayList[i])) j++;
+                beginInsertRows(parent, j, j);
+                mediaItemsDisplay.insert(j, displayList[i]);
+                endInsertRows();
+                j++;
+            }
         }
+
         if((m_limit > 0)&&(mediaItemsDisplay.count() > m_limit))
         {
             beginRemoveRows(parent, m_limit, mediaItemsDisplay.count()-1);
