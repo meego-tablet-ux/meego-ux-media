@@ -142,7 +142,7 @@
         ". FILTER (str(?artist) = '%1') " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
-        "ORDER BY nmm:trackNumber(?song)"
+        "ORDER BY nmm:albumTitle(?album) nmm:trackNumber(?song)"
 #define TRACKER_SONGS_BYPLAYLIST "SELECT ?song tracker:id(?song) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?song) " \
         "nie:url(nie:isStoredAs(?song)) nie:contentCreated(?song) nmm:trackNumber(?song) nfo:duration(?song) " \
         "nmm:artistName(?artist) ?artist nmm:albumTitle(?album) ?album nie:mimeType(?song) nfo:encodedBy(?song) " \

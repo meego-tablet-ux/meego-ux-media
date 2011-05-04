@@ -101,6 +101,7 @@ void MusicListModel::setType(const int type)
             setAlbum(m_album);
         return;
     case ListofAlbumsForArtist:
+        m_default_sort = SortByTitle;
     case ListofSongsForArtist:
     case ListofOrphanSongsForArtist:
         if(!m_artist.isEmpty())
