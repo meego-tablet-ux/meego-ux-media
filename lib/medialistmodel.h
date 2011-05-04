@@ -135,7 +135,7 @@ protected:
     int m_default_sort;
     bool firstsort;
     MediaDatabase *database;
-    QHash<QString, MediaItem *> selectedItemsHash;
+    QList<MediaItem *> selectedItemsList;
     QStringList hiddenURNsList;
     QStringList urnSortList;
 

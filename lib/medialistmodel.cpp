@@ -245,31 +245,34 @@ bool MediaListModel::isFavorite(const QString &id)
 
 void MediaListModel::setSelected(const QString &id, bool selected)
 {
+    MediaItem *item = NULL;
+    int idx = -1;
+
+    for(idx = 0; idx < mediaItemsDisplay.count(); idx++)
+        if(mediaItemsDisplay[idx]->m_id == id)
+        {
+            item = mediaItemsDisplay[idx];
+            break;
+        }
+
+    if((item == NULL)||(idx < 0))
+        return;
+
     if(selected)
-    {
-        for(int i = 0; i < mediaItemsDisplay.count(); i++)
-            if(mediaItemsDisplay[i]->m_id == id)
-            {
-                selectedItemsHash.insert(id, mediaItemsDisplay[i]);
-                emit dataChanged(index(i, 0), index(i, 0));
-                return;
-            }
-    }
+        selectedItemsList.append(item);
     else
-    {
-        selectedItemsHash.remove(id);
-        for(int i = 0; i < mediaItemsDisplay.count(); i++)
-            if(mediaItemsDisplay[i]->m_id == id)
-            {
-                emit dataChanged(index(i, 0), index(i, 0));
-                return;
-            }
-    }
+        selectedItemsList.removeAll(item);
+
+    emit dataChanged(index(idx, 0), index(idx, 0));
 }
 
 bool MediaListModel::isSelected(const QString &id)
 {
-    return(selectedItemsHash.contains(id));
+    for(int i = 0; i < mediaItemsDisplay.count(); i++)
+        if(mediaItemsDisplay[i]->m_id == id)
+            return(selectedItemsList.contains(mediaItemsDisplay[i]));
+
+    return false;
 }
 
 void MediaListModel::filterDuplicates(QList<MediaItem *> &currentList, QList<MediaItem *> &additionList)
@@ -338,10 +341,10 @@ void MediaListModel::hideItems(QList<MediaItem *> &list)
 
 void MediaListModel::clearSelected()
 {
-    QStringList ids = selectedItemsHash.keys();
-    selectedItemsHash.clear();
+    QList<MediaItem *> prevSelected = selectedItemsList;
+    selectedItemsList.clear();
     for(int i = 0; i < mediaItemsDisplay.count(); i++)
-        if(ids.contains(mediaItemsDisplay[i]->m_id))
+        if(prevSelected.contains(mediaItemsDisplay[i]))
         {
             emit dataChanged(index(i, 0), index(i, 0));
         }
@@ -349,19 +352,17 @@ void MediaListModel::clearSelected()
 
 QStringList MediaListModel::getSelectedURIs()
 {
-    QList<MediaItem *> items = selectedItemsHash.values();
     QStringList uris;
-    for(int i = 0; i < items.count(); i++)
-        uris << items[i]->m_uri;
+    for(int i = 0; i < selectedItemsList.count(); i++)
+        uris << selectedItemsList[i]->m_uri;
     return uris;
 }
 
 QStringList MediaListModel::getSelectedIDs()
 {
-    QList<MediaItem *> items = selectedItemsHash.values();
     QStringList ids;
-    for(int i = 0; i < items.count(); i++)
-        ids << items[i]->m_id;
+    for(int i = 0; i < selectedItemsList.count(); i++)
+        ids << selectedItemsList[i]->m_id;
     return ids;
 }
 
@@ -375,7 +376,7 @@ QStringList MediaListModel::getAllIDs()
 
 int MediaListModel::selectionCount()
 {
-    return selectedItemsHash.count();
+    return selectedItemsList.count();
 }
 
 void MediaListModel::setLimit(const int limit)
@@ -724,6 +725,10 @@ bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
         int xidx, yidx;
         xidx = urnSortList.indexOf(x->m_urn);
         yidx = urnSortList.indexOf(y->m_urn);
+        if(yidx < 0)
+            return false;
+        if(xidx < 0)
+            return true;
         return(yidx < xidx);
     }
     return false;
@@ -731,6 +736,9 @@ bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
 
 void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
 {
+    if(list.isEmpty())
+        return;
+
     if((sort == SortByAccessTime)||(sort == SortByCreationTime)||
        (sort == SortByAddedTime)||(sort == SortByUnwatched))
     {
@@ -838,11 +846,16 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
     else if(sort == SortByURNList)
     {
         QMap<int, MediaItem *> map;
+        QList<MediaItem *> newItems;
 
         /* create a QMap of all the items mapped to their list indexs */
         for(int i = 0; i < list.count(); i++)
         {
-            map.insertMulti(urnSortList.indexOf(list[i]->m_urn), list[i]);
+            int idx = urnSortList.indexOf(list[i]->m_urn);
+            if(idx < 0)
+                newItems << list[i];
+            else
+                map.insertMulti(urnSortList.indexOf(list[i]->m_urn), list[i]);
         }
 
         /* pull a list of the unique keys, in case two items have the same tracknum */
@@ -850,11 +863,13 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
         qSort( tracks );
         list.clear();
 
-        /* pop the values for each sorted key */
+        /* pull out the known tracks in order */
         for(int i = 0; i < tracks.count(); i++)
-        {
             list << map.values(tracks[i]);
-        }
+
+        /* add the new tracks at the end */
+        for(int i = 0; i < newItems.count(); i++)
+            list << newItems[i];
     }
 }
 
