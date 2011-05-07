@@ -20,7 +20,6 @@ MusicDatabase *MusicDatabase::musicDatabaseInstance = NULL;
 
 MusicDatabase *MusicDatabase::instance()
 {
-    //qDebug() << "MusicDatabase::instance";
     if (musicDatabaseInstance)
         return musicDatabaseInstance;
     else {
@@ -32,7 +31,6 @@ MusicDatabase *MusicDatabase::instance()
 MusicDatabase::MusicDatabase(QObject *parent)
     : MediaDatabase(GCONFKEY_RECENTRANGE, parent)
 {
-    //qDebug() << "MusicDatabase::MusicDatabase";
     trackeritems = 100;
     trackerindex = 0;
     targetitemtype = MediaItem::MusicPlaylistItem;
@@ -54,13 +52,11 @@ MusicDatabase::MusicDatabase(QObject *parent)
 
     connect(this,SIGNAL(songItemAdded(int)),this,SLOT(trackerSongAdded(int)));
     connect(this,SIGNAL(playlistItemAdded(int)),this,SLOT(trackerPlaylistAdded(int)));
-    qDebug() << "Initializing the database";
     trackerGetMusic(trackerindex, trackeritems);
 }
 
 MusicDatabase::~MusicDatabase()
 {
-    qDebug() << "~MusicDatabase";
 }
 
 MediaItem* MusicDatabase::getArtistItem(const QString &title)
@@ -72,24 +68,6 @@ MediaItem* MusicDatabase::getArtistItem(const QString &title)
         return NULL;
 
     return artistItemHash[title];
-}
-
-
-/* function used to ensure unique titles for all of an item type */
-void MusicDatabase::enforceUniqueTitles(MediaItem *item)
-{
-    //qDebug() << "MusicDatabase::enforceUniqueTitles";
-    if(titleCountHash.contains(item->m_title))
-    {
-        QString title = item->m_title;
-        int count = titleCountHash[title] + 1;
-        item->m_title += QString().sprintf(" (%d)", count);
-        titleCountHash[title] = count;
-    }
-    else
-    {
-        titleCountHash.insert(item->m_title, 1);
-    }
 }
 
 MediaItem* MusicDatabase::getAlbumItem(QString artist, QString album)
@@ -127,31 +105,13 @@ void MusicDatabase::processSong(MediaItem *item)
 
         if(trackerCall(music, sql))
         {
-            QVector<QStringList>::iterator i = music.begin();
-            if(i != music.end())
+            trackerAddItems(MediaItem::MusicArtistItem, music);
+            if(mediaItemsUrnHash.contains(item->m_artist_urn.first()))
             {
-                QString title = (*i)[IDX_ART_NAME];
-                if(!title.isEmpty())
-                {
-                    //qDebug() << "new MusicArtistItem " << (*i);
-                    item->artistitem = new MediaItem(MediaItem::MusicArtistItem, recenttime, *i);
-                    item->artistitem->m_tracknum++;
-                    item->artistitem->m_length += item->m_length;
-                    mediaItemsList << item->artistitem;
-
-                    if(!disable_mediaart&&(!item->artistitem->m_thumburi_exists)&&
-                       (!item->artistitem->m_thumburi_ignore))
-                    {
-                       //qDebug() << "needThumbList: added artist " << item->artistitem->m_title;
-                       needThumbList << item->artistitem;
-                    }
-
-                    artistItemHash.insert(item->artistitem->m_title, item->artistitem);
-                    mediaItemsUrnHash.insert(item->artistitem->m_urn, item->artistitem);
-                    mediaItemsIdHash.insert(item->artistitem->m_id, item->artistitem);
-                    mediaItemsSidHash.insert(item->artistitem->m_sid, item->artistitem);
-                    itemAdded(item->artistitem);
-                }
+                item->artistitem = mediaItemsUrnHash[item->m_artist_urn.first()];
+                item->artistitem->m_tracknum++;
+                item->artistitem->m_length += item->m_length;
+                itemChanged(item->artistitem, Other);
             }
         }
     }
@@ -175,41 +135,15 @@ void MusicDatabase::processSong(MediaItem *item)
 
         if(trackerCall(music, sql))
         {
-            QVector<QStringList>::iterator i = music.begin();
-            if(i != music.end())
+            trackerAddItems(MediaItem::MusicAlbumItem, music);
+            if(mediaItemsUrnHash.contains(item->m_album_urn))
             {
-                QStringList args = (*i);
-                QString title = args[IDX_MAL_TITLE];
-                QString artist = args[IDX_MAL_ARTISTNAME];
-                QString artist_urn = args[IDX_MAL_ARTISTURN];
-
-                if(artist.isEmpty()&&(item->artistitem != NULL))
-                    args.replace(IDX_MAL_ARTISTNAME, item->artistitem->m_title);
-                if(artist_urn.isEmpty()&&(item->artistitem != NULL))
-                   args.replace(IDX_MAL_ARTISTURN, item->artistitem->m_urn);
-
-                if(!title.isEmpty())
-                {
-                    item->albumitem = new MediaItem(MediaItem::MusicAlbumItem, recenttime, args);
-                    item->albumitem->m_tracknum++;
-                    item->albumitem->m_length += item->m_length;
-                    mediaItemsList << item->albumitem;
-
-                    if(!disable_mediaart&&(((!item->albumitem->m_thumburi_exists)&&
-                       (!item->albumitem->m_thumburi_ignore))||
-                       (item->albumitem->m_thumbtype == MediaItem::ArtistThumb)))
-                    {
-                       //qDebug() << "needThumbList: added album " << item->albumitem->m_title;
-                       needThumbList << item->albumitem;
-                    }
-
-                    mediaItemsUrnHash.insert(item->albumitem->m_urn, item->albumitem);
-                    mediaItemsIdHash.insert(item->albumitem->m_id, item->albumitem);
-                    mediaItemsSidHash.insert(item->albumitem->m_sid, item->albumitem);
-                    if(item->artistitem != NULL)
-                        item->albumitem->artistitem = item->artistitem;
-                    itemAdded(item->albumitem);
-                }
+                item->albumitem = mediaItemsUrnHash[item->m_album_urn];
+                item->albumitem->m_tracknum++;
+                item->albumitem->m_length += item->m_length;
+                if(item->artistitem != NULL)
+                    item->albumitem->artistitem = item->artistitem;
+                itemChanged(item->albumitem, Other);
             }
         }
     }
@@ -219,7 +153,6 @@ void MusicDatabase::processSong(MediaItem *item)
         item->albumitem = getAlbumItem(item->m_artist.first(), "Unknown Album");
         if(item->albumitem == NULL)
         {
-            //qDebug() << "Creating Unknown Album for " << item->m_artist.first() << " SONG: " << item->m_title;
             item->albumitem = new MediaItem(MediaItem::MusicAlbumItem);
             mediaItemsList << item->albumitem;
             item->albumitem->m_artist << item->m_artist.first();
@@ -233,7 +166,6 @@ void MusicDatabase::processSong(MediaItem *item)
         }
         else
         {
-            //qDebug() << "Adding a song to Unknown Album for " << item->m_artist.first() << " SONG: " << item->m_title;
             item->albumitem->m_tracknum++;
             item->albumitem->m_length += item->m_length;
             itemChanged(item->albumitem, Other);
@@ -243,7 +175,6 @@ void MusicDatabase::processSong(MediaItem *item)
 
 void MusicDatabase::trackerGetMusic(const int offset, const int limit)
 {
-    //qDebug() << "MusicDatabase::trackerGetMusic";
     QString SqlCmd;
     switch(targetitemtype) {
     case MediaItem::SongItem:
@@ -257,7 +188,6 @@ void MusicDatabase::trackerGetMusic(const int offset, const int limit)
     }
 
     QString sql = QString(SqlCmd).arg(QString().sprintf("%d", limit), QString().sprintf("%d", offset));
-    //qDebug() << "Tracker Query: " << sql;
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sql);
@@ -310,7 +240,6 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
                  continue;
          }
 
-         //qDebug() << "new item " << targetitemtype << " " << (*i);
          /* the item is valid, create an entry for it */
          MediaItem *item = new MediaItem(type, recenttime, *i);
          mediaItemsList << item;
@@ -319,6 +248,14 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          mediaItemsSidHash.insert(item->m_sid, item);
          if(type == MediaItem::MusicArtistItem)
              artistItemHash.insert(item->m_title, item);
+
+         /* if this is an album or artist (from a command line call) get the thumb */
+         if(!disable_mediaart&&
+            ((((type == MediaItem::MusicArtistItem)||(type == MediaItem::MusicAlbumItem))&&(!item->m_thumburi_exists)&&(!item->m_thumburi_ignore))||
+            ((type == MediaItem::MusicAlbumItem)&&(item->m_thumbtype == MediaItem::ArtistThumb))))
+         {
+            needThumbList << item;
+         }
 
          /* tell the world we have new data */
          itemAdded(item);
@@ -333,11 +270,8 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
              emit songItemAvailable(item->m_urn);
          }
 
-
          if(type == MediaItem::SongItem)
          {
-             /* hack in case tracker doesn't give us a unique song title */
-             //enforceUniqueTitles(item);
              processSong(item);
          }
     }
@@ -514,7 +448,6 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
         {
             for (QVector<QStringList>::iterator j = info.begin(); j != info.end(); j++)
             {
-                //qDebug() << "Changed Item: " << (*j);
                 mediaItemsUrnHash.remove(item->m_urn);
                 mediaItemsSidHash.remove(item->m_sid);
                 item->changeData(recenttime, *j);
@@ -533,13 +466,15 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
     }
 }
 
-QStringList MusicDatabase::loadPlaylist(const QString &title)
+QStringList MusicDatabase::loadPlaylist(const QString &title, bool bytitle)
 {
     QStringList playlistItems;
-    QString SqlCmd =
-        "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
-        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }" \
-        "ORDER BY ?index";
+
+    QString SqlCmd;
+    if(bytitle)
+        SqlCmd = TRACKER_PLAYLIST_CONTENTS_BY_TITLE;
+    else
+        SqlCmd = TRACKER_PLAYLIST_CONTENTS_BY_URN;
 
     QString sql = QString(SqlCmd).arg(title);
     QVector<QStringList> info;

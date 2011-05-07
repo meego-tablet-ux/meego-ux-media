@@ -191,6 +191,12 @@
         ". FILTER (nie:title(?playlist) = '%1') " \
         ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?playlist nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
+#define TRACKER_PLAYLIST_CONTENTS_BY_TITLE "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
+        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }" \
+        "ORDER BY ?index"
+#define TRACKER_PLAYLIST_CONTENTS_BY_URN "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
+        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (str(?playlist) = '%1')} } }" \
+        "ORDER BY ?index"
 
 #define IDX_MPL_TITLE IDX_CUSTOM_BEGIN
 #define IDX_MPL_COUNT IDX_CUSTOM_BEGIN + 1

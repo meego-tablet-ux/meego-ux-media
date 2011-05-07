@@ -24,7 +24,7 @@ public:
     void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void savePlaylist(QList<MediaItem *> &list, const QString &title);
-    QStringList loadPlaylist(const QString &title);
+    QStringList loadPlaylist(const QString &title, bool bytitle = true);
     MediaItem* getArtistItem(const QString &title);
 
 public slots:
@@ -46,7 +46,6 @@ private:
     /* tracker calls */
     void trackerGetMusic(const int offset, const int limit);
     void processSong(MediaItem *item);
-    void enforceUniqueTitles(MediaItem *item);
     void trackerAddItems(int type, QVector<QStringList> trackerreply, int priority=0);
     MediaItem* getAlbumItem(QString artist, QString album);
     /* unique title variables */
@@ -55,6 +54,7 @@ private:
     void generatePlaylistThumbId(MediaItem *item);
     void requestSongItems(int type, QString identifier);
     int playlistthumbid;
+    QStringList notifyUrns;
 
     /* music database hashes for easy lookup */
     QHash<QString, MediaItem *> artistItemHash;

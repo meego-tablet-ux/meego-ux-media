@@ -25,7 +25,6 @@ MediaListModel::MediaListModel(QObject *parent)
 
 MediaListModel::~MediaListModel()
 {
-    qDebug() << "~MediaListModel";
     mediaItemsList.clear();
     mediaItemsDisplay.clear();
 }
