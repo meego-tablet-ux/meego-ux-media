@@ -66,10 +66,10 @@ void VideoListModel::clearData()
     {
         /* formally remove all the items from the list */
         beginRemoveRows(QModelIndex(), 0, mediaItemsDisplay.count()-1);
-        mediaItemsList.clear();
         mediaItemsDisplay.clear();
         endRemoveRows();
     }
+    mediaItemsList.clear();
 }
 
 void VideoListModel::setType(const int type)
