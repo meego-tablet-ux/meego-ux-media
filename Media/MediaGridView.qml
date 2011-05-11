@@ -4,7 +4,102 @@
  * This program is licensed under the terms and conditions of the
  * Apache License, version 2.0.  The full text of the Apache License is at 	
  * http://www.apache.org/licenses/LICENSE-2.0
- */
+
+
+/*!
+  \qmlclass MucMediaGridView
+  \title MucMediaGridView
+  \section1 MucMediaGridView
+  Displays a given set of images representing videos, folders or image files in a grid view.
+
+  \section2  API properties
+
+  \qmlproperty int spacing
+  \qmlcm the border margin of the items.
+
+  \qmlproperty string defaultThumbnail
+  \qmlcm the default image for the items.
+
+  \qmlproperty int frameBorderWidth
+  \qmlcm margin of the selection overlay.
+
+  \qmlproperty bool selectionMode
+  \qmlcm on true the selected item is highlighted, on false only a pressed state is provided.
+
+  \qmlproperty int type
+  \qmlcm the internal type. See the private properties for details.
+
+  \section2 Signals
+  \qmlsignal clicked
+  \qmlcm emitted when an item was clicked.
+       \param int mouseX
+       \qmlpcm position of the click event. \endparam
+       \param int mouseY
+       \qmlpcm position of the click event. \endparam
+       \param int payload
+       \qmlpcm the clicked item. \endparam
+
+  \qmlsignal longPressAndHold
+  \qmlcm emitted when an item was long pressed.
+       \param int mouseX
+       \qmlpcm position of the click event. \endparam
+       \param int mouseY
+       position of the click event. \endparam
+       \param variant payload
+       \qmlpcm variant, the clicked item. \endparam
+
+  \qmlsignal doubleClicked
+  \qmlcm emitted when an item was double clicked. Note that a 'clicked' for the first click is emitted as well.
+       \param int mouseX
+       \qmlpcm position of the click event. \endparam
+       \param int mouseY
+       \qmlpcm position of the click event. \endparam
+       \param variant payload
+       \qmlpcm the clicked item. \endparam
+
+  \qmlsignal released
+  \qmlcm emitted when the left mouse button was released.
+       \param int mouseX
+       \qmlpcm position of the click event. \endparam
+       \param int mouseY
+       \qmlpcm position of the click event. \endparam
+       \param variant payload
+       \qmlpcm the clicked item. \endparam
+
+  \qmlsignal positionChanged
+  \qmlcm emitted when the mouse moves above the item.
+       \param int mouseX
+       \qmlpcm position of the click event. \endparam
+       \param int mouseY
+       \qmlpcm position of the click event. \endparam
+       \param int payload
+       \qmlpcm the hovered item. \endparam
+
+  \section2 Functions
+  \qmlfn formatMinutes
+  \qmlcm provides functionality to calculate hours and minutes. Only for qml internal use.
+       \param object time
+       \qmlpcm for internal use only  \endparam
+  \section2 Example
+   \code
+       MucMediaGridView {
+           id: gridView
+
+           model: someModel
+
+           anchors.top: parent.top
+           anchors.bottom: parent.bottom
+
+           type: 2
+
+           width: 400
+
+           onClicked: {
+               // selected item and click position
+           }
+       }
+   \endcode
+*/
 
 import Qt 4.7
 import MeeGo.Components 0.1
@@ -12,7 +107,7 @@ import MeeGo.Media 0.1
 
 Item {
     id: container
-
+  
     // apptype: 0=music, 1=video, 2=photo
     property int musictype: 0
     property int videotype: 1
@@ -26,7 +121,7 @@ Item {
     property bool selectionMode: false
     property int frameBorderWidth: 0
     property string defaultThumbnail: ""
-
+    
     property alias clip: gridView.clip
     property alias cellWidth: gridView.cellWidth
     property alias cellHeight: gridView.cellHeight
@@ -43,6 +138,11 @@ Item {
     signal released(real mouseX, real mouseY, variant payload)
     signal positionChanged(real mouseX, real mouseY, variant payload)
 
+    function formatMinutes(time){
+        var min = parseInt( time / 60 );
+        return min
+    }
+  
     Component {
         id: headerComponent
         Item {
@@ -73,126 +173,114 @@ Item {
     }
 
     GridView {
-        id: gridView
-        clip:true
-        cellWidth: 80
-        cellHeight: 80
-        header: headerComponent
-        footer: footerComponent
-        anchors.fill: parent
-        boundsBehavior: Flickable.StopAtBounds
-        delegate: Image {
-            id: dinstance
-            width: gridView.cellWidth-spacing
-            height: gridView.cellHeight-spacing
-            source: "image://meegotheme/images/media/photos_thumb_med"
-            clip: true
+	id: gridView
 
-            function formatMinutes(time)
-            {
-                var min = parseInt(time/60);
-                return min
-            }
-            property int mindex: index
+	anchors.fill: parent
+  
+	clip:true
+	cellWidth: theme.thumbSize
+	cellHeight: cellWidth
+	
+	header: headerComponent
+	footer: footerComponent
+      
+	interactive: contentHeight > height
+	boundsBehavior: Flickable.StopAtBounds
 
-            property string mtitle
-            mtitle:{
-                try
-                {
-                    return title;
-                }
-                catch(err)
-                {
-                    return "";
-                }
-            }
-            property string mthumburi
-            mthumburi:{
-                try
-                {
-                    if (thumburi == "" | thumburi == undefined)
-                        return defaultThumbnail;
-                    else
-                        return thumburi;
-                }
-                catch(err)
-                {
-                    return defaultThumbnail
-                }
-            }
-            property string mitemid
-            mitemid:{
-                try
-                {
-                    return itemid;
-                }
-                catch(err)
-                {
-                    return "";
-                }
-            }
-            property int mitemtype
-            mitemtype:{
-                try
-                {
-                    return itemtype;
-                }
-                catch(err)
-                {
-                    return -1;
-                }
-            }
-            property bool mfavorite
-            mfavorite: {
-                try
-                {
-                    return favorite;
-                }
-                catch(err)
-                {
-                    return false;
-                }
-            }
-            property int mcount
-            mcount: {
-                try
-                {
-                    return tracknum;
-                }
-                catch(err)
-                {
-                    return 0;
-                }
-            }
-            property int mlength
-            mlength: {
-                try
-                {
-                    return length;
-                }
-                catch(err)
-                {
-                    return 0;
-                }
-            }
-            property string martist
-            martist: {
-                var a;
-                try
-                {
-                    a = artist ;
-                }
-                catch(err)
-                {
-                    a = "";
-                }
-                a[0]== undefined ? "":a[0];
-            }
-            property string malbum: (type == 0)?album:""
-            property string muri: uri
-            property string murn: urn
+	cacheBuffer: 2000
+	flickDeceleration: 250
 
-            property bool misvirtual: (type != 1)?isvirtual:false
+	delegate: BorderImage {
+	  
+	  id: dinstance
+
+  	  clip: true
+
+	  width: gridView.cellWidth
+	  height: gridView.cellHeight
+	  asynchronous: true
+
+	  property int mindex: index
+	  property string mtitle
+	  property string muri: uri
+	  property string murn: urn
+	  property string mthumburi
+	  property string mitemid
+	  property int mitemtype
+	  property bool mfavorite
+	  property int mcount
+	  property string martist
+	  
+	  property bool misvirtual: (type != 1)?isvirtual:false
+
+
+	  mtitle:{
+	      try {
+		  return title
+	      }
+	      catch(err){
+		  return ""
+	      }
+	  }
+
+	  mthumburi:{
+	      try {
+		  if (thumburi == "" | thumburi == undefined)
+		      return defaultThumbnail
+		  else
+		      return thumburi
+	      }
+	      catch(err){
+		  return defaultThumbnail
+	      }
+	  }
+
+	  mitemid:{
+	      try {
+		  return itemid;
+	      }
+	      catch(err) {
+		  return ""
+	      }
+	  }
+
+	  mitemtype:{
+	      try {
+		  return itemtype
+	      }
+	      catch(err) {
+		  return -1
+	      }
+	  }
+
+	  mfavorite: {
+	      try {
+		  return favorite;
+	      }
+	      catch(err) {
+		  return false
+	      }
+	  }
+
+	  mcount: {
+	      try {
+		  return tracknum;
+	      }
+	      catch(err) {
+		  return 0
+	      }
+	  }
+
+	  martist: {
+	      var a;
+	      try {
+		  a = artist
+	      }
+	      catch(err) {
+		  a = ""
+	      }
+	      a[0]== undefined ? "" : a[0]
+	  }
 
             Item {
                 id: thumbnailClipper
@@ -275,59 +363,65 @@ Item {
                 }
             }
 
-            MouseArea {
-                id: mouseArea
-                anchors.fill:parent
-                onClicked:{
-                    container.clicked(mouseX,mouseY, dinstance);
-                }
-                onPressAndHold: {
-                    container.longPressAndHold(mouseX,mouseY,dinstance);
-                }
-                onDoubleClicked: {
-                    container.doubleClicked(mouseX,mouseY,dinstance);
-                }
-                onReleased: {
-                    container.released(mouseX,mouseY,dinstance);
-                }
-                onPositionChanged: {
-                    container.positionChanged(mouseX,mouseY,dinstance);
-                }
-            }
-            states: [
-                State {
-                    name: "normal"
-                    when: !selectionMode && !mouseArea.pressed
-                    PropertyChanges {
-                        target: frame
-                        source: "image://meegotheme/images/media/photos_thumb_med"
-                    }
-                },
-                State {
-                    name: "feedback"
-                    when: !selectionMode && mouseArea.pressed
-                    PropertyChanges {
-                        target: fog
-                        visible: true
-                    }
-                },
-                State {
-                    name: "selectionNotSelected"
-                    when: selectionMode && !gridView.model.isSelected(itemid)
-                    PropertyChanges {
-                        target: frame
-                        source: "image://meegotheme/images/media/photos_thumb_med"
-                    }
-                },
-                State {
-                    name: "selectionSelected"
-                    when: selectionMode && gridView.model.isSelected(itemid)
-                    PropertyChanges {
-                        target: frame
-                        source: "image://meegotheme/images/media/photos_selected_tick"
-                    }
-                }
-            ]
-        }
-    }
+	  MouseArea {
+	      id: mouseArea
+
+	      anchors.fill:parent
+
+	      onClicked:{
+		  container.clicked(mouseX,mouseY, dinstance);
+	      }
+	      onPressAndHold: {
+		  container.longPressAndHold(mouseX,mouseY,dinstance);
+	      }
+	      onDoubleClicked: {
+		  container.doubleClicked(mouseX,mouseY,dinstance);
+	      }
+	      onReleased: {
+		  container.released(mouseX,mouseY,dinstance);
+	      }
+	      onPositionChanged: {
+		  container.positionChanged(mouseX,mouseY,dinstance);
+	      }
+	  }
+
+	  states: [
+	      State {
+		  name: "normal"
+		  when: !selectionMode && !mouseArea.pressed
+		  PropertyChanges {
+		      target: frame
+		      source: "image://meegotheme/images/media/photos_thumb_med"
+		  }
+	      },
+	      State {
+		  name: "feedback"
+		  when: !selectionMode && mouseArea.pressed
+		  PropertyChanges {
+		      target: fog
+		      visible: true
+		  }
+	      },
+	      State {
+		  name: "selectionNotSelected"
+		  when: selectionMode && !gridView.model.isSelected(itemid)
+		  PropertyChanges {
+		      target: frame		      
+		      source: "image://meegotheme/images/media/photos_thumb_med"
+		  }
+	      },
+	      State {
+		  name: "selectionSelected"
+		  when: selectionMode && gridView.model.isSelected(itemid)
+		  PropertyChanges {
+		      target: frame		      
+		      source: "image://meegotheme/images/media/photos_selected_tick"
+
+		  }
+	      }
+	  ]
+      }
+
+      Theme { id: theme }
+      
 }
