@@ -424,4 +424,5 @@ Item {
 
       Theme { id: theme }
       
+    }
 }
