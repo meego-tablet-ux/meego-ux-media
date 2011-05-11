@@ -203,28 +203,39 @@ Item {
 
 	  property int mindex: index
 	  property string mtitle
-	  property string muri: uri
+          property string malbum
+          property string muri: uri
 	  property string murn: urn
 	  property string mthumburi
 	  property string mitemid
 	  property int mitemtype
 	  property bool mfavorite
-	  property int mcount
-	  property string martist
+          property int mcount
+          property int mlength
+          property string martist
 	  
 	  property bool misvirtual: (type != 1)?isvirtual:false
 
 
-	  mtitle:{
-	      try {
-		  return title
-	      }
-	      catch(err){
-		  return ""
-	      }
-	  }
+          mtitle:{
+              try {
+                  return title
+              }
+              catch(err){
+                  return ""
+              }
+          }
 
-	  mthumburi:{
+          mlength:{
+              try {
+                  return length
+              }
+              catch(err){
+                  return 0
+              }
+          }
+
+          mthumburi:{
 	      try {
 		  if (thumburi == "" | thumburi == undefined)
 		      return defaultThumbnail
@@ -236,16 +247,25 @@ Item {
 	      }
 	  }
 
-	  mitemid:{
-	      try {
-		  return itemid;
-	      }
-	      catch(err) {
-		  return ""
-	      }
-	  }
+          malbum:{
+              try {
+                  return album;
+              }
+              catch(err) {
+                  return ""
+              }
+          }
 
-	  mitemtype:{
+          mitemid:{
+              try {
+                  return itemid;
+              }
+              catch(err) {
+                  return ""
+              }
+          }
+
+          mitemtype:{
 	      try {
 		  return itemtype
 	      }
