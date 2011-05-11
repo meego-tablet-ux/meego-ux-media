@@ -135,6 +135,19 @@ QVariant MediaListModel::datafromURN(const QString &urn, int role)
     return datafromItem(item, role);
 }
 
+QVariant MediaListModel::datafromURI(const QString &uri, int role)
+{
+    MediaItem *item = NULL;
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->m_uri == uri)
+            item = mediaItemsList[i];
+
+    if(item == NULL)
+        return QVariant();
+
+    return datafromItem(item, role);
+}
+
 QVariant MediaListModel::datafromID(const QString &id, int role)
 {
     MediaItem *item = NULL;

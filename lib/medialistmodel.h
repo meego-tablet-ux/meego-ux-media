@@ -88,6 +88,7 @@ public slots:
     QVariant datafromURN(const QString &urn, int role);
     QVariant datafromID(const QString &id, int role);
     QVariant datafromIndex(const int index, int role);
+    QVariant datafromURI(const QString &uri, int role);
     QString getIDfromURN(const QString &urn);
     QString getTitlefromURN(const QString &urn);
     QString getURIfromURN(const QString &urn);
