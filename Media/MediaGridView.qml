@@ -340,7 +340,7 @@ Item {
 
                 Image {
                     id: textBackground
-                    source: "image://meegotheme/images/media/music_text_bg_med"
+                    source: "image://themedimage/images/media/music_text_bg_med"
                     width: parent.width
                     height: 63
                     anchors.bottom: parent.bottom
@@ -412,7 +412,7 @@ Item {
 		  when: !selectionMode && !mouseArea.pressed
 		  PropertyChanges {
 		      target: frame
-		      source: "image://meegotheme/images/media/photos_thumb_med"
+		      source: "image://themedimage/images/media/photos_thumb_med"
 		  }
 	      },
 	      State {
@@ -428,7 +428,7 @@ Item {
 		  when: selectionMode && !gridView.model.isSelected(itemid)
 		  PropertyChanges {
 		      target: frame		      
-		      source: "image://meegotheme/images/media/photos_thumb_med"
+		      source: "image://themedimage/images/media/photos_thumb_med"
 		  }
 	      },
 	      State {
@@ -436,7 +436,7 @@ Item {
 		  when: selectionMode && gridView.model.isSelected(itemid)
 		  PropertyChanges {
 		      target: frame		      
-		      source: "image://meegotheme/images/media/photos_selected_tick"
+		      source: "image://themedimage/images/media/photos_selected_tick"
 
 		  }
 	      }

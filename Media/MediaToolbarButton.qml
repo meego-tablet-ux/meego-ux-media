@@ -35,7 +35,7 @@ Item{
         z: -1
         visible: toggled
         anchors.fill: parent
-        source: "image://meegotheme/widgets/common/menu/menu-item-selected"
+        source: "image://themedimage/widgets/common/menu/menu-item-selected"
         fillMode: Image.PreserveAspectCrop
     }
 
@@ -44,14 +44,14 @@ Item{
         z: -1
         visible: false
         anchors.fill: parent
-        source: "image://meegotheme/widgets/common/menu/menu-item-active"
+        source: "image://themedimage/widgets/common/menu/menu-item-active"
         fillMode: Image.PreserveAspectCrop
     }
 
     Image{
         id: divider
         anchors.right: parent.right
-        source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+        source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
         height: parent.height
     }
 

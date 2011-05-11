@@ -81,7 +81,7 @@ Item {
     Image {
         id: background
         anchors.fill: parent
-        source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
+        source: "image://themedimage/widgets/common/action-bar/action-bar-background"
         MediaToolbarButton {
             id: btRewind
             visible: showprev
@@ -89,8 +89,8 @@ Item {
             anchors.top: parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: "image://meegotheme/icons/actionbar/media-backward"
-            bgSourceDn: "image://meegotheme/icons/actionbar/media-backward-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-backward"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-backward-active"
             onClicked: container.prevPressed();
         }
         MediaToolbarButton {
@@ -100,10 +100,10 @@ Item {
             anchors.top:parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (disablerecord)?"image://meegotheme/icons/actionbar/media-record-disabled":
-                    ((ispauserecord)?"image://meegotheme/icons/actionbar/media-pause":"image://meegotheme/icons/actionbar/media-record")
-            bgSourceDn: (disablerecord)?"image://meegotheme/icons/actionbar/media-record-disabled":
-                    ((ispauserecord)?"image://meegotheme/icons/actionbar/media-pause-active":"image://meegotheme/icons/actionbar/media-record-active")
+            bgSourceUp: (disablerecord)?"image://themedimage/icons/actionbar/media-record-disabled":
+                    ((ispauserecord)?"image://themedimage/icons/actionbar/media-pause":"image://themedimage/icons/actionbar/media-record")
+            bgSourceDn: (disablerecord)?"image://themedimage/icons/actionbar/media-record-disabled":
+                    ((ispauserecord)?"image://themedimage/icons/actionbar/media-pause-active":"image://themedimage/icons/actionbar/media-record-active")
             onClicked: {
                 if(!disablerecord)
                 {
@@ -121,8 +121,8 @@ Item {
             anchors.top:parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop"
-            bgSourceDn: (disablestop)?"image://meegotheme/icons/actionbar/media-stop-disabled":"image://meegotheme/icons/actionbar/media-stop-active"
+            bgSourceUp: (disablestop)?"image://themedimage/icons/actionbar/media-stop-disabled":"image://themedimage/icons/actionbar/media-stop"
+            bgSourceDn: (disablestop)?"image://themedimage/icons/actionbar/media-stop-disabled":"image://themedimage/icons/actionbar/media-stop-active"
             onClicked: {
                 if(!disablestop)
                 {
@@ -137,10 +137,10 @@ Item {
             anchors.top:parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (disableplay)?"image://meegotheme/icons/actionbar/media-play":
-                    ((ispause)?"image://meegotheme/icons/actionbar/media-pause":"image://meegotheme/icons/actionbar/media-play")
-            bgSourceDn: (disableplay)?"image://meegotheme/icons/actionbar/media-play":
-                    ((ispause)?"image://meegotheme/icons/actionbar/media-pause-active":"image://meegotheme/icons/actionbar/media-play-active")
+            bgSourceUp: (disableplay)?"image://themedimage/icons/actionbar/media-play":
+                    ((ispause)?"image://themedimage/icons/actionbar/media-pause":"image://themedimage/icons/actionbar/media-play")
+            bgSourceDn: (disableplay)?"image://themedimage/icons/actionbar/media-play":
+                    ((ispause)?"image://themedimage/icons/actionbar/media-pause-active":"image://themedimage/icons/actionbar/media-play-active")
             onClicked: {
                 if(!disableplay)
                 {
@@ -158,8 +158,8 @@ Item {
             anchors.top:parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: "image://meegotheme/icons/actionbar/media-forward"
-            bgSourceDn: "image://meegotheme/icons/actionbar/media-forward-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-forward"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-forward-active"
             onClicked: container.nextPressed();
         }
         Item {
@@ -200,25 +200,25 @@ Item {
                     anchors.right: parent.right
                     anchors.left: parent.left
                     anchors.verticalCenter:parent.verticalCenter
-                    source: "image://meegotheme/images/playhead_bg"
+                    source: "image://themedimage/images/playhead_bg"
                 }
                 Image {
                     id: progressBarSlider
                     anchors.verticalCenter:progressBar.verticalCenter
-                    source:"image://meegotheme/images/scrub_head_lrg"
+                    source:"image://themedimage/images/scrub_head_lrg"
                     x: -width/2
                     z:10
                 }
                 Image {
                     id: elapsedHead
-                    source: "image://meegotheme/images/media/progress_fill_1"
+                    source: "image://themedimage/images/media/progress_fill_1"
                     anchors.left: progressBar.left
                     anchors.verticalCenter:progressBar.verticalCenter
                     z:1
                 }
                 BorderImage {
                     id: elapsedBody
-                    source: "image://meegotheme/images/media/progress_fill_2"
+                    source: "image://themedimage/images/media/progress_fill_2"
                     anchors.left: elapsedHead.right
                     anchors.right: elapsedTail.left
                     anchors.verticalCenter:progressBar.verticalCenter
@@ -228,7 +228,7 @@ Item {
                 }
                 Image {
                     id: elapsedTail
-                    source: "image://meegotheme/images/media/progress_fill_3"
+                    source: "image://themedimage/images/media/progress_fill_3"
                     anchors.right: progressBarSlider.right
                     anchors.rightMargin: progressBarSlider.width/2
                     anchors.verticalCenter:progressBar.verticalCenter
@@ -288,7 +288,7 @@ Item {
             Image{
                 id: divider
                 anchors.right: parent.right
-                source: "image://meegotheme/widgets/common/action-bar/action-bar-separator"
+                source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                 height: parent.height
             }
         }
@@ -299,14 +299,14 @@ Item {
             anchors.top: parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: (volumeControl.volume < 2)?"image://meegotheme/icons/actionbar/media-volume-mute":
-                        (volumeControl.volume < 33)?"image://meegotheme/icons/actionbar/media-volume-1":
-                        (volumeControl.volume < 67)?"image://meegotheme/icons/actionbar/media-volume-2":
-                        "image://meegotheme/icons/actionbar/media-volume-max"
-            bgSourceDn: (volumeControl.volume < 2)?"image://meegotheme/icons/actionbar/media-volume-mute-active":
-                        (volumeControl.volume < 33)?"image://meegotheme/icons/actionbar/media-volume-1-active":
-                        (volumeControl.volume < 67)?"image://meegotheme/icons/actionbar/media-volume-2-active":
-                        "image://meegotheme/icons/actionbar/media-volume-max-active"
+            bgSourceUp: (volumeControl.volume < 2)?"image://themedimage/icons/actionbar/media-volume-mute":
+                        (volumeControl.volume < 33)?"image://themedimage/icons/actionbar/media-volume-1":
+                        (volumeControl.volume < 67)?"image://themedimage/icons/actionbar/media-volume-2":
+                        "image://themedimage/icons/actionbar/media-volume-max"
+            bgSourceDn: (volumeControl.volume < 2)?"image://themedimage/icons/actionbar/media-volume-mute-active":
+                        (volumeControl.volume < 33)?"image://themedimage/icons/actionbar/media-volume-1-active":
+                        (volumeControl.volume < 67)?"image://themedimage/icons/actionbar/media-volume-2-active":
+                        "image://themedimage/icons/actionbar/media-volume-max-active"
             onClicked: {
                 if (volumeLoader.sourceComponent != null ) {
                     volumeLoader.sourceComponent = null;
@@ -330,9 +330,9 @@ Item {
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             toggled: isfavorite
-            bgSourceUp: "image://meegotheme/icons/toolbar/contact-favorite"
-            bgSourceUpToggled: "image://meegotheme/icons/toolbar/contact-favorite-selected"
-            bgSourceDn: (isfavorite)?"image://meegotheme/icons/toolbar/contact-favorite-selected-active":"image://meegotheme/icons/toolbar/contact-favorite-active"
+            bgSourceUp: "image://themedimage/icons/toolbar/contact-favorite"
+            bgSourceUpToggled: "image://themedimage/icons/toolbar/contact-favorite-selected"
+            bgSourceDn: (isfavorite)?"image://themedimage/icons/toolbar/contact-favorite-selected-active":"image://themedimage/icons/toolbar/contact-favorite-active"
             onClicked: {
                 isfavorite = !isfavorite;
                 container.favoritePressed();
@@ -346,9 +346,9 @@ Item {
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             toggled: isshuffle
-            bgSourceUp: "image://meegotheme/icons/actionbar/media-shuffle"
-            bgSourceUpToggled: "image://meegotheme/icons/actionbar/media-shuffle-selected"
-            bgSourceDn: "image://meegotheme/icons/actionbar/media-shuffle-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-shuffle"
+            bgSourceUpToggled: "image://themedimage/icons/actionbar/media-shuffle-selected"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-shuffle-active"
             onClicked: {
                 isshuffle = !isshuffle;
                 container.shufflePressed();
@@ -362,9 +362,9 @@ Item {
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             toggled: isrepeat
-            bgSourceUp: "image://meegotheme/icons/actionbar/media-repeat"
-            bgSourceUpToggled: "image://meegotheme/icons/actionbar/media-repeat-active-selected"
-            bgSourceDn: "image://meegotheme/icons/actionbar/media-repeat-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-repeat"
+            bgSourceUpToggled: "image://themedimage/icons/actionbar/media-repeat-active-selected"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-repeat-active"
             onClicked: {
                 isrepeat = !isrepeat;
                 container.repeatPressed();

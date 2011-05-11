@@ -20,7 +20,7 @@ Item {
     Image {
         id: background
         anchors.fill: parent
-        source: "image://meegotheme/widgets/common/action-bar/action-bar-background"
+        source: "image://themedimage/widgets/common/action-bar/action-bar-background"
         MediaToolbarButton {
             id: btShare
             anchors.left: parent.left
@@ -28,8 +28,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://meegotheme/images/media/icn_share_up"
-            bgSourceDn: "image://meegotheme/images/media/icn_share_up"
+            bgSourceUp: "image://themedimage/images/media/icn_share_up"
+            bgSourceDn: "image://themedimage/images/media/icn_share_up"
             onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
         }
         MediaToolbarButton {
@@ -39,8 +39,8 @@ Item {
             height: parent.height
             width: (showadd)?itemwidth:0
             visible: showadd
-            bgSourceUp: "image://meegotheme/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://meegotheme/images/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
             onClicked: container.addPressed()
         }
         MediaToolbarButton {
@@ -50,8 +50,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://meegotheme/images/media/icn_trash_up"
-            bgSourceDn: "image://meegotheme/images/media/icn_trash_dn"
+            bgSourceUp: "image://themedimage/images/media/icn_trash_up"
+            bgSourceDn: "image://themedimage/images/media/icn_trash_dn"
             onClicked: container.deletePressed()
         }
         MediaToolbarButton {
@@ -61,8 +61,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://meegotheme/images/media/icn_cancel_ms_up"
-            bgSourceDn: "image://meegotheme/images/media/icn_cancel_ms_dn"
+            bgSourceUp: "image://themedimage/images/media/icn_cancel_ms_up"
+            bgSourceDn: "image://themedimage/images/media/icn_cancel_ms_dn"
             onClicked: {
                 container.cancelPressed();
             }
