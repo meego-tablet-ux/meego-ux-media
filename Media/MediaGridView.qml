@@ -108,11 +108,11 @@ import MeeGo.Media 0.1
 Item {
     id: container
   
-    // apptype: 0=music, 1=video, 2=photo
+    // apptype: 0=music, 1=video, 2=photo, 3=photoalbum
     property int musictype: 0
     property int videotype: 1
     property int phototype: 2
-    property int photoalbumtype: 0
+    property int photoalbumtype: 3
     property int type: 0
     property int spacing: 2
     property bool showHeader: false
@@ -121,8 +121,19 @@ Item {
     property bool selectionMode: false
     property int frameBorderWidth: 0
     property string defaultThumbnail: ""
-    
-    property alias clip: gridView.clip
+
+    property string delegateFooterSource: ""
+    property bool delegateFooterVisible: false
+    property string delegateHeaderSource: ""
+    property bool delegateHeaderVisible: false
+
+    property string borderImageSource: ""
+    property int borderImageTop: 0
+    property int borderImageBottom: 0
+    property int borderImageLeft: 0
+    property int borderImageRight: 0
+    property int borderImageInnerMargin: 0
+
     property alias cellWidth: gridView.cellWidth
     property alias cellHeight: gridView.cellHeight
     property alias model: gridView.model
@@ -177,8 +188,7 @@ Item {
 	id: gridView
 
 	anchors.fill: parent
-  
-	clip:true
+
 	cellWidth: theme.thumbSize
 	cellHeight: cellWidth
 	
@@ -191,15 +201,13 @@ Item {
 	cacheBuffer: 2000
 	flickDeceleration: 250
 
-	delegate: BorderImage {
+        delegate: Image {
 	  
 	  id: dinstance
+          width: gridView.cellWidth-spacing
+          height: gridView.cellHeight-spacing
 
-  	  clip: true
-
-	  width: gridView.cellWidth
-	  height: gridView.cellHeight
-	  asynchronous: true
+          asynchronous: true
 
 	  property int mindex: index
 	  property string mtitle
@@ -303,14 +311,33 @@ Item {
 	      a[0]== undefined ? "" : a[0]
 	  }
 
-            Item {
+            Image {
+                id: delegateHeader
+                source: delegateHeaderSource
+                anchors.bottom: thumbnailClipper.top
+                anchors.left:  thumbnailClipper.left
+                width: thumbnailClipper.width
+                visible: delegateHeaderVisible
+            }
+
+            BorderImage {
                 id: thumbnailClipper
                 anchors.fill:parent
                 z: -10
 
+                source: borderImageSource
+                border.top: borderImageTop
+                border.bottom: borderImageBottom
+                border.left: borderImageLeft
+                border.right: borderImageRight
+
                 Item {
                     id: wrapper
                     anchors.fill: parent
+                    anchors.topMargin: thumbnailClipper.border.top - borderImageInnerMargin
+                    anchors.bottomMargin: thumbnailClipper.border.bottom - borderImageInnerMargin
+                    anchors.leftMargin: thumbnailClipper.border.left - borderImageInnerMargin
+                    anchors.rightMargin: thumbnailClipper.border.right - borderImageInnerMargin
                     transformOrigin: Item.Center
                     rotation: extension.orientation * 90
 
@@ -319,7 +346,7 @@ Item {
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectCrop
                         source: mthumburi
-                        smooth: true
+                        smooth: !gridView.moving
                         clip: true
                         z: 0
 
@@ -338,13 +365,14 @@ Item {
                     }
                 }
 
-                Image {
+                Rectangle {
                     id: textBackground
-                    source: "image://themedimage/images/media/music_text_bg_med"
-                    width: parent.width
+                    width: wrapper.width
                     height: 63
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
+                    color: theme_mediaGridTitleBackgroundColor
+                    opacity: theme_mediaGridTitleBackgroundAlpha
+                    anchors.bottom: wrapper.bottom
+                    anchors.left: wrapper.left
                     z: 1
                     visible: (type != 2)
                     Text {
@@ -374,14 +402,32 @@ Item {
                         visible: text
                     }
                 }
-                Image {
+                Item {
                     id: frame
-                    anchors.centerIn: parent
-                    width: parent.width - 2 * frameBorderWidth
-                    height: parent.height - 2 * frameBorderWidth
-                    smooth: true
+                    anchors.fill: wrapper
                     z: 2
+                    visible: false
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "white"
+                        opacity: 0.7
+                    }
+                    Image {
+                        id: tick
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                        anchors.margins: 10
+                        source: "image://meegotheme/widgets/apps/media/photo-selected-tick"
+                    }
                 }
+            }
+            Image {
+                id: delegateFooter
+                source: delegateFooterSource
+                anchors.top: thumbnailClipper.bottom
+                anchors.left:  thumbnailClipper.left
+                width: thumbnailClipper.width
+                visible: delegateFooterVisible
             }
 
 	  MouseArea {
@@ -412,7 +458,7 @@ Item {
 		  when: !selectionMode && !mouseArea.pressed
 		  PropertyChanges {
 		      target: frame
-		      source: "image://themedimage/images/media/photos_thumb_med"
+                        visible: false
 		  }
 	      },
 	      State {
@@ -428,17 +474,16 @@ Item {
 		  when: selectionMode && !gridView.model.isSelected(itemid)
 		  PropertyChanges {
 		      target: frame		      
-		      source: "image://themedimage/images/media/photos_thumb_med"
+                        visible: false
 		  }
 	      },
 	      State {
 		  name: "selectionSelected"
 		  when: selectionMode && gridView.model.isSelected(itemid)
 		  PropertyChanges {
-		      target: frame		      
-		      source: "image://themedimage/images/media/photos_selected_tick"
-
-		  }
+                      target: frame
+                      visible: true
+                  }
 	      }
 	  ]
       }
