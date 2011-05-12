@@ -198,7 +198,7 @@ Item {
 	interactive: contentHeight > height
 	boundsBehavior: Flickable.StopAtBounds
 
-	cacheBuffer: 2000
+        cacheBuffer: 8000
 	flickDeceleration: 250
 
         delegate: Image {
@@ -318,12 +318,14 @@ Item {
                 anchors.left:  thumbnailClipper.left
                 width: thumbnailClipper.width
                 visible: delegateHeaderVisible
+                asynchronous: true
             }
 
             BorderImage {
                 id: thumbnailClipper
                 anchors.fill:parent
                 z: -10
+                asynchronous: true
 
                 source: borderImageSource
                 border.top: borderImageTop
@@ -348,6 +350,7 @@ Item {
                         source: mthumburi
                         smooth: !gridView.moving
                         clip: true
+                        asynchronous: true
                         z: 0
 
                         Rectangle {
@@ -414,6 +417,7 @@ Item {
                     }
                     Image {
                         id: tick
+                        asynchronous: true
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.margins: 10
@@ -427,6 +431,7 @@ Item {
                 anchors.top: thumbnailClipper.bottom
                 anchors.left:  thumbnailClipper.left
                 width: thumbnailClipper.width
+                asynchronous: true
                 visible: delegateFooterVisible
             }
 
