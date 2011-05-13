@@ -188,7 +188,7 @@ Item {
 	id: gridView
 
 	anchors.fill: parent
-
+        clip: true
 	cellWidth: theme.thumbSize
 	cellHeight: cellWidth
 	
@@ -421,7 +421,7 @@ Item {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         anchors.margins: 10
-                        source: "image://meegotheme/widgets/apps/media/photo-selected-tick"
+                        source: "image://themedimage/widgets/apps/media/photo-selected-tick"
                     }
                 }
             }
