@@ -41,6 +41,8 @@ MusicListModel::MusicListModel(QObject *parent)
 
     m_type = -1;
     m_mix = 0;
+    m_playindex = -1;
+    m_playstatus = Stopped;
     shuffleindex = 0;
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
@@ -663,9 +665,22 @@ void MusicListModel::setViewed(const QStringList &ids)
     MusicDatabase::instance()->setViewedMulti(ids);
 }
 
-void MusicListModel::setPlayStatus(const QString &id, int playstatus)
+void MusicListModel::setPlayIndex(const int index)
 {
-    MusicDatabase::instance()->setPlayStatus(id, playstatus);
+    if(m_playindex != index)
+    {
+        m_playindex = index;
+        emit playIndexChanged(m_playindex);
+    }
+}
+
+void MusicListModel::setPlayStatus(const int status)
+{
+    if(m_playstatus != status)
+    {
+        m_playstatus = status;
+        emit playStatusChanged(m_playstatus);
+    }
 }
 
 void MusicListModel::addItems(const QStringList &ids)
@@ -677,34 +692,27 @@ void MusicListModel::addItems(const QStringList &ids)
     }
 
     QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByID(ids);
+    QList<MediaItem *> tempList = MusicDatabase::instance()->getSnapshot();
+    QList<MediaItem *> newItemListFull;
 
-    if(m_type == NowPlaying)
+    /* first grab the item we need */
+    for(int i = 0; i < newItemList.count(); i++)
     {
-        QList<MediaItem *> tempList = MusicDatabase::instance()->getSnapshot();
-        QList<MediaItem *> newItemListFull;
+        /* if this is a playlist, artist, or album, get its songs only */
+        newItemListFull = unwrapItem(tempList, newItemList[i]);
 
-        /* first grab the item we need */
-        for(int i = 0; i < newItemList.count(); i++)
+        /* add the songs to the list */
+        if(!newItemListFull.isEmpty())
         {
-            /* if this is a playlist, artist, or album, get its songs only */
-            newItemListFull = unwrapItem(tempList, newItemList[i]);
-
-            /* filter out any items already in the queue */
-            filterDuplicates(mediaItemsList, newItemListFull);
-
-            /* add any items left over */
-            if(!newItemListFull.isEmpty())
+            /* if this is a playlist, add the new items to the sort list */
+            if(m_type == MusicPlaylist)
             {
-                displayNewItems(newItemListFull);
+                for(int i = 0; i < newItemListFull.count(); i++)
+                    urnSortList << newItemListFull[i]->m_urn;
             }
-        }
-    }
-    else if(m_type == MusicPlaylist)
-    {
-        for(int i = 0; i < newItemList.count(); i++)
-            urnSortList << newItemList[i]->m_urn;
 
-        displayNewItems(newItemList);
+            displayNewItems(newItemListFull);
+        }
     }
 }
 
@@ -738,9 +746,21 @@ void MusicListModel::removeItems(const QStringList &ids)
 
 void MusicListModel::removeIndex(const int index)
 {
-    if(m_type != MusicPlaylist)
+    if((m_type != MusicPlaylist)&&(m_type != NowPlaying))
     {
-        qDebug() << "You can't remove items from this model";
+        qDebug() << "removeIndex: You can't remove items from this model type";
+        return;
+    }
+
+    if((m_type == MusicPlaylist)&&((m_default_sort != SortByURNList)||(m_filter != FilterAll)))
+    {
+        qDebug() << "removeIndex: Using sorts or filters prevents removeIndex from functioning";
+        return;
+    }
+
+    if((m_type == NowPlaying)&&((m_default_sort != SortAsIs)||(m_filter != FilterAll)))
+    {
+        qDebug() << "removeIndex: Using sorts or filters prevents removeIndex from functioning";
         return;
     }
 
@@ -750,30 +770,77 @@ void MusicListModel::removeIndex(const int index)
         return;
     }
 
-    int nth = 0;
-    MediaItem *item = mediaItemsDisplay[index];
-    /* find out which instance of item we're deleting */
-    for(int i = 0; i < mediaItemsDisplay.count(); i++)
-    {
-        if(i == index)
-            break;
-        if(mediaItemsDisplay[i] == item)
-           nth++;
-    }
-
+    /* the assumption is that no sort or filter is set on this model */
+    /* therefore the master and display lists should be the same */
     removeRows(index, 1);
-    int count = 0;
-    for(int i = 0; i < mediaItemsList.count(); i++)
-    {
-        /* delete the nth item from the master list */
-        if((mediaItemsList[i] == item)&&(nth == count++))
-        {
-            mediaItemsList.removeAt(i);
-            break;
-        }
-    }
+    mediaItemsList.removeAt(index);
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
+}
+
+void MusicListModel::removeIndexes(QList<int> indexes)
+{
+    if((m_type != MusicPlaylist)&&(m_type != NowPlaying))
+    {
+        qDebug() << "removeIndexes: You can't remove items from this model type";
+        return;
+    }
+
+    if((m_type == MusicPlaylist)&&((m_default_sort != SortByURNList)||(m_filter != FilterAll)))
+    {
+        qDebug() << "removeIndexes: Using sorts or filters prevents removeIndex from functioning";
+        return;
+    }
+
+    if((m_type == NowPlaying)&&((m_default_sort != SortAsIs)||(m_filter != FilterAll)))
+    {
+        qDebug() << "removeIndexes: Using sorts or filters prevents removeIndex from functioning";
+        return;
+    }
+
+    for(int i = 0; i < indexes.count(); i++)
+    {
+        removeIndex(indexes[i]);
+    }
+}
+
+void MusicListModel::setSelectedIndex(const int idx, bool selected)
+{
+    if(selected)
+    {
+        if(!selectedIndexesList.contains(idx))
+            selectedIndexesList.append(idx);
+    }
+    else
+    {
+        if(selectedIndexesList.contains(idx))
+            selectedIndexesList.removeAll(idx);
+    }
+
+    emit dataChanged(index(idx, 0), index(idx, 0));
+}
+
+bool MusicListModel::isSelectedIndex(const int index)
+{
+    return selectedIndexesList.contains(index);
+}
+
+QList<int> MusicListModel::getSelectedIndexes()
+{
+    return selectedIndexesList;
+}
+
+int MusicListModel::selectedIndexCount()
+{
+    return selectedIndexesList.count();
+}
+
+void MusicListModel::clearSelectedIndexes()
+{
+    QList<int> prevSelected = selectedIndexesList;
+    selectedIndexesList.clear();
+    for(int i = 0; i < prevSelected.count(); i++)
+        emit dataChanged(index(prevSelected[i], 0), index(prevSelected[i], 0));
 }
 
 void MusicListModel::destroyItem(const int index)

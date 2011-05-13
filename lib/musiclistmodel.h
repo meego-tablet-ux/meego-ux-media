@@ -27,6 +27,8 @@ class MusicListModel: public MediaListModel
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum NOTIFY albumChanged);
     Q_PROPERTY(QString playlist READ getPlaylist WRITE setPlaylist NOTIFY playlistChanged);
     Q_PROPERTY(QStringList urns READ getURNs WRITE setURNs NOTIFY urnsChanged);
+    Q_PROPERTY(int playindex READ getPlayIndex WRITE setPlayIndex NOTIFY playIndexChanged);
+    Q_PROPERTY(int playstatus READ getPlayStatus WRITE setPlayStatus NOTIFY playStatusChanged);
 
 public:
     MusicListModel(QObject *parent = 0);
@@ -74,12 +76,17 @@ public:
     QStringList getURNs() const
         { return m_urns; }
     virtual void setURNs(const QStringList urns);
+    int getPlayIndex() const
+        { return m_playindex; }
+    void setPlayIndex(const int index);
+    int getPlayStatus() const
+        { return m_playstatus; }
+    void setPlayStatus(const int status);
 
 public slots:
     /* view calls for all models */
     void setFavorite(const QStringList &ids, bool val);
     void setViewed(const QStringList &ids);
-    void setPlayStatus(const QString &id, int playstatus);
     void destroyItem(const int index);
     void destroyItemByID(const QString &id);
     void destroyItemsByID(const QStringList &ids);
@@ -87,6 +94,11 @@ public slots:
     void requestItem(int type, QString urn);
     void changeTitle(QString uri, QString title);
     void changeTitleByURN(QString urn, QString title);
+    void setSelectedIndex(const int idx, bool selected);
+    bool isSelectedIndex(const int index);
+    QList<int> getSelectedIndexes();
+    int selectedIndexCount();
+    void clearSelectedIndexes();
 
     QString getURNFromIndex(const int index);
 
@@ -94,6 +106,7 @@ public slots:
     void addItems(const QStringList &ids);
     void removeItems(const QStringList &ids);
     void removeIndex(const int index);
+    void removeIndexes(QList<int> indexes);
     void savePlaylist(const QString &title);
     void clear();
     int shuffleIndex(int offset);
@@ -107,6 +120,8 @@ signals:
     void playlistChanged(const QString playlist);
     void songChanged(const QString song);
     void urnsChanged(const QStringList urns);
+    void playIndexChanged(const int playindex);
+    void playStatusChanged(const int playstatus);
 
 protected slots:
     /* from MusicDatabase signals */
@@ -119,10 +134,13 @@ protected:
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
     void shuffleReset();
+    QList<int> selectedIndexesList;
 
     /* properties for this model */
     int m_type;
     int m_mix;
+    int m_playindex;
+    int m_playstatus;
     QString m_artist;
     QString m_album;
     QString m_playlist;
