@@ -318,7 +318,7 @@ Item {
                   return addedtime;
               }
               catch(err) {
-                  return "prkl"
+                  return ""
               }
           }
 
