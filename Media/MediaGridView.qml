@@ -142,6 +142,7 @@ Item {
     property alias currentItem: gridView.currentItem
     property alias currentIndex: gridView.currentIndex
     property alias count: gridView.count
+    property alias snapMode: gridView.snapMode
     property alias theGridView: gridView
 
     signal clicked(real mouseX, real mouseY, variant payload)
@@ -221,6 +222,7 @@ Item {
           property int mcount
           property int mlength
           property string martist
+          property string maddedtime
 	  
 	  property bool misvirtual: (type != 1)?isvirtual:false
 
@@ -310,6 +312,15 @@ Item {
 	      }
 	      a[0]== undefined ? "" : a[0]
 	  }
+
+          maddedtime: {
+              try {
+                  return addedtime;
+              }
+              catch(err) {
+                  return "prkl"
+              }
+          }
 
             Image {
                 id: delegateHeader
