@@ -396,6 +396,8 @@ public:
     /* properties functions for the photo item */
     QString getURI() const
         { return m_uri; }
+    QString getURN() const
+        { return m_urn; }
     QString getThumbURI() const
         { return m_thumburi; }
     QStringList getThumbURIList() const

@@ -50,6 +50,9 @@ QVariant MediaListModel::datafromItem(MediaItem *item, int role)
     if (role == MediaItem::ID)
         return item->getID();
 
+    if (role == MediaItem::URN)
+        return item->getURN();
+
     if (role == MediaItem::ItemType)
         return item->getType();
 
