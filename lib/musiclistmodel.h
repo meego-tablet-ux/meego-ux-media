@@ -94,19 +94,13 @@ public slots:
     void requestItem(int type, QString urn);
     void changeTitle(QString uri, QString title);
     void changeTitleByURN(QString urn, QString title);
-    void setSelectedIndex(const int idx, bool selected);
-    bool isSelectedIndex(const int index);
-    QList<int> getSelectedIndexes();
-    int selectedIndexCount();
-    void clearSelectedIndexes();
-
     QString getURNFromIndex(const int index);
+    void removeSelected();
 
     /* view calls for editable models */
     void addItems(const QStringList &ids);
     void removeItems(const QStringList &ids);
     void removeIndex(const int index);
-    void removeIndexes(QList<int> indexes);
     void savePlaylist(const QString &title);
     void clear();
     int shuffleIndex(int offset);
@@ -134,7 +128,6 @@ protected:
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
     void shuffleReset();
-    QList<int> selectedIndexesList;
 
     /* properties for this model */
     int m_type;

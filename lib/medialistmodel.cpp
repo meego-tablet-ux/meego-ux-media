@@ -10,6 +10,7 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QtDeclarative/qdeclarative.h>
 
 MediaListModel::MediaListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -282,6 +283,23 @@ void MediaListModel::setSelected(const QString &id, bool selected)
     emit dataChanged(index(idx, 0), index(idx, 0));
 }
 
+void MediaListModel::setSelected(const int idx, bool selected)
+{
+    if(selected)
+    {
+        if(!selectedIndexesList.contains(idx))
+            selectedIndexesList.append(idx);
+    }
+    else
+    {
+        if(selectedIndexesList.contains(idx))
+            selectedIndexesList.removeAll(idx);
+    }
+
+    emit dataChanged(index(idx, 0), index(idx, 0));
+}
+
+
 bool MediaListModel::isSelected(const QString &id)
 {
     for(int i = 0; i < mediaItemsDisplay.count(); i++)
@@ -289,6 +307,84 @@ bool MediaListModel::isSelected(const QString &id)
             return(selectedItemsList.contains(mediaItemsDisplay[i]));
 
     return false;
+}
+
+bool MediaListModel::isSelected(const int idx)
+{
+    return selectedIndexesList.contains(idx);
+}
+
+int MediaListModel::selectionCount(const int type)
+{
+    switch(type) {
+    case SelectByID:
+        return selectedItemsList.count();
+    case SelectByIndex:
+        return selectedIndexesList.count();
+    default:
+        return 0;
+    }
+}
+
+void MediaListModel::clearSelected(const int type)
+{
+    if(type == SelectByID)
+    {
+        QList<MediaItem *> prevSelected = selectedItemsList;
+        selectedItemsList.clear();
+        for(int i = 0; i < mediaItemsDisplay.count(); i++)
+            if(prevSelected.contains(mediaItemsDisplay[i]))
+            {
+                emit dataChanged(index(i, 0), index(i, 0));
+            }
+    }
+    else if(type == SelectByIndex)
+    {
+        QList<int> prevSelected = selectedIndexesList;
+        selectedIndexesList.clear();
+        for(int i = 0; i < prevSelected.count(); i++)
+            emit dataChanged(index(prevSelected[i], 0), index(prevSelected[i], 0));
+    }
+}
+
+QStringList MediaListModel::getSelectedURIs(const int type)
+{
+    QStringList uris;
+    if(type == SelectByID)
+    {
+        for(int i = 0; i < selectedItemsList.count(); i++)
+            uris << selectedItemsList[i]->m_uri;
+    }
+    else if(type == SelectByIndex)
+    {
+        for(int i = 0; i < selectedIndexesList.count(); i++)
+        {
+            if((selectedIndexesList[i] >= 0)&&
+               (selectedIndexesList[i] < mediaItemsDisplay.count()))
+                uris << mediaItemsDisplay[selectedIndexesList[i]]->m_uri;
+        }
+    }
+    return uris;
+}
+
+QStringList MediaListModel::getSelectedIDs(const int type)
+{
+    QStringList ids;
+    if(type == SelectByID)
+    {
+        for(int i = 0; i < selectedItemsList.count(); i++)
+            ids << selectedItemsList[i]->m_id;
+    }
+    else if(type == SelectByIndex)
+    {
+        for(int i = 0; i < selectedIndexesList.count(); i++)
+        {
+            if((selectedIndexesList[i] >= 0)&&
+               (selectedIndexesList[i] < mediaItemsDisplay.count()))
+                ids << mediaItemsDisplay[selectedIndexesList[i]]->m_id;
+        }
+    }
+    return ids;
 }
 
 void MediaListModel::filterDuplicates(QList<MediaItem *> &currentList, QList<MediaItem *> &additionList)
@@ -355,44 +451,12 @@ void MediaListModel::hideItems(QList<MediaItem *> &list)
         list.removeAll(hiddenItems[i]);
 }
 
-void MediaListModel::clearSelected()
-{
-    QList<MediaItem *> prevSelected = selectedItemsList;
-    selectedItemsList.clear();
-    for(int i = 0; i < mediaItemsDisplay.count(); i++)
-        if(prevSelected.contains(mediaItemsDisplay[i]))
-        {
-            emit dataChanged(index(i, 0), index(i, 0));
-        }
-}
-
-QStringList MediaListModel::getSelectedURIs()
-{
-    QStringList uris;
-    for(int i = 0; i < selectedItemsList.count(); i++)
-        uris << selectedItemsList[i]->m_uri;
-    return uris;
-}
-
-QStringList MediaListModel::getSelectedIDs()
-{
-    QStringList ids;
-    for(int i = 0; i < selectedItemsList.count(); i++)
-        ids << selectedItemsList[i]->m_id;
-    return ids;
-}
-
 QStringList MediaListModel::getAllIDs()
 {
     QStringList ids;
     for(int i = 0; i < mediaItemsDisplay.count(); i++)
         ids << mediaItemsDisplay[i]->m_id;
     return ids;
-}
-
-int MediaListModel::selectionCount()
-{
-    return selectedItemsList.count();
 }
 
 void MediaListModel::setLimit(const int limit)

@@ -20,6 +20,7 @@ class MediaListModel : public QAbstractListModel
     Q_ENUMS(FilterType)
     Q_ENUMS(SortType)
     Q_ENUMS(PlayType)
+    Q_ENUMS(SelectionType)
     Q_PROPERTY(int filter READ getFilter WRITE setFilter NOTIFY filterChanged);
     Q_PROPERTY(int limit READ getLimit WRITE setLimit NOTIFY limitChanged);
     Q_PROPERTY(int sort READ getSort WRITE setSort NOTIFY sortChanged);
@@ -33,28 +34,38 @@ public:
     MediaListModel(QObject *parent = 0);
     ~MediaListModel();
 
-    enum FilterType { FilterAll = 0,
-                      FilterFavorite = 1,
-                      FilterViewed = 2,
-                      FilterAdded = 3,
-                      FilterUnwatched = 4,
-                      FilterSearch = 5 };
+    enum FilterType {
+        FilterAll = 0,
+        FilterFavorite = 1,
+        FilterViewed = 2,
+        FilterAdded = 3,
+        FilterUnwatched = 4,
+        FilterSearch = 5
+    };
 
-    enum SortType { SortByDefault = 0,
-                    SortByTitle = 1,
-                    SortByAddedTime = 2,
-                    SortByCreationTime = 3,
-                    SortByAccessTime = 4,
-                    SortByUnwatched = 5,
-                    SortByFavorite = 6,
-                    SortByTrackNum = 7,
-                    SortByURNList = 8,
-                    SortAsIs = 9 };
+    enum SortType {
+        SortByDefault = 0,
+        SortByTitle = 1,
+        SortByAddedTime = 2,
+        SortByCreationTime = 3,
+        SortByAccessTime = 4,
+        SortByUnwatched = 5,
+        SortByFavorite = 6,
+        SortByTrackNum = 7,
+        SortByURNList = 8,
+        SortAsIs = 9
+    };
 
-    enum PlayType  {  Stopped = 0,
-                      Paused = 1,
-                      Playing = 2
-                   };
+    enum PlayType {
+        Stopped = 0,
+        Paused = 1,
+        Playing = 2
+    };
+
+    enum SelectionType {
+        SelectByID = 0,
+        SelectByIndex = 1
+    };
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -84,6 +95,7 @@ public:
         { return mediaItemsList.count(); }
 
 public slots:
+    /* MediaItem property retrieval functions */
     int itemIndex(const QString &id);
     QVariant datafromURN(const QString &urn, int role);
     QVariant datafromID(const QString &id, int role);
@@ -99,12 +111,18 @@ public slots:
     int getTypefromURN(const QString &urn);
     int getTypefromID(const QString &id);
     bool isFavorite(const QString &id);
+
+    /* selection functions */
     void setSelected(const QString &id, bool selected);
+    void setSelected(const int idx, bool selected);
     bool isSelected(const QString &id);
-    int selectionCount();
-    void clearSelected();
-    QStringList getSelectedURIs();
-    QStringList getSelectedIDs();
+    bool isSelected(const int idx);
+    int selectionCount(const int type);
+    void clearSelected(const int type);
+    QStringList getSelectedURIs(const int type);
+    QStringList getSelectedIDs(const int type);
+
+    /* hiding functions */
     QStringList getAllIDs();
     void hideItemsByURN(const QStringList &urns);
     void hideItemByURN(const QString &urn);
@@ -137,6 +155,7 @@ protected:
     bool firstsort;
     MediaDatabase *database;
     QList<MediaItem *> selectedItemsList;
+    QList<int> selectedIndexesList;
     QStringList hiddenURNsList;
     QStringList urnSortList;
     bool disable_filter;

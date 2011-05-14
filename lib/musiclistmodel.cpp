@@ -778,76 +778,40 @@ void MusicListModel::removeIndex(const int index)
     emit totalChanged(mediaItemsList.count());
 }
 
-void MusicListModel::removeIndexes(QList<int> indexes)
+void MusicListModel::removeSelected()
 {
     if((m_type != MusicPlaylist)&&(m_type != NowPlaying))
     {
-        qDebug() << "removeIndexes: You can't remove items from this model type";
+        qDebug() << "removeIndex: You can't remove items from this model type";
         return;
     }
 
     if((m_type == MusicPlaylist)&&((m_default_sort != SortByURNList)||(m_filter != FilterAll)))
     {
-        qDebug() << "removeIndexes: Using sorts or filters prevents removeIndex from functioning";
+        qDebug() << "removeIndex: Using sorts or filters prevents removeIndex from functioning";
         return;
     }
 
     if((m_type == NowPlaying)&&((m_default_sort != SortAsIs)||(m_filter != FilterAll)))
     {
-        qDebug() << "removeIndexes: Using sorts or filters prevents removeIndex from functioning";
+        qDebug() << "removeIndex: Using sorts or filters prevents removeIndex from functioning";
         return;
     }
 
-    for(int i = 0; i < indexes.count(); i++)
+    QList<int> indexes = selectedIndexesList;
+    qSort(indexes);
+
+    for(int i = indexes.count() - 1; i >= 0; i--)
     {
         removeIndex(indexes[i]);
     }
-}
-
-void MusicListModel::setSelectedIndex(const int idx, bool selected)
-{
-    if(selected)
-    {
-        if(!selectedIndexesList.contains(idx))
-            selectedIndexesList.append(idx);
-    }
-    else
-    {
-        if(selectedIndexesList.contains(idx))
-            selectedIndexesList.removeAll(idx);
-    }
-
-    emit dataChanged(index(idx, 0), index(idx, 0));
-}
-
-bool MusicListModel::isSelectedIndex(const int index)
-{
-    return selectedIndexesList.contains(index);
-}
-
-QList<int> MusicListModel::getSelectedIndexes()
-{
-    return selectedIndexesList;
-}
-
-int MusicListModel::selectedIndexCount()
-{
-    return selectedIndexesList.count();
-}
-
-void MusicListModel::clearSelectedIndexes()
-{
-    QList<int> prevSelected = selectedIndexesList;
-    selectedIndexesList.clear();
-    for(int i = 0; i < prevSelected.count(); i++)
-        emit dataChanged(index(prevSelected[i], 0), index(prevSelected[i], 0));
 }
 
 void MusicListModel::destroyItem(const int index)
 {
     if((index < 0)||(index >= mediaItemsDisplay.count()))
     {
-        qDebug() << "removeIndex: Invalid Index";
+        qDebug() << "destroyItem: Invalid Index";
         return;
     }
 
