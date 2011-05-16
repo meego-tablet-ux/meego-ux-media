@@ -117,10 +117,10 @@ public slots:
     void setSelected(const int idx, bool selected);
     bool isSelected(const QString &id);
     bool isSelected(const int idx);
-    int selectionCount(const int type);
-    void clearSelected(const int type);
-    QStringList getSelectedURIs(const int type);
-    QStringList getSelectedIDs(const int type);
+    int selectionCount(const int type = SelectByID);
+    void clearSelected(const int type = SelectByID);
+    QStringList getSelectedURIs(const int type = SelectByID);
+    QStringList getSelectedIDs(const int type = SelectByID);
 
     /* hiding functions */
     QStringList getAllIDs();
