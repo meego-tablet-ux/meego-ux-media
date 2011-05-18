@@ -5,7 +5,7 @@ TARGET = Media
 CONFIG += plugin
 QT += declarative
 
-INCLUDEPATH += ../lib
+INCLUDEPATH += ../lib /usr/include/resource/qt4
 LIBS += -L../lib -lmeegouxmedia
 
 OBJECTS_DIR = .obj

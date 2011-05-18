@@ -14,7 +14,8 @@ CONFIG += \
     mobility
 PKGCONFIG += \
     gconf-2.0 \
-    libexif 
+    libresourceqt1 \
+    libexif
 MOBILITY = publishsubscribe
 TARGET = $$qtLibraryTarget($$TARGET)
 
@@ -34,7 +35,8 @@ SOURCES += \
     thumbnailer.cpp \
     videodatabase.cpp \
     videolistmodel.cpp \
-    playlistimageprovider.cpp
+    playlistimageprovider.cpp \
+    resourcemanager.cpp
 
 # these are the external interfaces exposed to clients in /usr/include
 INSTALL_HEADERS += \
@@ -55,7 +57,8 @@ HEADERS += \
     thumbnailer.h \
     videodatabase.h \
     mediainfoplugininterface.h \
-    playlistimageprovider.h
+    playlistimageprovider.h \
+    resourcemanager.h
 
 OTHER_FILES += \
     meego-ux-media.pc

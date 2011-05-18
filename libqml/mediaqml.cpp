@@ -11,6 +11,7 @@
 #include "photolistmodel.h"
 #include "videolistmodel.h"
 #include "playlistimageprovider.h"
+#include "resourcemanager.h"
 
 void MediaQML::registerTypes(const char *uri)
 {
@@ -18,6 +19,7 @@ void MediaQML::registerTypes(const char *uri)
     qmlRegisterType<MusicListModel>(uri, 0, 0, "MusicListModel");
     qmlRegisterType<PhotoListModel>(uri, 0, 0, "PhotoListModel");
     qmlRegisterType<VideoListModel>(uri, 0, 0, "VideoListModel");
+    qmlRegisterType<ResourceManager>(uri, 0, 0, "ResourceManager");
 }
 
 void MediaQML::initializeEngine(QDeclarativeEngine *engine, const char *uri)
