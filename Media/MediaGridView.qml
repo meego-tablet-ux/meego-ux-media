@@ -168,8 +168,8 @@ Item {
                 font.pixelSize: theme_fontPixelSizeLarge
                 color: theme_fontColorNormal
                 text: ((gridView.model.filter == MusicListModel.FilterFavorite)?qsTr("Favorites"):
-                       (gridView.model.filter == MusicListModel.FilterViewed)?qsTr("Recently Viewed"):
-                       (gridView.model.filter == MusicListModel.FilterAdded)?qsTr("Recently Added"):
+                       (gridView.model.filter == MusicListModel.FilterViewed)?qsTr("Recently viewed"):
+                       (gridView.model.filter == MusicListModel.FilterAdded)?qsTr("Newest"):
                        (gridView.model.filter == MusicListModel.FilterUnwatched)?qsTr("Unwatched"):
                        (gridView.model.filter == MusicListModel.FilterSearch)?qsTr("Search Results"):
                        (""))
