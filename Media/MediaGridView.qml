@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Intel Corporation.
+* Copyright 2011 Intel Corporation.
  *
  * This program is licensed under the terms and conditions of the
  * Apache License, version 2.0.  The full text of the Apache License is at 	
@@ -323,189 +323,189 @@ Item {
                 height: gridView.cellHeight - spacing
                 anchors.centerIn: parent
 
-            asynchronous: true
-
-            Image {
-                id: delegateHeader
-                source: delegateHeaderSource
-                anchors.bottom: thumbnailClipper.top
-                anchors.left:  thumbnailClipper.left
-                width: thumbnailClipper.width
-                visible: delegateHeaderVisible
-                asynchronous: true
-            }
-
-            BorderImage {
-                id: thumbnailClipper
-                anchors.fill:parent
-                z: -10
                 asynchronous: true
 
-                source: borderImageSource
-                border.top: borderImageTop
-                border.bottom: borderImageBottom
-                border.left: borderImageLeft
-                border.right: borderImageRight
+                Image {
+                    id: delegateHeader
+                    source: delegateHeaderSource
+                    anchors.bottom: thumbnailClipper.top
+                    anchors.left:  thumbnailClipper.left
+                    width: thumbnailClipper.width
+                    visible: delegateHeaderVisible
+                    asynchronous: true
+                }
 
-                Item {
-                    id: wrapper
-                    anchors.fill: parent
-                    anchors.topMargin: thumbnailClipper.border.top - borderImageInnerMargin
-                    anchors.bottomMargin: thumbnailClipper.border.bottom - borderImageInnerMargin
-                    anchors.leftMargin: thumbnailClipper.border.left - borderImageInnerMargin
-                    anchors.rightMargin: thumbnailClipper.border.right - borderImageInnerMargin
-                    transformOrigin: Item.Center
-                    rotation: extension.orientation * 90
+                BorderImage {
+                    id: thumbnailClipper
+                    anchors.fill:parent
+                    z: -10
+                    asynchronous: true
 
-                    Image {
-                        id: thumbnail
+                    source: borderImageSource
+                    border.top: borderImageTop
+                    border.bottom: borderImageBottom
+                    border.left: borderImageLeft
+                    border.right: borderImageRight
+
+                    Item {
+                        id: wrapper
                         anchors.fill: parent
-                        fillMode: Image.PreserveAspectCrop
-                        source: mthumburi
-                        smooth: !gridView.moving
-                        clip: true
-                        asynchronous: true
-                        z: 0
+                        anchors.topMargin: thumbnailClipper.border.top - borderImageInnerMargin
+                        anchors.bottomMargin: thumbnailClipper.border.bottom - borderImageInnerMargin
+                        anchors.leftMargin: thumbnailClipper.border.left - borderImageInnerMargin
+                        anchors.rightMargin: thumbnailClipper.border.right - borderImageInnerMargin
+                        transformOrigin: Item.Center
+                        rotation: extension.orientation * 90
 
-                        Rectangle {
-                            id: fog
+                        Image {
+                            id: thumbnail
                             anchors.fill: parent
-                            color: "white"
-                            opacity: 0.25
-                            visible: false
+                            fillMode: Image.PreserveAspectCrop
+                            source: mthumburi
+                            smooth: !gridView.moving
+                            clip: true
+                            asynchronous: true
+                            z: 0
+
+                            Rectangle {
+                                id: fog
+                                anchors.fill: parent
+                                color: "white"
+                                opacity: 0.25
+                                visible: false
+                            }
+                        }
+
+                        ImageExtension {
+                            id: extension
+                            source: muri
                         }
                     }
 
-                    ImageExtension {
-                        id: extension
-                        source: muri
-                    }
-                }
-
-                Rectangle {
-                    id: textBackground
-                    width: wrapper.width
-                    height: 63
-                    color: theme_mediaGridTitleBackgroundColor
-                    opacity: theme_mediaGridTitleBackgroundAlpha
-                    anchors.bottom: wrapper.bottom
-                    anchors.left: wrapper.left
-                    z: 1
-                    visible: (type != 2)
-                    Text {
-                        id: titleText
-                        text: mtitle
-                        anchors.top: parent.top
-                        anchors.topMargin: 10
-                        anchors.left: parent.left
-                        anchors.leftMargin: 10
-                        width: parent.width - 20
-                        elide: Text.ElideRight
-                        font.pixelSize: theme_fontPixelSizeMedium
-                        font.bold: true
-                        color:theme_fontColorMediaHighlight
-                    }
-                    Text {
-                        id: artistText
-                        text: (type == 1)?((formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))):martist
-                        font.pixelSize: theme_fontPixelSizeMedium
-                        anchors.top: titleText.bottom
-                        anchors.topMargin: 4
-                        anchors.left: parent.left
-                        anchors.leftMargin: 10
-                        width: parent.width - 20
-                        elide: Text.ElideRight
-                        color:theme_fontColorMediaHighlight
-                        visible: text
-                    }
-                }
-                Item {
-                    id: frame
-                    anchors.fill: wrapper
-                    z: 2
-                    visible: false
                     Rectangle {
-                        anchors.fill: parent
-                        color: "white"
-                        opacity: 0.7
+                        id: textBackground
+                        width: wrapper.width
+                        height: 63
+                        color: theme_mediaGridTitleBackgroundColor
+                        opacity: theme_mediaGridTitleBackgroundAlpha
+                        anchors.bottom: wrapper.bottom
+                        anchors.left: wrapper.left
+                        z: 1
+                        visible: (type != 2)
+                        Text {
+                            id: titleText
+                            text: mtitle
+                            anchors.top: parent.top
+                            anchors.topMargin: 10
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            width: parent.width - 20
+                            elide: Text.ElideRight
+                            font.pixelSize: theme_fontPixelSizeMedium
+                            font.bold: true
+                            color:theme_fontColorMediaHighlight
+                        }
+                        Text {
+                            id: artistText
+                            text: (type == 1)?((formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))):martist
+                            font.pixelSize: theme_fontPixelSizeMedium
+                            anchors.top: titleText.bottom
+                            anchors.topMargin: 4
+                            anchors.left: parent.left
+                            anchors.leftMargin: 10
+                            width: parent.width - 20
+                            elide: Text.ElideRight
+                            color:theme_fontColorMediaHighlight
+                            visible: text
+                        }
                     }
-                    Image {
-                        id: tick
-                        asynchronous: true
-                        anchors.right: parent.right
-                        anchors.bottom: parent.bottom
-                        anchors.margins: 10
-                        source: "image://themedimage/widgets/apps/media/photo-selected-tick"
-                    }
-                }
-            }
-            Image {
-                id: delegateFooter
-                source: delegateFooterSource
-                anchors.top: thumbnailClipper.bottom
-                anchors.left:  thumbnailClipper.left
-                width: thumbnailClipper.width
-                asynchronous: true
-                visible: delegateFooterVisible
-            }
-
-            MouseArea {
-                id: mouseArea
-
-                anchors.fill:parent
-
-                onClicked:{
-                    container.clicked(mouseX,mouseY, dinstance);
-                }
-                onPressAndHold: {
-                    container.longPressAndHold(mouseX,mouseY,dinstance);
-                }
-                onDoubleClicked: {
-                    container.doubleClicked(mouseX,mouseY,dinstance);
-                }
-                onReleased: {
-                    container.released(mouseX,mouseY,dinstance);
-                }
-                onPositionChanged: {
-                    container.positionChanged(mouseX,mouseY,dinstance);
-                }
-            }
-
-            states: [
-                State {
-                    name: "normal"
-                    when: !selectionMode && !mouseArea.pressed
-                    PropertyChanges {
-                        target: frame
+                    Item {
+                        id: frame
+                        anchors.fill: wrapper
+                        z: 2
                         visible: false
-                    }
-                },
-                State {
-                    name: "feedback"
-                    when: !selectionMode && mouseArea.pressed
-                    PropertyChanges {
-                        target: fog
-                        visible: true
-                    }
-                },
-                State {
-                    name: "selectionNotSelected"
-                    when: selectionMode && !gridView.model.isSelected(itemid)
-                    PropertyChanges {
-                        target: frame
-                        visible: false
-                    }
-                },
-                State {
-                    name: "selectionSelected"
-                    when: selectionMode && gridView.model.isSelected(itemid)
-                    PropertyChanges {
-                        target: frame
-                        visible: true
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "white"
+                            opacity: 0.7
+                        }
+                        Image {
+                            id: tick
+                            asynchronous: true
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            anchors.margins: 10
+                            source: "image://themedimage/widgets/apps/media/photo-selected-tick"
+                        }
                     }
                 }
-            ]
-        }
+                Image {
+                    id: delegateFooter
+                    source: delegateFooterSource
+                    anchors.top: thumbnailClipper.bottom
+                    anchors.left:  thumbnailClipper.left
+                    width: thumbnailClipper.width
+                    asynchronous: true
+                    visible: delegateFooterVisible
+                }
+
+                MouseArea {
+                    id: mouseArea
+
+                    anchors.fill:parent
+
+                    onClicked:{
+                        container.clicked(mouseX,mouseY, dinstance);
+                    }
+                    onPressAndHold: {
+                        container.longPressAndHold(mouseX,mouseY,dinstance);
+                    }
+                    onDoubleClicked: {
+                        container.doubleClicked(mouseX,mouseY,dinstance);
+                    }
+                    onReleased: {
+                        container.released(mouseX,mouseY,dinstance);
+                    }
+                    onPositionChanged: {
+                        container.positionChanged(mouseX,mouseY,dinstance);
+                    }
+                }
+
+                states: [
+                    State {
+                        name: "normal"
+                        when: !selectionMode && !mouseArea.pressed
+                        PropertyChanges {
+                            target: frame
+                            visible: false
+                        }
+                    },
+                    State {
+                        name: "feedback"
+                        when: !selectionMode && mouseArea.pressed
+                        PropertyChanges {
+                            target: fog
+                            visible: true
+                        }
+                    },
+                    State {
+                        name: "selectionNotSelected"
+                        when: selectionMode && !gridView.model.isSelected(itemid)
+                        PropertyChanges {
+                            target: frame
+                            visible: false
+                        }
+                    },
+                    State {
+                        name: "selectionSelected"
+                        when: selectionMode && gridView.model.isSelected(itemid)
+                        PropertyChanges {
+                            target: frame
+                            visible: true
+                        }
+                    }
+                ]
+            }
         }
 
         Theme { id: theme }
