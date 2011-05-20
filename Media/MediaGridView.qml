@@ -107,7 +107,7 @@ import MeeGo.Media 0.1
 
 Item {
     id: container
-  
+
     // apptype: 0=music, 1=video, 2=photo, 3=photoalbum
     property int musictype: 0
     property int videotype: 1
@@ -155,7 +155,7 @@ Item {
         var min = parseInt( time / 60 );
         return min
     }
-  
+
     Component {
         id: headerComponent
         Item {
@@ -186,141 +186,140 @@ Item {
     }
 
     GridView {
-	id: gridView
+        id: gridView
 
-	anchors.fill: parent
+        anchors.fill: parent
         clip: true
-	cellWidth: theme.thumbSize
-	cellHeight: cellWidth
-	
-	header: headerComponent
-	footer: footerComponent
-      
-	interactive: contentHeight > height
-	boundsBehavior: Flickable.StopAtBounds
+        cellWidth: theme.thumbSize
+        cellHeight: cellWidth
+
+        header: headerComponent
+        footer: footerComponent
+
+        interactive: contentHeight > height
+        boundsBehavior: Flickable.StopAtBounds
 
         cacheBuffer: 8000
-	flickDeceleration: 250
+        flickDeceleration: 250
 
         delegate: Image {
-	  
-	  id: dinstance
-          width: gridView.cellWidth-spacing
-          height: gridView.cellHeight-spacing
+            id: dinstance
+            width: gridView.cellWidth-spacing
+            height: gridView.cellHeight-spacing
 
-          asynchronous: true
+            asynchronous: true
 
-	  property int mindex: index
-	  property string mtitle
-          property string malbum
-          property string muri: uri
-	  property string murn: urn
-	  property string mthumburi
-	  property string mitemid
-	  property int mitemtype
-	  property bool mfavorite
-          property int mcount
-          property int mlength
-          property string martist
-          property string maddedtime
-	  
-	  property bool misvirtual: (type != 1)?isvirtual:false
+            property int mindex: index
+            property string mtitle
+            property string malbum
+            property string muri: uri
+            property string murn: urn
+            property string mthumburi
+            property string mitemid
+            property int mitemtype
+            property bool mfavorite
+            property int mcount
+            property int mlength
+            property string martist
+            property string maddedtime
+
+            property bool misvirtual: (type != 1)?isvirtual:false
 
 
-          mtitle:{
-              try {
-                  return title
-              }
-              catch(err){
-                  return ""
-              }
-          }
+            mtitle:{
+                try {
+                    return title
+                }
+                catch(err){
+                    return ""
+                }
+            }
 
-          mlength:{
-              try {
-                  return length
-              }
-              catch(err){
-                  return 0
-              }
-          }
+            mlength:{
+                try {
+                    return length
+                }
+                catch(err){
+                    return 0
+                }
+            }
 
-          mthumburi:{
-	      try {
-		  if (thumburi == "" | thumburi == undefined)
-		      return defaultThumbnail
-		  else
-		      return thumburi
-	      }
-	      catch(err){
-		  return defaultThumbnail
-	      }
-	  }
+            mthumburi:{
+                try {
+                    if (thumburi == "" | thumburi == undefined)
+                        return defaultThumbnail
+                    else
+                        return thumburi
+                }
+                catch(err){
+                    return defaultThumbnail
+                }
+            }
 
-          malbum:{
-              try {
-                  return album;
-              }
-              catch(err) {
-                  return ""
-              }
-          }
+            malbum:{
+                try {
+                    return album;
+                }
+                catch(err) {
+                    return ""
+                }
+            }
 
-          mitemid:{
-              try {
-                  return itemid;
-              }
-              catch(err) {
-                  return ""
-              }
-          }
+            mitemid:{
+                try {
+                    return itemid;
+                }
+                catch(err) {
+                    return ""
+                }
+            }
 
-          mitemtype:{
-	      try {
-		  return itemtype
-	      }
-	      catch(err) {
-		  return -1
-	      }
-	  }
+            mitemtype:{
+                try {
+                    return itemtype
+                }
+                catch(err) {
+                    return -1
+                }
+            }
 
-	  mfavorite: {
-	      try {
-		  return favorite;
-	      }
-	      catch(err) {
-		  return false
-	      }
-	  }
+            mfavorite: {
+                try {
+                    return favorite;
+                }
+                catch(err) {
+                    return false
+                }
+            }
 
-	  mcount: {
-	      try {
-		  return tracknum;
-	      }
-	      catch(err) {
-		  return 0
-	      }
-	  }
+            mcount: {
+                try {
+                    return tracknum;
+                }
+                catch(err) {
+                    return 0
+                }
+            }
 
-	  martist: {
-	      var a;
-	      try {
-		  a = artist
-	      }
-	      catch(err) {
-		  a = ""
-	      }
-	      a[0]== undefined ? "" : a[0]
-	  }
+            martist: {
+                var a;
+                try {
+                    a = artist
+                }
+                catch(err) {
+                    a = ""
+                }
+                a[0]== undefined ? "" : a[0]
+            }
 
-          maddedtime: {
-              try {
-                  return addedtime;
-              }
-              catch(err) {
-                  return ""
-              }
-          }
+            maddedtime: {
+                try {
+                    return addedtime;
+                }
+                catch(err) {
+                    return ""
+                }
+            }
 
             Image {
                 id: delegateHeader
@@ -446,65 +445,64 @@ Item {
                 visible: delegateFooterVisible
             }
 
-	  MouseArea {
-	      id: mouseArea
+            MouseArea {
+                id: mouseArea
 
-	      anchors.fill:parent
+                anchors.fill:parent
 
-	      onClicked:{
-		  container.clicked(mouseX,mouseY, dinstance);
-	      }
-	      onPressAndHold: {
-		  container.longPressAndHold(mouseX,mouseY,dinstance);
-	      }
-	      onDoubleClicked: {
-		  container.doubleClicked(mouseX,mouseY,dinstance);
-	      }
-	      onReleased: {
-		  container.released(mouseX,mouseY,dinstance);
-	      }
-	      onPositionChanged: {
-		  container.positionChanged(mouseX,mouseY,dinstance);
-	      }
-	  }
+                onClicked:{
+                    container.clicked(mouseX,mouseY, dinstance);
+                }
+                onPressAndHold: {
+                    container.longPressAndHold(mouseX,mouseY,dinstance);
+                }
+                onDoubleClicked: {
+                    container.doubleClicked(mouseX,mouseY,dinstance);
+                }
+                onReleased: {
+                    container.released(mouseX,mouseY,dinstance);
+                }
+                onPositionChanged: {
+                    container.positionChanged(mouseX,mouseY,dinstance);
+                }
+            }
 
-	  states: [
-	      State {
-		  name: "normal"
-		  when: !selectionMode && !mouseArea.pressed
-		  PropertyChanges {
-		      target: frame
+            states: [
+                State {
+                    name: "normal"
+                    when: !selectionMode && !mouseArea.pressed
+                    PropertyChanges {
+                        target: frame
                         visible: false
-		  }
-	      },
-	      State {
-		  name: "feedback"
-		  when: !selectionMode && mouseArea.pressed
-		  PropertyChanges {
-		      target: fog
-		      visible: true
-		  }
-	      },
-	      State {
-		  name: "selectionNotSelected"
-		  when: selectionMode && !gridView.model.isSelected(itemid)
-		  PropertyChanges {
-		      target: frame		      
+                    }
+                },
+                State {
+                    name: "feedback"
+                    when: !selectionMode && mouseArea.pressed
+                    PropertyChanges {
+                        target: fog
+                        visible: true
+                    }
+                },
+                State {
+                    name: "selectionNotSelected"
+                    when: selectionMode && !gridView.model.isSelected(itemid)
+                    PropertyChanges {
+                        target: frame
                         visible: false
-		  }
-	      },
-	      State {
-		  name: "selectionSelected"
-		  when: selectionMode && gridView.model.isSelected(itemid)
-		  PropertyChanges {
-                      target: frame
-                      visible: true
-                  }
-	      }
-	  ]
-      }
+                    }
+                },
+                State {
+                    name: "selectionSelected"
+                    when: selectionMode && gridView.model.isSelected(itemid)
+                    PropertyChanges {
+                        target: frame
+                        visible: true
+                    }
+                }
+            ]
+        }
 
-      Theme { id: theme }
-      
+        Theme { id: theme }
     }
 }
