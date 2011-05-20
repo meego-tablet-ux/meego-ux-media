@@ -45,6 +45,7 @@ MediaDatabase::MediaDatabase(QString recentRangeKey, QObject *parent)
     tid.nmm_Playlist = 673;
     tid.nmm_Video = 671;
     tid.nao_Tag = 89;
+    initialized = false;
 
     qRegisterMetaType<QVector<QStringList> >();
     qDBusRegisterMetaType<QVector<QStringList> >();

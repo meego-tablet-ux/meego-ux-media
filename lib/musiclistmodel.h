@@ -96,6 +96,7 @@ public slots:
     void changeTitleByURN(QString urn, QString title);
     QString getURNFromIndex(const int index);
     void removeSelected();
+    void playAllSongs();
 
     /* view calls for editable models */
     void addItems(const QStringList &ids);
@@ -116,11 +117,13 @@ signals:
     void urnsChanged(const QStringList urns);
     void playIndexChanged(const int playindex);
     void playStatusChanged(const int playstatus);
+    void beginPlayback();
 
 protected slots:
     /* from MusicDatabase signals */
     void itemsAdded(const QList<MediaItem *> *list);
     void itemsChanged(const QStringList &ids, int reason);
+    void databaseInitComplete();
 
 protected:
     /* private filter functions which respond to setting the filter property */
@@ -141,6 +144,8 @@ protected:
     QStringList m_albums;
     QList<int> shuffler;
     int shuffleindex;
+    bool loadplayqueue;
+    bool needplaycall;
 };
 
 #endif // MUSICLISTMODEL_H

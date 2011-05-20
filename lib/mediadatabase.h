@@ -89,6 +89,7 @@ public:
     void changeTitle(QString uri, QString title);
     void changeTitleByURN(QString urn, QString title);
     void clearHistory();
+    bool initialized;
 
 public slots:
     void trackerUpdates(QString classname, QVector<Quad> deletes, QVector<Quad> inserts);
@@ -107,6 +108,7 @@ signals:
     void videoItemAdded(int subjectid);
     void itemAvailable(const QString identifier);
     void songItemAvailable(const QString identifier);
+    void databaseInitComplete();
 
 protected:
     /* the master list contains all music items found through tracker */

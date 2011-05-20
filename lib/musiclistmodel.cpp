@@ -44,9 +44,12 @@ MusicListModel::MusicListModel(QObject *parent)
     m_playindex = -1;
     m_playstatus = Stopped;
     shuffleindex = 0;
+    loadplayqueue = false;
+    needplaycall = false;
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
     connect(MusicDatabase::instance(),SIGNAL(songItemAvailable(const QString)),this,SIGNAL(songItemAvailable(const QString)));
+    connect(MusicDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(databaseInitComplete()));
 }
 
 MusicListModel::~MusicListModel()
@@ -76,6 +79,9 @@ void MusicListModel::clearData()
     disable_filter = false;
     m_albums.clear();
     urnSortList.clear();
+    loadplayqueue = false;
+    needplaycall = false;
+
     if(!mediaItemsDisplay.isEmpty())
     {
         /* formally remove all the items from the list */
@@ -577,6 +583,12 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
             if(urnSortList.contains(list->at(i)->m_urn))
                 newItemList << list->at(i);
     }
+    else if((m_type == NowPlaying)&&(loadplayqueue))
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(list->at(i)->isSong())
+                newItemList << list->at(i);
+    }
     else
     {
         return;
@@ -586,6 +598,11 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     if(!newItemList.isEmpty())
     {
         displayNewItems(newItemList);
+        if((m_type == NowPlaying)&&(needplaycall))
+        {
+            needplaycall = false;
+            emit beginPlayback();
+        }
     }
 }
 
@@ -848,6 +865,9 @@ void MusicListModel::clear()
     if(m_type == ListofRecentlyPlayed)
         MusicDatabase::instance()->clearHistory();
 
+    loadplayqueue = false;
+    needplaycall = false;
+
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
 }
@@ -1049,4 +1069,46 @@ void MusicListModel::shuffleIncrement()
         if(shuffler[count-1] == shuffler[count])
             shuffler.swap(count, (count*2)-1);
     }
+}
+
+void MusicListModel::playAllSongs()
+{
+    if(m_type != NowPlaying)
+    {
+        qDebug() << "playAllSongs only works for the NowPlaying queue";
+        return;
+    }
+
+    /* kill any existing playqueue items */
+    clear();
+    QList<MediaItem *> tempList = MusicDatabase::instance()->getSnapshot();
+    QList<MediaItem *> newItemList;
+
+    /* grab all the existing songs */
+    for(int i = 0; i < tempList.count(); i++)
+        if(tempList[i]->isSong())
+            newItemList << tempList[i];
+
+    if(!newItemList.isEmpty())
+    {
+        /* if have items, display them and begin playback */
+        displayNewItems(newItemList);
+        needplaycall = false;
+        emit beginPlayback();
+    }
+    else if(!MusicDatabase::instance()->initialized)
+    {
+        /* no items, but more are coming, need a beginPlayback call */
+        needplaycall = true;
+    }
+
+    /* continue loading if the list isn't done yet */
+    if(!MusicDatabase::instance()->initialized)
+        loadplayqueue = true;
+}
+
+void MusicListModel::databaseInitComplete()
+{
+    loadplayqueue = false;
+    needplaycall = false;
 }

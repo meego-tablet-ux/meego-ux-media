@@ -119,6 +119,8 @@ void VideoDatabase::trackerGetVideosFinished(QDBusPendingCallWatcher *call)
      if (reply.isError()||reply.value().isEmpty()) {
          if(reply.isError())
             qDebug() << "QDBus Error: " << reply.error().message();
+         initialized = true;
+         emit databaseInitComplete();
          return;
      }
 

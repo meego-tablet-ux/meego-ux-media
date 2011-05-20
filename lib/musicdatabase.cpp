@@ -297,6 +297,8 @@ void MusicDatabase::trackerGetMusicFinished(QDBusPendingCallWatcher *call)
          else
          {
              targetitemtype = -1;
+             initialized = true;
+             emit databaseInitComplete();
          }
          return;
      }
@@ -315,6 +317,8 @@ void MusicDatabase::trackerGetMusicFinished(QDBusPendingCallWatcher *call)
          else
          {
              targetitemtype = -1;
+             initialized = true;
+             emit databaseInitComplete();
          }
          return;
      }

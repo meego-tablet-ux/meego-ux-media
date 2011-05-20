@@ -320,6 +320,11 @@ void PhotoDatabase::trackerGetPhotosFinished(QDBusPendingCallWatcher *call)
              trackerindex = 0;
              trackerGetPhotos(trackerindex, trackeritems);
          }
+         else
+         {
+             initialized = true;
+             emit databaseInitComplete();
+         }
          return;
      }
 
@@ -333,6 +338,11 @@ void PhotoDatabase::trackerGetPhotosFinished(QDBusPendingCallWatcher *call)
              targetitemtype = MediaItem::PhotoItem;
              trackerindex = 0;
              trackerGetPhotos(trackerindex, trackeritems);
+         }
+         else
+         {
+             initialized = true;
+             emit databaseInitComplete();
          }
          return;
      }
