@@ -202,12 +202,10 @@ Item {
         cacheBuffer: 8000
         flickDeceleration: 250
 
-        delegate: Image {
+        delegate: Item {
             id: dinstance
-            width: gridView.cellWidth-spacing
-            height: gridView.cellHeight-spacing
-
-            asynchronous: true
+            width: gridView.cellWidth
+            height: gridView.cellHeight
 
             property int mindex: index
             property string mtitle
@@ -224,7 +222,6 @@ Item {
             property string maddedtime
 
             property bool misvirtual: (type != 1)?isvirtual:false
-
 
             mtitle:{
                 try {
@@ -320,6 +317,13 @@ Item {
                     return ""
                 }
             }
+
+            Image {
+                width: gridView.cellWidth - spacing
+                height: gridView.cellHeight - spacing
+                anchors.centerIn: parent
+
+            asynchronous: true
 
             Image {
                 id: delegateHeader
@@ -501,6 +505,7 @@ Item {
                     }
                 }
             ]
+        }
         }
 
         Theme { id: theme }
