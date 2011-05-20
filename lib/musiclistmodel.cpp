@@ -128,7 +128,7 @@ void MusicListModel::setType(const int type)
         return;
     case NowPlaying:
         setSort(SortByDefault);
-        connectSignals(false, true, true);
+        connectSignals(true, true, true);
         return;
     case Editor:
         return;
@@ -601,6 +601,7 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
         if((m_type == NowPlaying)&&(needplaycall))
         {
             needplaycall = false;
+            setPlayIndex(0);
             emit beginPlayback();
         }
     }
@@ -1094,6 +1095,7 @@ void MusicListModel::playAllSongs()
         /* if have items, display them and begin playback */
         displayNewItems(newItemList);
         needplaycall = false;
+        setPlayIndex(0);
         emit beginPlayback();
     }
     else if(!MusicDatabase::instance()->initialized)
