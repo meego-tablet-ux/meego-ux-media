@@ -474,6 +474,12 @@ void MediaDatabase::destroyItem(MediaItem *item)
         /* Are you sure? (y/n) */
         QFile f(url.toLocalFile());
         f.remove();
+        if( item->albumitem )
+        {
+            item->albumitem->m_length -= item->m_length;
+            item->albumitem->m_tracknum -= 1;
+            itemChanged( item->albumitem, Contents );
+        }
     }
     else if(item->m_type == MediaItem::MusicAlbumItem)
     {
