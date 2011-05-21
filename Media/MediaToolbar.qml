@@ -78,10 +78,17 @@ Item {
         }
     }
 
-    Image {
-        id: background
+    Item {
         anchors.fill: parent
-        source: "image://themedimage/widgets/common/action-bar/action-bar-background"
+        Theme { id: theme }
+
+        Rectangle {
+            id: background
+            anchors.fill: parent
+            color: theme_mediaGridTitleBackgroundColor
+            opacity: theme_mediaGridTitleBackgroundAlpha
+        }
+
         MediaToolbarButton {
             id: btRewind
             visible: showprev
@@ -285,11 +292,15 @@ Item {
                     text: "0:00"
                 }
             }
-            Image{
+
+            Rectangle{
                 id: divider
                 anchors.right: parent.right
-                source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
                 height: parent.height
+                width: 1
+                // TODO themeing
+                color: "#454646"
+                opacity: 1
             }
         }
         MediaToolbarButton {

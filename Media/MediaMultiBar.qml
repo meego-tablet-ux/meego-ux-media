@@ -17,10 +17,17 @@ Item {
     signal addPressed()
     property int itemwidth: background.width/((showadd)?4:3)
 
-    Image {
-        id: background
+    Item {
         anchors.fill: parent
-        source: "image://themedimage/widgets/common/action-bar/action-bar-background"
+        Theme { id: theme }
+
+        Rectangle {
+            id: background
+            anchors.fill: parent
+            color: theme_mediaGridTitleBackgroundColor
+            opacity: theme_mediaGridTitleBackgroundAlpha
+        }
+
         MediaToolbarButton {
             id: btShare
             anchors.left: parent.left

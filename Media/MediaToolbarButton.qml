@@ -48,11 +48,14 @@ Item{
         fillMode: Image.PreserveAspectCrop
     }
 
-    Image{
+    Rectangle{
         id: divider
         anchors.right: parent.right
-        source: "image://themedimage/widgets/common/action-bar/action-bar-separator"
         height: parent.height
+        width: 1
+        // TODO themeing
+        color: "#454646"
+        opacity: 1
     }
 
     states: [
