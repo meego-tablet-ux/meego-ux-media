@@ -151,6 +151,16 @@ Item {
     signal released(real mouseX, real mouseY, variant payload)
     signal positionChanged(real mouseX, real mouseY, variant payload)
 
+    function setMargins() {
+        var columns = Math.floor(parent.width / cellWidth)
+        var gridWidth = columns * cellWidth
+        var remain = parent.width - gridWidth
+        anchors.leftMargin = Math.floor(remain / 2);
+    }
+
+    Component.onCompleted: setMargins()
+    onWidthChanged: setMargins()
+
     function formatMinutes(time){
         var min = parseInt( time / 60 );
         return min
