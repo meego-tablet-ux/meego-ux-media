@@ -220,6 +220,7 @@ Item {
             property int mlength
             property string martist
             property string maddedtime
+            property int mphotocount
 
             property bool misvirtual: (type != 1)?isvirtual:false
 
@@ -318,6 +319,15 @@ Item {
                 }
             }
 
+            mphotocount: {
+                try {
+                    return photocount;
+                }
+                catch(err) {
+                    return 0
+                }
+            }
+
             Image {
                 width: gridView.cellWidth - spacing
                 height: gridView.cellHeight - spacing
@@ -382,10 +392,35 @@ Item {
                         }
                     }
 
+
+                    Rectangle {
+                        id: metaDataBackground
+                        width: (metaDataText.width + 12 < (wrapper.width / 6))? wrapper.width / 6 : metaDataText.width + 12
+                        height: 24
+                        color: theme_mediaGridTitleBackgroundColor
+                        opacity: theme_mediaGridTitleBackgroundAlpha
+                        anchors.top: wrapper.top
+                        anchors.right: wrapper.right
+                        z: 1
+                        visible: (type == photoalbumtype)
+                        Text {
+                            id: metaDataText
+                            text: mphotocount
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            // TODO: Fix the padding
+                            anchors.topMargin: 4
+                            anchors.rightMargin: 6
+                            font.pixelSize: theme_fontPixelSizeMedium
+                            font.bold: true
+                            color:theme_fontColorMediaHighlight
+                        }
+                    }
+
                     Rectangle {
                         id: textBackground
                         width: wrapper.width
-                        height: 63
+                        height: (type == photoalbumtype)? 34 : 63
                         color: theme_mediaGridTitleBackgroundColor
                         opacity: theme_mediaGridTitleBackgroundAlpha
                         anchors.bottom: wrapper.bottom
