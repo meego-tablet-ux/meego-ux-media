@@ -20,7 +20,7 @@ Item {
     property alias currentItem: previewStrip.currentItem
     property alias model: previewStrip.model
     property alias count: previewStrip.count
-    signal clicked(variant element);
+    signal clicked(variant payload);
 
     function show(disabletimer)
     {
@@ -47,9 +47,13 @@ Item {
     ListView {
         id: previewStrip
 
-        width: Math.min((itemWidth + itemSpacing) * count, parent.width)
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.leftMargin: (parent.width - ((itemWidth + itemSpacing) * count))/2
+        width: parent.width
         orientation: ListView.Horizontal
         height: itemHeight
+        boundsBehavior: Flickable.StopAtBounds
 
         focus: true
         clip: true
