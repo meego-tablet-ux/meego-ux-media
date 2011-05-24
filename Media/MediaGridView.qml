@@ -169,6 +169,7 @@ Item {
     Component {
         id: headerComponent
         Item {
+            anchors.leftMargin: spacing/2
             width: gridView.width
             height: (visible)?container.headerHeight:0
             visible: (container.showHeader && gridView.model.filter != MusicListModel.FilterAll)
