@@ -104,7 +104,6 @@ void ResourceManager::release()
 
 void ResourceManager::resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType>&)
 {
-    qDebug() << "ACQUIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
     m_acquired = true;
     if(m_userwantsplayback)
         emit startPlaying();
@@ -112,7 +111,6 @@ void ResourceManager::resourceAcquiredHandler(const QList<ResourcePolicy::Resour
 
 void ResourceManager::resourceLostHandler()
 {
-    qDebug() << "LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
     m_acquired = false;
     if(m_userwantsplayback)
         emit stopPlaying();
