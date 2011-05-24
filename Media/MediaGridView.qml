@@ -210,7 +210,7 @@ Item {
         interactive: contentHeight > height
         boundsBehavior: Flickable.StopAtBounds
 
-        cacheBuffer: 8000
+        cacheBuffer: 20000
         flickDeceleration: 250
 
         delegate: Item {

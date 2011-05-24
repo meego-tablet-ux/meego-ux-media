@@ -127,6 +127,12 @@ void PhotoListModel::setType(const int type)
             if(tempList[i]->isPhotoAlbum()&&!tempList[i]->isVirtual())
                 newItemList << tempList[i];
     }
+    else if(m_type == ListofVirtualAlbums)
+    {
+        for(int i = 0; i < tempList.count(); i++)
+            if(tempList[i]->isPhotoAlbum()&&tempList[i]->isVirtual())
+                newItemList << tempList[i];
+    }
     else if(m_type == ListofRecentlyViewed)
     {
         m_default_sort = SortByAccessTime;
@@ -262,6 +268,12 @@ void PhotoListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
            if(list->at(i)->isPhotoAlbum()&&!list->at(i)->isVirtual())
+               newItemList << list->at(i);
+    }
+    else if(m_type == ListofVirtualAlbums)
+    {
+        for(int i = 0; i < list->count(); i++)
+           if(list->at(i)->isPhotoAlbum()&&list->at(i)->isVirtual())
                newItemList << list->at(i);
     }
     else if(m_type == ListofRecentlyViewed)
