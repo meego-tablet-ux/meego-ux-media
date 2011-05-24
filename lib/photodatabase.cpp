@@ -130,7 +130,7 @@ void PhotoDatabase::processPhoto(MediaItem *item)
         return;
 
     /* this photo's an orphan, add it to a virtual album */
-    QString timestring = (item->m_creationtime.isEmpty())?item->m_addedtime:item->m_creationtime;
+    QString timestring = (item->m_creationtime.isEmpty())?item->m_addedtime.toString(Qt::ISODate):item->m_creationtime;
     if(timestring.isEmpty())
         return;
 
@@ -155,7 +155,7 @@ void PhotoDatabase::processPhoto(MediaItem *item)
         albumitem->m_thumburi = item->m_thumburi;
         albumitem->m_thumburi_ignore = item->m_thumburi_ignore;
         albumitem->m_thumburi_exists = item->m_thumburi_exists;
-        albumitem->m_addedtime = timestring;
+        albumitem->m_addedtime = QDateTime::fromString(timestring, Qt::ISODate);
         albumitem->m_creationtime = timestring;
         mediaItemsList << albumitem;
         albumItemsHash.insert(name, albumitem);

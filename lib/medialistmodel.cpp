@@ -781,8 +781,8 @@ bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
         }
         else
         {
-            xtime = QDateTime::fromString(x->m_addedtime, Qt::ISODate);
-            ytime = QDateTime::fromString(y->m_addedtime, Qt::ISODate);
+            xtime = x->m_addedtime;
+            ytime = y->m_addedtime;
         }
         return(ytime > xtime);
     }
@@ -831,11 +831,11 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
             if((sort == SortByAccessTime)||(sort == SortByUnwatched))
                 ptime = QDateTime::fromString(list[i]->m_lastplayedtime, Qt::ISODate);
             else if((sort == SortByAddedTime)||(sort ==SortByFavorite))
-                ptime = QDateTime::fromString(list[i]->m_addedtime, Qt::ISODate);
+                ptime = list[i]->m_addedtime;
             else if(!list[i]->m_creationtime.isEmpty())
                 ptime = QDateTime::fromString(list[i]->m_creationtime, Qt::ISODate);
             else
-                ptime = QDateTime::fromString(list[i]->m_addedtime, Qt::ISODate);
+                ptime = list[i]->m_addedtime;
             map.insertMulti(ptime, list[i]);
         }
 

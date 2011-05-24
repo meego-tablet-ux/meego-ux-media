@@ -135,7 +135,7 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     m_urn = args.at(IDX_URN);
     if(!args.at(IDX_SUBJECTID).isEmpty())
         m_sid = args.at(IDX_SUBJECTID).toInt();
-    m_addedtime = args.at(IDX_ADDTIME);
+    m_addedtime = QDateTime::fromString(args.at(IDX_ADDTIME), Qt::ISODate);
     m_lastplayedtime = args.at(IDX_VIEWED);
     m_favorite = (args.at(IDX_FAVORITE) == "favorite");
 
@@ -309,11 +309,10 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
 
     /* calculate recently added and recently viewed */
     QDateTime ctime = QDateTime::currentDateTime();
-    if(!m_addedtime.isEmpty())
+    if(m_addedtime.isValid())
     {
         /* if item was added within X days ago it's recent */
-        QDateTime atime = QDateTime::fromString(m_addedtime, Qt::ISODate);
-        if(ctime.daysTo(atime) > DAYSRECENT)
+        if(ctime.daysTo(m_addedtime) > DAYSRECENT)
             m_recentlyadded = true;
     }
     if(!m_lastplayedtime.isEmpty())
@@ -326,8 +325,8 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
 
     if(!m_creationtime.isEmpty())
         m_timestamp = QDateTime::fromString(m_creationtime, Qt::ISODate);
-    else if(!m_addedtime.isEmpty())
-        m_timestamp = QDateTime::fromString(m_addedtime, Qt::ISODate);
+    else if(m_addedtime.isValid())
+        m_timestamp = m_addedtime;
 }
 
 QString MediaItem::stripInvalidEntities(const QString &src)
