@@ -6,12 +6,14 @@ ResourceManager::ResourceManager(QObject *parent) :
     QObject(parent)
 {
     m_type = -1;
-    ready = false;
+    m_ready = false;
+    m_userwantsplayback = false;
+    m_acquired = false;
 }
 
 ResourceManager::~ResourceManager()
 {
-    if(ready)
+    if(m_ready)
         resourceSet->release();
 }
 
@@ -33,9 +35,8 @@ void ResourceManager::startup()
     connect(resourceSet, SIGNAL(resourcesGranted(const QList<ResourcePolicy::ResourceType>&)),
             this,        SLOT(resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType>&)));
     connect(resourceSet, SIGNAL(lostResources()),     this, SLOT(resourceLostHandler()));
-    connect(resourceSet, SIGNAL(resourcesReleased()), this, SLOT(resourceReleasedHandler()));
 
-    ready = true;
+    m_ready = true;
 }
 
 void ResourceManager::setType(const int type)
@@ -46,7 +47,7 @@ void ResourceManager::setType(const int type)
     m_type = type;
     emit typeChanged(m_type);
 
-    if(!ready&&!m_name.isEmpty())
+    if(!m_ready&&!m_name.isEmpty())
         startup();
 }
 
@@ -58,8 +59,30 @@ void ResourceManager::setName(const QString &name)
     m_name = name;
     emit nameChanged(m_name);
 
-    if(!ready&&(m_type >= 0))
+    if(!m_ready&&(m_type >= 0))
         startup();
+}
+
+void ResourceManager::setUserwantsplayback(const bool userwantsplayback)
+{
+    if(!m_ready)
+        return;
+
+    m_userwantsplayback = userwantsplayback;
+    emit userwantsplaybackChanged(m_userwantsplayback);
+
+    if(userwantsplayback)
+    {
+        if(m_acquired)
+            emit startPlaying();
+        else
+            acquire();
+    }
+    else
+    {
+        if(m_acquired)
+            release();
+    }
 }
 
 void ResourceManager::acquire()
@@ -76,21 +99,21 @@ void ResourceManager::acquire()
 void ResourceManager::release()
 {
     resourceSet->release();
+    m_acquired = false;
 }
 
-void ResourceManager::resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType>& /*grantedOptionalResList*/)
+void ResourceManager::resourceAcquiredHandler(const QList<ResourcePolicy::ResourceType>&)
 {
-    qDebug("PlayerWidget::resourceAcquiredHandler()");
-    emit acquired();
-}
-
-void ResourceManager::resourceReleasedHandler()
-{
-    qDebug("PlayerWidget::resourceReleasedHandler()");
+    qDebug() << "ACQUIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    m_acquired = true;
+    if(m_userwantsplayback)
+        emit startPlaying();
 }
 
 void ResourceManager::resourceLostHandler()
 {
-    qDebug("PlayerWidget::resourceLostHandler()");
-    emit lost();
+    qDebug() << "LOST!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    m_acquired = false;
+    if(m_userwantsplayback)
+        emit stopPlaying();
 }
