@@ -34,7 +34,8 @@ public:
                       PhotoAlbum = 3,
                       Editor = 4,
                       ListofUserAlbums = 5,
-                      ListofUserPhotos = 6
+                      ListofUserPhotos = 6,
+                      ListofVirtualAlbums = 7
                    };
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
