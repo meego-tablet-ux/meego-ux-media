@@ -8,13 +8,13 @@ QT += declarative \
     sql
 CONFIG += \
     qt \
-    meegotouch \
     dbus \
     link_pkgconfig \
     mobility
 PKGCONFIG += \
     gconf-2.0 \
     libresourceqt1 \
+    mlite \
     libexif
 MOBILITY = publishsubscribe
 TARGET = $$qtLibraryTarget($$TARGET)
