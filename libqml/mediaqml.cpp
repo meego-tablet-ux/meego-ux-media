@@ -10,6 +10,7 @@
 #include "musiclistmodel.h"
 #include "photolistmodel.h"
 #include "videolistmodel.h"
+#include "documentlistmodel.h"
 #include "playlistimageprovider.h"
 #include "resourcemanager.h"
 
@@ -19,6 +20,7 @@ void MediaQML::registerTypes(const char *uri)
     qmlRegisterType<MusicListModel>(uri, 0, 0, "MusicListModel");
     qmlRegisterType<PhotoListModel>(uri, 0, 0, "PhotoListModel");
     qmlRegisterType<VideoListModel>(uri, 0, 0, "VideoListModel");
+    qmlRegisterType<DocumentListModel>(uri, 0, 0, "DocumentListModel");
     qmlRegisterType<ResourceManager>(uri, 0, 0, "ResourceManager");
 }
 

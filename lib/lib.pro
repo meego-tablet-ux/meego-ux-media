@@ -24,6 +24,8 @@ MOC_DIR = .moc
 
 # Input
 SOURCES += \
+    documentdatabase.cpp \
+    documentlistmodel.cpp \
     mediadatabase.cpp \
     mediainfodownloader.cpp \
     mediaitem.cpp \
@@ -41,6 +43,7 @@ SOURCES += \
 # these are the external interfaces exposed to clients in /usr/include
 INSTALL_HEADERS += \
     mediaitem.h \
+    documentlistmodel.h \
     medialistmodel.h \
     musiclistmodel.h \
     photolistmodel.h \
@@ -50,6 +53,7 @@ INSTALL_HEADERS += \
 # these are implementation details
 HEADERS += \
     $$INSTALL_HEADERS \
+    documentdatabase.h \
     mediadatabase.h \
     mediainfodownloader.h \
     musicdatabase.h \

@@ -6,3 +6,5 @@ libMedia.so
 */.obj
 meego-ux-media-*.tar.bz2
 libmediaplugin.so
+documentPickerDemo-build-meego/
+meego-ux-media.pro.user*
