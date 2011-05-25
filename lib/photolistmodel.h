@@ -84,7 +84,7 @@ protected:
     QString m_coveruri;
     bool isVirtualAlbum;
 
-    void saveAlbum(const QString &title);
+    void saveAlbum(const QString &title, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved);
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
 };
