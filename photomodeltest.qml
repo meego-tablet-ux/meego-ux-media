@@ -188,7 +188,7 @@ Window {
                                         height: 100
                                     }
                                     Text {
-                                        text: title + "\n" + ((creationtime == "")?addedtime:creationtime)
+                                        text: title + "\n" + ((creationtime == "")?Qt.formatDateTime(addedtime,Qt.ISODate):creationtime)
                                         color: "white"
                                         anchors.top: colthumb.top
                                         anchors.left: colthumb.left

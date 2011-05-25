@@ -300,7 +300,7 @@ class MediaItem: public QObject {
     Q_PROPERTY(int length READ getLength);
     Q_PROPERTY(QString camera READ getCamera);
     Q_PROPERTY(QString creationtime READ getCreationTime);
-    Q_PROPERTY(QString addedtime READ getAddedTime);
+    Q_PROPERTY(QDateTime addedtime READ getAddedTime);
     Q_PROPERTY(QString lastplayedtime READ getLastPlayedTime);
     Q_PROPERTY(bool favorite READ getFavorite);
     Q_PROPERTY(bool recentlyadded READ getRecentlyAdded);
@@ -427,7 +427,7 @@ public:
         { return m_camera; }
     QString getCreationTime() const
         { return m_creationtime; }
-    QString getAddedTime() const
+    QDateTime getAddedTime() const
         { return m_addedtime; }
     QString getLastPlayedTime() const
         { return m_lastplayedtime; }
@@ -461,7 +461,7 @@ public:
     QStringList m_thumburilist;
     QString m_creationtime;
     QDateTime m_timestamp;
-    QString m_addedtime;
+    QDateTime m_addedtime;
     QString m_lastplayedtime;
     QStringList m_artist_urn;
     QString m_album_urn;
