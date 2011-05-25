@@ -262,6 +262,8 @@ bool MediaListModel::isFavorite(const QString &id)
 
 void MediaListModel::setSelected(const QString &id, bool selected)
 {
+    qDebug() << Q_FUNC_INFO << "id" << id << selected;
+
     MediaItem *item = NULL;
     int idx = -1;
 

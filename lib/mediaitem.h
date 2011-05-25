@@ -273,6 +273,41 @@
 #define IDX_VID_USER       IDX_CUSTOM_BEGIN + 4
 #define VID_ARGS           IDX_VID_USER + 1
 
+/* DOCUMENTS */
+
+#define TRACKER_DOCUMENT_ONTOLOGY "nfo:PaginatedTextDocument"
+#define TRACKER_ALLDOCUMENTS "SELECT ?document tracker:id(?document) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
+        "nie:url(nie:isStoredAs(?document)) nie:title(?document) nfo:duration(?document) nie:mimeType(?document) " \
+        "nie:comment(?document) WHERE{?document a "TRACKER_DOCUMENT_ONTOLOGY";tracker:added ?_added " \
+        ". OPTIONAL {?document nao:hasTag ?tagf . ?tagf nao:identifier 'favorite' } " \
+        ". OPTIONAL {?document nao:hasTag ?tagv . ?tagv nao:identifier 'viewed' . }} " \
+        "ORDER BY nie:url(nie:isStoredAs(?document)) LIMIT %1 OFFSET %2";
+#define TRACKER_DOCUMENT  "SELECT ?document tracker:id(?document) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
+        "nie:url(nie:isStoredAs(?document)) nie:title(?document) nfo:duration(?document) nie:mimeType(?document) " \
+        "nie:comment(?document) WHERE{?document a "TRACKER_DOCUMENT_ONTOLOGY";tracker:added ?_added " \
+        ". FILTER (str(?document) = '%1') " \
+        ". OPTIONAL {?document nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?document nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
+#define TRACKER_DOCUMENT_URL  "SELECT ?document tracker:id(?document) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
+        "nie:url(nie:isStoredAs(?document)) nie:title(?document) nfo:duration(?document) nie:mimeType(?document) " \
+        "nie:comment(?document) WHERE{?document a "TRACKER_DOCUMENT_ONTOLOGY";tracker:added ?_added " \
+        ". FILTER (nie:url(?document) = '%1') " \
+        ". OPTIONAL {?document nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?document nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
+#define TRACKER_DOCUMENT_SID  "SELECT ?document tracker:id(?document) ?_added nao:prefLabel(?tagv) nao:prefLabel(?tagf) " \
+        "nie:url(nie:isStoredAs(?document)) nie:title(?document) nfo:duration(?document) nie:mimeType(?document) " \
+        "nie:comment(?document) WHERE{?document a "TRACKER_DOCUMENT_ONTOLOGY";tracker:added ?_added " \
+        ". FILTER (tracker:id(?document) = '%1') " \
+        ". OPTIONAL {?document nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+        ". OPTIONAL {?document nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
+
+#define IDX_DOC_URI        IDX_CUSTOM_BEGIN
+#define IDX_DOC_TITLE      IDX_CUSTOM_BEGIN + 1
+#define IDX_DOC_DURATION   IDX_CUSTOM_BEGIN + 2
+#define IDX_DOC_MIME       IDX_CUSTOM_BEGIN + 3
+#define IDX_DOC_USER       IDX_CUSTOM_BEGIN + 4
+#define DOC_ARGS           IDX_DOC_USER + 1
+
 #define TRACKER_SERVICE       "org.freedesktop.Tracker1"
 #define TRACKER_PATH          "/org/freedesktop/Tracker1/Resources"
 #define TRACKER_INTERFACE     "org.freedesktop.Tracker1.Resources"
@@ -357,7 +392,8 @@ public:
         MusicPlaylistItem = 5,
         VideoItem = 6,
         TVShowItem = 7,
-        MusicVideoItem = 8
+        MusicVideoItem = 8,
+        DocumentItem = 9
     };
 
     enum ThumbType {
@@ -366,7 +402,8 @@ public:
         AlbumThumb = 2,
         ArtistThumb = 3,
         VideoThumb = 4,
-        PlaylistThumb = 5
+        PlaylistThumb = 5,
+        DocumentThumb = 6
     };
 
     void changeData(QDateTime recenttime, QStringList args);
@@ -391,6 +428,8 @@ public:
         { return (m_type == MusicArtistItem); }
     bool isMusicPlaylist()
         { return (m_type == MusicPlaylistItem); }
+    bool isDocument()
+        { return (m_type == DocumentItem); }
     bool isVirtual()
         { return m_isvirtual; }
 

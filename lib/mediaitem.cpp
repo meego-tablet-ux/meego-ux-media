@@ -306,6 +306,47 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
             m_title = temp.last();
         }
     }
+    else if(isDocument() && (args.count() == DOC_ARGS))
+    {
+        m_uri = (QUrl::fromEncoded(args.at(IDX_DOC_URI).toAscii())).toString();
+        m_title = (QUrl::fromEncoded(args.at(IDX_DOC_TITLE).toAscii())).toString();
+        if(!args.at(IDX_DOC_DURATION).isEmpty())
+            m_length = args.at(IDX_DOC_DURATION).toInt();
+        m_mimetype = args.at(IDX_DOC_MIME);
+        if(args.at(IDX_DOC_USER) == USER_CONTENT_STRING)
+            m_isusercontent = true;
+
+        if(!m_uri.isEmpty())
+        {
+            m_thumbtype = DocumentThumb;
+            QString ext = QFileInfo(m_uri).suffix();
+            if (ext=="docx") {
+                m_thumburi="image://themedimage/images/media/icn_ms_word";
+                m_thumburi_exists = true;
+                m_thumburi_ignore = false;
+            } else
+            if (ext=="pdf") {
+                m_thumburi="image://themedimage/images/media/icn_adobe_pdf";
+                m_thumburi_exists = true;
+                m_thumburi_ignore = false;
+            } else
+            if(ext=="txt") {
+                m_thumburi="image://themedimage/images/media/icn_plain_txt";
+                m_thumburi_exists = true;
+                m_thumburi_ignore = false;
+            }
+
+//            m_thumburi = thumbPhoto(m_uri);
+//            m_thumburi_ignore = false;
+//            if(thumbExists())
+//                m_thumburi_exists = true;
+        }
+        if(m_title.isEmpty()&&!m_uri.isEmpty())
+        {
+            QStringList temp = m_uri.split("/", QString::SkipEmptyParts);
+            m_title = temp.last();
+        }
+    }
 
     /* calculate recently added and recently viewed */
     QDateTime ctime = QDateTime::currentDateTime();
