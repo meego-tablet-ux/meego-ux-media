@@ -85,8 +85,8 @@ Item {
     }
 
     Image {
-        width: gridView.cellWidth - spacing
-        height: gridView.cellHeight - spacing
+        width: 104
+        height: width
         anchors.centerIn: parent
 
         asynchronous: true
