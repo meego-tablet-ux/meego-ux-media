@@ -43,9 +43,9 @@ MusicListModel::MusicListModel(QObject *parent)
     m_mix = 0;
     m_playindex = -1;
     m_playstatus = Stopped;
-    shuffleindex = 0;
     loadplayqueue = false;
     needplaycall = false;
+    m_shuffle = false;
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
     connect(MusicDatabase::instance(),SIGNAL(songItemAvailable(const QString)),this,SIGNAL(songItemAvailable(const QString)));
@@ -81,6 +81,7 @@ void MusicListModel::clearData()
     urnSortList.clear();
     loadplayqueue = false;
     needplaycall = false;
+    m_shuffle = false;
 
     if(!mediaItemsDisplay.isEmpty())
     {
@@ -1060,69 +1061,41 @@ void MusicListModel::changeTitleByURN(QString urn, QString title)
             emit dataChanged(index(i, 0), index(i, 0));
 }
 
-/* create a random shuffle path for the play queue */
-void MusicListModel::shuffleReset()
+void MusicListModel::setShuffle(const bool shuffle)
 {
-    int count = mediaItemsDisplay.count();
-
-    /* the count changed, clear the old shuffle path */
-    shuffler.clear();
-    shuffleindex = 0;
-
-    /* initialize a straight path, with space for the next one */
-    for(int i = 0; i < count*2; i++)
-        shuffler << i%count;
-
-    /* randomize the current path */
-    for(int i = 0; i < count; i++)
-        shuffler.swap(rand()%count, rand()%count);
-
-    /* randomize the next path */
-    for(int i = 0; i < count; i++)
-        shuffler.swap(count+(rand()%count), count+(rand()%count));
-
-    /* if current last = next first, change it */
-    if(shuffler[count-1] == shuffler[count])
-        shuffler.swap(count, (count*2)-1);
-}
-
-/* return the next shuffled index */
-int MusicListModel::shuffleIndex(int offset)
-{
-    if((mediaItemsDisplay.count() <= 0)||(offset < 0)||(offset > 2))
-        return -1;
-
-    if(shuffler.count() != mediaItemsDisplay.count()*2)
-        shuffleReset();
-
-    return shuffler[shuffleindex + offset];
-}
-
-void MusicListModel::shuffleIncrement()
-{
-    int count = mediaItemsDisplay.count();
-    if(shuffler.count() != count*2)
+    if(m_type != NowPlaying)
     {
-        shuffleReset();
+        qDebug() << "playAllSongs only works for the NowPlaying queue";
         return;
     }
 
-    /* the new index is dipping into the next path */
-    if(++shuffleindex >= count)
+    if(m_shuffle == shuffle)
+        return;
+
+    m_shuffle = shuffle;
+
+    if(m_shuffle)
     {
-        /* move the next path to the current path */
-        shuffleindex = 0;
-        for(int i = 0; i < count; i++)
-            shuffler[i] = shuffler[i+count];
+        MediaItem *item = NULL;
+        if((m_playindex >= 0)&&(m_playindex < mediaItemsList.count()))
+            item = mediaItemsList[m_playindex];
 
-        /* randomize the next path */
+        int count = mediaItemsDisplay.count();
         for(int i = 0; i < count; i++)
-            shuffler.swap(count+(rand()%count), count+(rand()%count));
+        {
+            int idx1 = rand()%count;
+            int idx2 = rand()%count;
+            mediaItemsList.swap(idx1, idx2);
+            mediaItemsDisplay.swap(idx1, idx2);
+        }
 
-        /* if current last = next first, change it */
-        if(shuffler[count-1] == shuffler[count])
-            shuffler.swap(count, (count*2)-1);
+        if(item != NULL)
+            m_playindex = mediaItemsList.indexOf(item);
+
+        redisplay();
     }
+
+    emit shuffleChanged(m_shuffle);
 }
 
 void MusicListModel::playAllSongs()

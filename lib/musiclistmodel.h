@@ -29,6 +29,7 @@ class MusicListModel: public MediaListModel
     Q_PROPERTY(QStringList urns READ getURNs WRITE setURNs NOTIFY urnsChanged);
     Q_PROPERTY(int playindex READ getPlayIndex WRITE setPlayIndex NOTIFY playIndexChanged);
     Q_PROPERTY(int playstatus READ getPlayStatus WRITE setPlayStatus NOTIFY playStatusChanged);
+    Q_PROPERTY(bool shuffle READ getShuffle WRITE setShuffle NOTIFY shuffleChanged);
 
 public:
     MusicListModel(QObject *parent = 0);
@@ -82,6 +83,9 @@ public:
     int getPlayStatus() const
         { return m_playstatus; }
     void setPlayStatus(const int status);
+    bool getShuffle() const
+        { return m_shuffle; }
+    void setShuffle(const bool shuffle);
 
 public slots:
     /* view calls for all models */
@@ -105,8 +109,7 @@ public slots:
     void savePlaylist(const QString &title);
     void clear();
     void clearPlaylist();
-    int shuffleIndex(int offset);
-    void shuffleIncrement();
+    void shufflePlayqueue(bool enable);
 
 signals:
     void typeChanged(const int type);
@@ -118,6 +121,7 @@ signals:
     void urnsChanged(const QStringList urns);
     void playIndexChanged(const int playindex);
     void playStatusChanged(const int playstatus);
+    void shuffleChanged(const bool shuffle);
     void beginPlayback();
 
 protected slots:
@@ -131,7 +135,6 @@ protected:
     QList<MediaItem *> unwrapItem(const QList<MediaItem *> &snapshot, MediaItem *item);
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
-    void shuffleReset();
 
     void savePlaylist(const QString &playlist, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved);
 
@@ -145,10 +148,9 @@ protected:
     QString m_playlist;
     QStringList m_urns;
     QStringList m_albums;
-    QList<int> shuffler;
-    int shuffleindex;
     bool loadplayqueue;
     bool needplaycall;
+    bool m_shuffle;
 };
 
 #endif // MUSICLISTMODEL_H
