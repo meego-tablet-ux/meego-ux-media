@@ -24,7 +24,6 @@ public:
     void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void saveAlbum(QList<MediaItem *> &list, const QString &title);
-    void updateAlbum(QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved, const QString &title);
     QList<MediaItem *> loadAlbum(const QString &title);
     MediaItem* getAlbumItem(const QString &title);
     void destroyItem(MediaItem *item);
@@ -40,6 +39,8 @@ private:
     static PhotoDatabase *photoDatabaseInstance;
     Thumbnailer thumb;
     QHash<QString, MediaItem *> albumItemsHash;
+
+    void updateAlbum(MediaItem *item, QList<MediaItem *> &newList);
 
     /* tracker calls */
     void trackerGetPhotos(const int offset, const int limit);

@@ -190,7 +190,7 @@ void PhotoListModel::setAlbum(const QString &album)
     emit albumChanged(m_album);
 }
 
-void PhotoListModel::saveAlbum(const QString &album, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved)
+void PhotoListModel::saveAlbum(const QString &album)
 {
     if(m_type != PhotoAlbum)
     {
@@ -213,19 +213,14 @@ void PhotoListModel::saveAlbum(const QString &album, QList<MediaItem *> itemsAdd
     else
         m_album = album;
 
-    // if no changes, then save the album else update it
-    if (itemsAdded.isEmpty() && itemsRemoved.isEmpty()) {
-        PhotoDatabase::instance()->saveAlbum(mediaItemsList, m_album);
-    } else {
-        PhotoDatabase::instance()->updateAlbum(itemsAdded, itemsRemoved, m_album);
-    }
+    PhotoDatabase::instance()->saveAlbum(mediaItemsList, m_album);
     connectSignals(true, true, true);
     emit albumChanged(m_album);
 }
 
 void PhotoListModel::saveAlbum()
 {
-  saveAlbum(m_album, QList< MediaItem* >(), QList< MediaItem* >());
+  saveAlbum(m_album);
 }
 
 QStringList PhotoListModel::getAllURIs()
@@ -411,7 +406,7 @@ void PhotoListModel::addItems(const QStringList &ids)
     if (!newItemList.isEmpty()) {
       displayNewItems(newItemList);
       if(m_type == PhotoAlbum)
-          saveAlbum(m_album, newItemList, QList< MediaItem* >());
+          saveAlbum(m_album);
     }
 }
 
@@ -441,7 +436,7 @@ void PhotoListModel::removeItems(const QStringList &ids)
         }
         mediaItemsList.removeAll(deleteItemList[i]);
     }
-    saveAlbum(m_album,QList< MediaItem* >(), deleteItemList);
+    saveAlbum(m_album);
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
 }
@@ -482,9 +477,7 @@ void PhotoListModel::removeIndex(const int index)
             break;
         }
     }
-    QList< MediaItem* > itemsRemoved;
-    itemsRemoved.append(item);
-    saveAlbum(m_album,QList< MediaItem* >(),itemsRemoved);
+    saveAlbum(m_album);
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
 }

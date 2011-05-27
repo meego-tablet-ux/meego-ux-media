@@ -390,11 +390,13 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
 
     QString SqlCmd, sql;
 
-    /* if this is an overwrite of an existing album, delete it first */
+    /* if this is an update of an existing album */
     if(item != NULL)
     {
-        SqlCmd = "DELETE { ?album a nmm:ImageList } WHERE { ?album a nmm:ImageList . FILTER (nie:title(?album) = '%1')} ";
-        sql = QString(SqlCmd).arg(title);
+        updateAlbum(item, list);
+        return;
+        // SqlCmd = "DELETE { ?album a nmm:ImageList } WHERE { ?album a nmm:ImageList . FILTER (nie:title(?album) = '%1')} ";
+        // sql = QString(SqlCmd).arg(title);
     }
 
     /* create a new album */
@@ -475,20 +477,10 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
         }
     }
 }
-void PhotoDatabase::updateAlbum(QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved, const QString &title)
+void PhotoDatabase::updateAlbum(MediaItem *item, QList<MediaItem *> &newList)
 {
-    /* see if the album already exists */
-    MediaItem *item = NULL;
-    for(int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->isPhotoAlbum()&&(mediaItemsList[i]->m_title == title))
-            item = mediaItemsList[i];
-
-    if(item == NULL) {
-        saveAlbum(itemsAdded, title);
-        return;
-    }
-    // qDebug() << "Album: " << title;
-    updateMediaList(item, itemsAdded, itemsRemoved);
+    // qDebug() << "Album: " << item->m_title;
+    updateMediaList(item, newList);
 
     QStringList temp;
     temp << item->m_id;

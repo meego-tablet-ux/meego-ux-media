@@ -24,7 +24,6 @@ public:
     void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void savePlaylist(QList<MediaItem *> &list, const QString &title);
-    void updatePlaylist(QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved, const QString &title);
     QStringList loadPlaylist(const QString &title, bool bytitle = true);
     MediaItem* getArtistItem(const QString &title);
     MediaItem* getPlaylistItem(const QString &title);
@@ -50,6 +49,7 @@ private:
     void processSong(MediaItem *item);
     void trackerAddItems(int type, QVector<QStringList> trackerreply, int priority=0);
     MediaItem* getAlbumItem(QString artist, QString album);
+    void updatePlaylist(MediaItem *item, QList<MediaItem *> &list);
     /* unique title variables */
     QHash<QString, int> titleCountHash;
     void createPlaylistThumb(QList<MediaItem *> &list, const QString &title);

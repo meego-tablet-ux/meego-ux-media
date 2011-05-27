@@ -464,32 +464,6 @@ void MusicListModel::savePlaylist(const QString &playlist)
     connectSignals(false, true, true);
     emit playlistChanged(m_playlist);
 }
-void MusicListModel::savePlaylist(const QString &playlist, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved)
-{
-    if(m_type != MusicPlaylist && m_type != NowPlaying)
-    {
-        qDebug() << "You can't save this model";
-        return;
-    }
-
-    if(playlist.isEmpty())
-    {
-        QDateTime time = QDateTime();
-        time.setTimeSpec(Qt::LocalTime);
-        m_playlist = time.currentDateTime().toString(Qt::ISODate);
-    }
-    else
-        m_playlist = playlist;
-
-    // if no changes, then save the playlist else update it
-    if (itemsAdded.isEmpty() && itemsRemoved.isEmpty()) {
-        MusicDatabase::instance()->savePlaylist(mediaItemsList, m_playlist);
-    } else {
-        MusicDatabase::instance()->updatePlaylist(itemsAdded, itemsRemoved, m_playlist);
-    }
-    connectSignals(false, true, true);
-    emit playlistChanged(m_playlist);
-}
 
 QStringList MusicListModel::getPlaylistThumbs(int num)
 {
@@ -777,7 +751,7 @@ void MusicListModel::addItems(const QStringList &ids)
         }
     }
     if (m_type == MusicPlaylist) {
-        savePlaylist(m_playlist, newItemListFull, QList< MediaItem* >());
+        savePlaylist(m_playlist);
     }
 }
 
@@ -806,7 +780,7 @@ void MusicListModel::removeItems(const QStringList &ids)
     }
 
     if (m_type == MusicPlaylist) {
-        savePlaylist(m_playlist, QList< MediaItem* >(), deleteItemList);
+        savePlaylist(m_playlist);
     }
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
@@ -841,12 +815,10 @@ void MusicListModel::removeIndex(const int index)
     /* the assumption is that no sort or filter is set on this model */
     /* therefore the master and display lists should be the same */
     removeRows(index, 1);
-    if (m_type == MusicPlaylist) {
-        QList<MediaItem *> deleteItemList;
-        deleteItemList << mediaItemsList.value(index);
-        savePlaylist(m_playlist, QList< MediaItem* >(), deleteItemList);
-    }
     mediaItemsList.removeAt(index);
+    if (m_type == MusicPlaylist) {
+        savePlaylist(m_playlist);
+    }
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
 }
@@ -933,10 +905,8 @@ void MusicListModel::clearPlaylist()
         qDebug() << "You can't call clearPlaylist for non-playlist model";
         return;
     }
-    QList<MediaItem *> itemsRemoved = mediaItemsList;
     clear();
-    QList<MediaItem *> itemsAdded;
-    MusicDatabase::instance()->updatePlaylist(itemsAdded, itemsRemoved, m_playlist);
+    savePlaylist(m_playlist);
 }
 
 QVariant MusicListModel::data(const QModelIndex &index, int role) const
