@@ -69,6 +69,16 @@ MediaItem* MusicDatabase::getArtistItem(const QString &title)
 
     return artistItemHash[title];
 }
+MediaItem* MusicDatabase::getPlaylistItem(const QString &title)
+{
+    if(title.isEmpty())
+        return NULL;
+
+    if(!playlistItemHash.contains(title))
+        return NULL;
+
+    return playlistItemHash[title];
+}
 
 MediaItem* MusicDatabase::getAlbumItem(QString artist, QString album)
 {
@@ -248,6 +258,11 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          mediaItemsSidHash.insert(item->m_sid, item);
          if(type == MediaItem::MusicArtistItem)
              artistItemHash.insert(item->m_title, item);
+         if(type == MediaItem::MusicPlaylistItem) {
+             playlistItemHash.insert(item->m_title, item);
+             // Get playlist songs
+             item->children = loadPlaylist(item->m_urn, false);
+         }
 
          /* if this is an album or artist (from a command line call) get the thumb */
          if(!disable_mediaart&&
@@ -468,6 +483,29 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
             trackerAddItems(MediaItem::MusicPlaylistItem, info);
         }
     }
+}
+void MusicDatabase::updatePlaylist(QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved, const QString &title)
+{
+    /* see if the playlist already exists */
+    MediaItem *item = NULL;
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->isMusicPlaylist()&&(mediaItemsList[i]->m_title == title))
+            item = mediaItemsList[i];
+
+    if(item == NULL) {
+        savePlaylist(itemsAdded, title);
+        return;
+    }
+    updateMediaList(item, itemsAdded, itemsRemoved);
+
+    QList<MediaItem *> list = getItemsByURN(item->children);
+    createPlaylistThumb(list, title);
+    generatePlaylistThumbId(item);
+    item->m_thumburi_exists = true;
+
+    QStringList temp;
+    temp << item->m_id;
+    emit itemsChanged(temp, MusicDatabase::Contents);
 }
 
 QStringList MusicDatabase::loadPlaylist(const QString &title, bool bytitle)

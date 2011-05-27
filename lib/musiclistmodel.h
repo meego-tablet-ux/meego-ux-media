@@ -104,6 +104,7 @@ public slots:
     void removeIndex(const int index);
     void savePlaylist(const QString &title);
     void clear();
+    void clearPlaylist();
     int shuffleIndex(int offset);
     void shuffleIncrement();
 
@@ -131,6 +132,8 @@ protected:
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
     void shuffleReset();
+
+    void savePlaylist(const QString &playlist, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved);
 
     /* properties for this model */
     int m_type;

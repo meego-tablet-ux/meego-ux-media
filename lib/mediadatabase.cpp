@@ -776,3 +776,41 @@ void MediaDatabase::itemChanged(MediaItem *item, int reason)
     newItemsList << item->m_id;
     emit itemsChanged(newItemsList, reason);
 }
+void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved)
+{
+    // qDebug() << "Current list: " << mediaList->children;
+    // qDebug() << "Items to add: " << itemsAdded;
+    // qDebug() << "Items to remove: " << itemsRemoved;
+    QString sql = "";
+    if (!itemsRemoved.isEmpty()) {
+        QString remove = "DELETE { ?entry a nfo:MediaFileListEntry} WHERE { <%1> nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?value . FILTER (?value IN(";
+        QString removeEntry = "'%1',";
+        sql += remove.arg(mediaList->m_urn);
+        foreach (MediaItem * i, itemsRemoved) {
+            sql += removeEntry.arg(i->m_urn);
+            mediaList->children.removeAll(i->m_urn);
+        }
+        // remove the last ','
+        sql.chop(1);
+        sql += "))};";
+    }
+    int addIndex = mediaList->children.count();
+    if (!itemsAdded.isEmpty()) {
+        QString insert = "INSERT DATA { <%1> ";
+        QString insertEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition '%2'];";
+        sql += insert.arg(mediaList->m_urn);
+        foreach(MediaItem *i, itemsAdded) {
+            mediaList->children.append(i->m_urn);
+            sql += insertEntry.arg(i->m_urn).arg(addIndex);
+            addIndex++;
+        }
+        // remove the last ';'
+        sql.chop(1);
+        sql += "};";
+    }
+    // qDebug() << "New list: " << mediaList->children;
+    QString updateCounter = "INSERT OR REPLACE DATA { <%1> nfo:entryCounter '%2'}";
+    sql += updateCounter.arg(mediaList->m_urn).arg(mediaList->children.count());
+    qDebug() << sql;
+    trackerCallAsync(sql);
+}
