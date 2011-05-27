@@ -134,6 +134,9 @@ Item {
     property int borderImageRight: 0
     property int borderImageInnerMargin: 0
 
+    property alias cellWidth: gridView.cellWidth
+    property alias cellHeight: gridView.cellHeight
+
     property alias model: gridView.model
     property alias header: gridView.header
     property alias footer: gridView.footer
