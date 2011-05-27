@@ -142,21 +142,12 @@ Item {
     property alias count: gridView.count
     property alias snapMode: gridView.snapMode
     property alias theGridView: gridView
-    property int contHeight: 0
 
     signal clicked(real mouseX, real mouseY, variant payload)
     signal longPressAndHold(real mouseX, real mouseY, variant payload)
     signal doubleClicked(real mouseX, real mouseY, variant payload)
     signal released(real mouseX, real mouseY, variant payload)
     signal positionChanged(real mouseX, real mouseY, variant payload)
-    signal contentHeightChanged()
-
-    function setMargins() {
-        var columns = Math.floor(parent.width / gridView.cellWidth)
-        var gridWidth = columns * gridView.cellWidth
-        var remain = parent.width - gridWidth
-        anchors.leftMargin = Math.floor(remain / 2);
-    }
 
     Component.onCompleted: setMargins()
     onWidthChanged: setMargins()
@@ -226,13 +217,13 @@ Item {
         cellWidth: {
             switch(type) {
             case 0:
-                return theme.thumbSize
+                return 326
                 break;
             case 1:
-                return theme.thumbSize
+                return 370
                 break;
             case 2:
-                return 114
+                return 110
                 break;
             case 3:
                 return 326
@@ -246,13 +237,13 @@ Item {
         cellHeight: {
             switch(type) {
             case 0:
-                return cellWidth
+                return 136
                 break;
             case 1:
-                return cellWidth
+                return 148
                 break;
             case 2:
-                return 114
+                return 110
                 break;
             case 3:
                 return 128
@@ -262,18 +253,13 @@ Item {
             }
         }
 
-        onContentHeightChanged: {
-            container.contHeight = contentHeight
-            container.contentHeightChanged()
-        }
-
         header: headerComponent
         footer: footerComponent
 
         interactive: contentHeight > height
         boundsBehavior: Flickable.StopAtBounds
 
-        cacheBuffer: 20000
+        cacheBuffer: height * 4
         flickDeceleration: 250
 
         delegate: {

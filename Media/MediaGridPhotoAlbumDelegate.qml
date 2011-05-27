@@ -149,29 +149,7 @@ Item {
         Image {
             z: 10
             anchors.fill: parent
-            source: "image://themedimage/widgets/apps/media/assets/tile-border-photos-album"
-        }
-
-        MouseArea {
-            id: mouseArea
-
-            anchors.fill:parent
-
-            onClicked:{
-                container.clicked(mouseX,mouseY, dinstance);
-            }
-            onPressAndHold: {
-                container.longPressAndHold(mouseX,mouseY,dinstance);
-            }
-            onDoubleClicked: {
-                container.doubleClicked(mouseX,mouseY,dinstance);
-            }
-            onReleased: {
-                container.released(mouseX,mouseY,dinstance);
-            }
-            onPositionChanged: {
-                container.positionChanged(mouseX,mouseY,dinstance);
-            }
+            source: "image://themedimage/widgets/apps/media/tile-border-photos-album"
         }
 
         states: [
@@ -208,6 +186,28 @@ Item {
                 }
             }
         ]
+    }
+
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill:parent
+
+        onClicked:{
+            container.clicked(mouseX,mouseY, dinstance);
+        }
+        onPressAndHold: {
+            container.longPressAndHold(mouseX,mouseY,dinstance);
+        }
+        onDoubleClicked: {
+            container.doubleClicked(mouseX,mouseY,dinstance);
+        }
+        onReleased: {
+            container.released(mouseX,mouseY,dinstance);
+        }
+        onPositionChanged: {
+            container.positionChanged(mouseX,mouseY,dinstance);
+        }
     }
 
     Item {
