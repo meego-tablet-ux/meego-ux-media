@@ -134,8 +134,6 @@ Item {
     property int borderImageRight: 0
     property int borderImageInnerMargin: 0
 
-    property alias cellWidth: gridView.cellWidth
-    property alias cellHeight: gridView.cellHeight
     property alias model: gridView.model
     property alias header: gridView.header
     property alias footer: gridView.footer
@@ -144,16 +142,18 @@ Item {
     property alias count: gridView.count
     property alias snapMode: gridView.snapMode
     property alias theGridView: gridView
+    property int contHeight: 0
 
     signal clicked(real mouseX, real mouseY, variant payload)
     signal longPressAndHold(real mouseX, real mouseY, variant payload)
     signal doubleClicked(real mouseX, real mouseY, variant payload)
     signal released(real mouseX, real mouseY, variant payload)
     signal positionChanged(real mouseX, real mouseY, variant payload)
+    signal contentHeightChanged()
 
     function setMargins() {
-        var columns = Math.floor(parent.width / cellWidth)
-        var gridWidth = columns * cellWidth
+        var columns = Math.floor(parent.width / gridView.cellWidth)
+        var gridWidth = columns * gridView.cellWidth
         var remain = parent.width - gridWidth
         anchors.leftMargin = Math.floor(remain / 2);
     }
@@ -232,10 +232,10 @@ Item {
                 return theme.thumbSize
                 break;
             case 2:
-                return theme.thumbSize
+                return 114
                 break;
             case 3:
-                return 104
+                return 326
                 break;
             default:
                 return theme.thumbSize
@@ -252,14 +252,19 @@ Item {
                 return cellWidth
                 break;
             case 2:
-                return cellWidth
+                return 114
                 break;
             case 3:
-                return 108
+                return 128
                 break;
             default:
                 return cellWidth
             }
+        }
+
+        onContentHeightChanged: {
+            container.contHeight = contentHeight
+            container.contentHeightChanged()
         }
 
         header: headerComponent

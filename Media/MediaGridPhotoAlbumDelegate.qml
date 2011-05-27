@@ -7,21 +7,23 @@ Item {
     width: gridView.cellWidth
     height: gridView.cellHeight
 
+    resources: [
+        FuzzyDateTime {
+            id: fuzzy
+        }
+    ]
+
     property int mindex: index
     property string mtitle
-    property string malbum
     property string muri: uri
     property string murn: urn
     property string mthumburi
     property string mitemid
     property int mitemtype
-    property bool mfavorite
-    property int mcount
-    property int mlength
-    property string martist
     property string maddedtime
+    property int mphotocount
 
-    property bool misvirtual: (type != 1)?isvirtual:false
+    property bool misvirtual: isvirtual
 
     mtitle:{
         try {
@@ -29,15 +31,6 @@ Item {
         }
         catch(err){
             return ""
-        }
-    }
-
-    mlength:{
-        try {
-            return length
-        }
-        catch(err){
-            return 0
         }
     }
 
@@ -50,15 +43,6 @@ Item {
         }
         catch(err){
             return defaultThumbnail
-        }
-    }
-
-    malbum:{
-        try {
-            return album;
-        }
-        catch(err) {
-            return ""
         }
     }
 
@@ -80,35 +64,6 @@ Item {
         }
     }
 
-    mfavorite: {
-        try {
-            return favorite;
-        }
-        catch(err) {
-            return false
-        }
-    }
-
-    mcount: {
-        try {
-            return tracknum;
-        }
-        catch(err) {
-            return 0
-        }
-    }
-
-    martist: {
-        var a;
-        try {
-            a = artist
-        }
-        catch(err) {
-            a = ""
-        }
-        a[0]== undefined ? "" : a[0]
-    }
-
     maddedtime: {
         try {
             return addedtime;
@@ -118,10 +73,23 @@ Item {
         }
     }
 
+    mphotocount: {
+        try {
+            return photocount;
+        }
+        catch(err) {
+            return 0
+        }
+    }
+
     Image {
-        width: gridView.cellWidth
-        height: gridView.cellHeight
-        anchors.centerIn: parent
+        id: content
+        width: 104
+        height: 108
+
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.left: parent.left
 
         asynchronous: true
 
@@ -158,44 +126,6 @@ Item {
                     id: extension
                     source: muri
                 }
-
-            Rectangle {
-                id: textBackground
-                width: wrapper.width
-                height: 63
-                color: theme_mediaGridTitleBackgroundColor
-                opacity: theme_mediaGridTitleBackgroundAlpha
-                anchors.bottom: wrapper.bottom
-                anchors.left: wrapper.left
-                z: 1
-                visible: true
-                Text {
-                    id: titleText
-                    text: mtitle
-                    anchors.top: parent.top
-                    anchors.topMargin: 10
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    width: parent.width - 20
-                    elide: Text.ElideRight
-                    font.pixelSize: theme_fontPixelSizeMedium
-                    font.bold: true
-                    color:theme_fontColorMediaHighlight
-                }
-                Text {
-                    id: artistText
-                    text: maddedtime
-                    font.pixelSize: theme_fontPixelSizeMedium
-                    anchors.top: titleText.bottom
-                    anchors.topMargin: 4
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    width: parent.width - 20
-                    elide: Text.ElideRight
-                    color:theme_fontColorMediaHighlight
-                    visible: text
-                }
-            }
             Item {
                 id: frame
                 anchors.fill: wrapper
@@ -278,6 +208,52 @@ Item {
                 }
             }
         ]
+    }
+
+    Item {
+        id: textBackground
+        width: content.width * 2
+        height: 108
+        opacity: theme_mediaGridTitleBackgroundAlpha
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.right: parent.right
+        z: 1
+        Text {
+            id: titleText
+            text: mtitle
+            anchors.top: parent.top
+            anchors.topMargin: 10
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            width: parent.width - 20
+            elide: Text.ElideRight
+            font.pixelSize: theme_fontPixelSizeNormal
+            font.bold: true
+            color: theme_fontColorHighlight
+        }
+        Column {
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 9
+            anchors.left: parent.left
+            anchors.leftMargin: 5
+            Text {
+                id: photocountText
+                text: (mphotocount == 1)? qsTr("1 Photo") : qsTr("%1 Photos").arg(mphotocount)
+                font.pixelSize: theme_fontPixelSizeNormal
+                width: titleText.width
+                elide: Text.ElideRight
+                color: theme_fontColorMedium
+            }
+            Text {
+                id: addedTimeText
+                text: fuzzy.getFuzzy(maddedtime)
+                font.pixelSize: theme_fontPixelSizeNormal
+                width: titleText.width
+                elide: Text.ElideRight
+                color: theme_fontColorMedium
+            }
+        }
     }
 }
 
