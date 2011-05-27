@@ -335,6 +335,17 @@ void MediaDatabase::changeTitle(QString uri, QString title)
             mediaItemsList[i]->m_title = title;
             broadcastMyChanges(mediaItemsList[i]->m_id, MediaDatabase::Title);
         }
+
+    QUrl url = QUrl::fromEncoded(uri.toAscii());
+    QString oldName = url.toLocalFile();
+    if(QFile::exists(oldName))
+    {
+        QFileInfo fInfo(oldName);
+        QString suffix = "." + fInfo.suffix();
+        QString path = fInfo.path() + "/";
+        QString newName = path + title + suffix;
+        QFile::rename(oldName, newName);
+    }
 }
 
 void MediaDatabase::setFavorite(const QString &urn, const bool &favorite)
