@@ -481,6 +481,13 @@ void PhotoDatabase::updateAlbum(MediaItem *item, QList<MediaItem *> &newList)
 {
     // qDebug() << "Album: " << item->m_title;
     updateMediaList(item, newList);
+    if (newList.isEmpty()) {
+        // remove thumburi if album is now empty
+        item->m_thumburi = "";
+    } else {
+        // processAlbum generates a thumburi if album doesn't have it already
+        processAlbum(item);
+    }
 
     QStringList temp;
     temp << item->m_id;
