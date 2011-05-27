@@ -90,7 +90,6 @@ public:
     void changeTitleByURN(QString urn, QString title);
     void clearHistory();
     bool initialized;
-    void updateMediaList(MediaItem *mediaList, QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved);
 
 public slots:
     void trackerUpdates(QString classname, QVector<Quad> deletes, QVector<Quad> inserts);

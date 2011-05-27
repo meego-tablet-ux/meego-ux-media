@@ -488,7 +488,37 @@ void PhotoDatabase::updateAlbum(QList<MediaItem *> &itemsAdded, QList<MediaItem 
         return;
     }
     // qDebug() << "Album: " << title;
-    updateMediaList(item, itemsAdded, itemsRemoved);
+    // qDebug() << "Items to add: " << itemsAdded;
+    // qDebug() << "Items to remove: " << itemsRemoved;
+    QString sql = "";
+    if (!itemsAdded.isEmpty()) {
+        QString insert = "INSERT DATA { <%1> ";
+        QString insertEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'];";
+        sql += insert.arg(item->m_urn);
+        foreach(MediaItem *i, itemsAdded) {
+            item->children.append(i->m_urn);
+            sql += insertEntry.arg(i->m_urn);
+        }
+        // remove the last ';'
+        sql.chop(1);
+        sql += "};";
+    }
+    if (!itemsRemoved.isEmpty()) {
+        QString remove = "DELETE { ?entry a nfo:MediaFileListEntry} WHERE { <%1> nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?value . FILTER (?value IN(";
+        QString removeEntry = "'%1',";
+        sql += remove.arg(item->m_urn);
+        foreach (MediaItem * i, itemsRemoved) {
+            sql += removeEntry.arg(i->m_urn);
+            item->children.removeAll(i->m_urn);
+        }
+        // remove the last ','
+        sql.chop(1);
+        sql += "))};";
+    }
+    QString updateCounter = "INSERT OR REPLACE DATA { <%1> nfo:entryCounter '%2'}";
+    sql += updateCounter.arg(item->m_urn).arg(item->children.count());
+    // qDebug() << sql;
+    trackerCallAsync(sql);
 
     QStringList temp;
     temp << item->m_id;

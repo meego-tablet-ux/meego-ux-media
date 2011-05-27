@@ -289,15 +289,13 @@ void MusicListModel::setPlaylist(const QString playlist)
 
     if(!playlist.isEmpty())
     {
-        MediaItem *item = MusicDatabase::instance()->getPlaylistItem(m_playlist);
-        if (item) {
-            urnSortList = item->children;
-            QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByURN(urnSortList);
+        urnSortList = MusicDatabase::instance()->loadPlaylist(m_playlist);
+        QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByURN(urnSortList);
 
-            if(!newItemList.isEmpty()) {
-                /* formally add the new items */
-                displayNewItems(newItemList);
-            }
+        if(!newItemList.isEmpty())
+        {
+            /* formally add the new items */
+            displayNewItems(newItemList);
         }
     }
 
@@ -425,7 +423,7 @@ QList<MediaItem *> MusicListModel::unwrapItem(const QList<MediaItem *> &snapshot
         /* list is just songs */
         QList<MediaItem *> playlistItems;
         QStringList playlistURNs;
-        playlistURNs = item->children;
+        playlistURNs = MusicDatabase::instance()->loadPlaylist(item->m_title);
         playlistItems = MusicDatabase::instance()->getItemsByURN(playlistURNs);
         for(int i = 0; i < playlistItems.count(); i++)
             if(playlistItems[i]->isSong())
@@ -454,32 +452,6 @@ void MusicListModel::savePlaylist(const QString &playlist)
         m_playlist = playlist;
 
     MusicDatabase::instance()->savePlaylist(mediaItemsList, m_playlist);
-    connectSignals(false, true, true);
-    emit playlistChanged(m_playlist);
-}
-void MusicListModel::savePlaylist(const QString &playlist, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved)
-{
-    if(m_type != MusicPlaylist && m_type != NowPlaying)
-    {
-        qDebug() << "You can't save this model";
-        return;
-    }
-
-    if(playlist.isEmpty())
-    {
-        QDateTime time = QDateTime();
-        time.setTimeSpec(Qt::LocalTime);
-        m_playlist = time.currentDateTime().toString(Qt::ISODate);
-    }
-    else
-        m_playlist = playlist;
-
-    // if no changes, then save the playlist else update it
-    if (itemsAdded.isEmpty() && itemsRemoved.isEmpty()) {
-        MusicDatabase::instance()->savePlaylist(mediaItemsList, m_playlist);
-    } else {
-        MusicDatabase::instance()->updatePlaylist(itemsAdded, itemsRemoved, m_playlist);
-    }
     connectSignals(false, true, true);
     emit playlistChanged(m_playlist);
 }
@@ -761,9 +733,6 @@ void MusicListModel::addItems(const QStringList &ids)
             displayNewItems(newItemListFull);
         }
     }
-    if (m_type == MusicPlaylist) {
-        savePlaylist(m_playlist, newItemListFull, QList< MediaItem* >());
-    }
 }
 
 void MusicListModel::removeItems(const QStringList &ids)
@@ -790,9 +759,6 @@ void MusicListModel::removeItems(const QStringList &ids)
         mediaItemsList.removeAll(deleteItemList[i]);
     }
 
-    if (m_type == MusicPlaylist) {
-        savePlaylist(m_playlist, QList< MediaItem* >(), deleteItemList);
-    }
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
 }
@@ -826,11 +792,6 @@ void MusicListModel::removeIndex(const int index)
     /* the assumption is that no sort or filter is set on this model */
     /* therefore the master and display lists should be the same */
     removeRows(index, 1);
-    if (m_type == MusicPlaylist) {
-        QList<MediaItem *> deleteItemList;
-        deleteItemList << mediaItemsList.value(index);
-        savePlaylist(m_playlist, QList< MediaItem* >(), deleteItemList);
-    }
     mediaItemsList.removeAt(index);
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
@@ -911,17 +872,6 @@ void MusicListModel::clear()
 
     emit countChanged(mediaItemsDisplay.count());
     emit totalChanged(mediaItemsList.count());
-}
-void MusicListModel::clearPlaylist()
-{
-    if (m_type != MusicPlaylist) {
-        qDebug() << "You can't call clearPlaylist for non-playlist model";
-        return;
-    }
-    QList<MediaItem *> itemsRemoved = mediaItemsList;
-    clear();
-    QList<MediaItem *> itemsAdded;
-    MusicDatabase::instance()->updatePlaylist(itemsAdded, itemsRemoved, m_playlist);
 }
 
 QVariant MusicListModel::data(const QModelIndex &index, int role) const
