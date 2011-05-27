@@ -40,6 +40,8 @@ Item {
         if (volumeControl && volumeControl.volume != volume){
             volumeControl.volume = volume;
         }
+        if(volume > 0)
+            volumeControl.mute = false;
     }
 
     Item {
