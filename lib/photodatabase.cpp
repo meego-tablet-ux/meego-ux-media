@@ -143,7 +143,7 @@ void PhotoDatabase::processPhoto(MediaItem *item)
     else if(timestamp.daysTo(ctime) == 1)
         name = tr("Yesterday");
     else
-        name = timestamp.toString(Qt::SystemLocaleShortDate);
+        name = timestamp.date().toString(Qt::SystemLocaleShortDate);
 
     MediaItem *albumitem = albumItemsHash[name];
     if(albumitem == NULL)
