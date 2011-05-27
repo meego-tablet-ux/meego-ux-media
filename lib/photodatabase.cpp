@@ -139,11 +139,11 @@ void PhotoDatabase::processPhoto(MediaItem *item)
     QString name;
 
     if(timestamp.daysTo(ctime) == 0)
-        name = "Today";
+        name = tr("Today");
     else if(timestamp.daysTo(ctime) == 1)
-        name = "Yesterday";
+        name = tr("Yesterday");
     else
-        name = timestamp.toString("MMMM d, yyyy");
+        name = timestamp.toString(Qt::SystemLocaleShortDate);
 
     MediaItem *albumitem = albumItemsHash[name];
     if(albumitem == NULL)
