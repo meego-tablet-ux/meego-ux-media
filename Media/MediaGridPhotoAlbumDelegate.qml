@@ -149,7 +149,7 @@ Item {
         Image {
             z: 10
             anchors.fill: parent
-            source: "image://themedimage/widgets/apps/media/assets/tile-border-photos-album"
+            source: "image://themedimage/widgets/apps/media/tile-border-photos-album"
         }
 
         MouseArea {
