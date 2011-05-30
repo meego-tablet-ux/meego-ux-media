@@ -82,12 +82,47 @@ Item {
         }
     }
 
+    Item {
+        id:horizontalLine
+        height: 6
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        visible: dinstance.y > 0 //gridView.contentY
+        Item {
+            height: 2
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            Rectangle {
+                id: spaceLineDark
+                // TODO: Use defined values from theme
+                color: "#cbc9c9"//separatorDarkColor
+                opacity: 1.0 //separatorDarkAlpha
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+            }
+            Rectangle {
+                id: spaceLineLight
+                // TODO: Use defined values from theme
+                color: "#FFFFFF"//separatorLightColor
+                opacity: 1.0 //separatorLightAlpha
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+            }
+        }
+    }
+
     Image {
         id: content
         width: 104
         height: 108
 
-        anchors.top: parent.top
+        anchors.top: horizontalLine.bottom
         anchors.topMargin: 10
         anchors.left: parent.left
 
