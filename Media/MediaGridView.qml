@@ -152,9 +152,6 @@ Item {
     signal released(real mouseX, real mouseY, variant payload)
     signal positionChanged(real mouseX, real mouseY, variant payload)
 
-    Component.onCompleted: setMargins()
-    onWidthChanged: setMargins()
-
     function formatMinutes(time){
         var min = parseInt( time / 60 );
         return min
@@ -211,6 +208,107 @@ Item {
     }
 
     GridView {
+
+        id: emptyGridView
+
+        anchors.fill: gridView.contentHeight > gridView.height? undefined : gridView
+        anchors.left: gridView.left
+        anchors.right: gridView.right
+        anchors.top: parent.top
+        anchors.topMargin: gridView.contentHeight > gridView.height? gridView.contentHeight - gridView.cellHeight - gridView.contentY : 0
+        height: cellHeight
+
+        clip: true
+
+        model: gridView.contentHeight > gridView.height? Math.floor(width/gridView.cellWidth) : Math.floor(Math.floor(width/gridView.cellWidth)*Math.floor(height/gridView.cellHeight))
+
+        cellWidth: gridView.cellWidth
+        cellHeight: gridView.cellHeight
+
+        header: gridView.header
+        footer: gridView.footer
+
+        interactive: false
+        boundsBehavior: Flickable.StopAtBounds
+
+        flickDeceleration: 250
+
+        delegate: Item {
+            id: edinstance
+            width: gridView.cellWidth
+            height: gridView.cellHeight
+
+            Item {
+                id:horizontalLine
+                height: 6
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+                visible: (type == phototype)? false : (gridView.contentHeight > gridView.height)? true : (edinstance.y > 0)
+                Item {
+                    height: 2
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    Rectangle {
+                        id: spaceLineDark
+                        // TODO: Use defined values from theme
+                        color: "#cbc9c9"//separatorDarkColor
+                        opacity: 1.0 //separatorDarkAlpha
+                        height: 1
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
+                    }
+                    Rectangle {
+                        id: spaceLineLight
+                        // TODO: Use defined values from theme
+                        color: "#FFFFFF"//separatorLightColor
+                        opacity: 1.0 //separatorLightAlpha
+                        height: 1
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.bottom: parent.bottom
+                    }
+                }
+            }
+
+            Image {
+                anchors.top: horizontalLine.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                asynchronous: true
+                source: "image://themedimage/widgets/apps/media/tile-border-music-album-empty"
+                visible: type == musictype
+            }
+
+            Image {
+                anchors.top: horizontalLine.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                asynchronous: true
+                source: "image://themedimage/widgets/apps/media/tile-border-videos-empty"
+                visible: type == videotype
+            }
+
+            Image {
+                anchors.centerIn: parent
+                asynchronous: true
+                source: "image://themedimage/widgets/apps/media/tile-border-empty"
+                visible: type == phototype
+            }
+
+            Image {
+                anchors.top: horizontalLine.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+                asynchronous: true
+                source: "image://themedimage/widgets/apps/media/tile-border-photos-album-empty"
+                visible: type == photoalbumtype
+            }
+        }
+    }
+    GridView {
         id: gridView
 
         anchors.fill: parent
@@ -240,16 +338,16 @@ Item {
         cellHeight: {
             switch(type) {
             case 0:
-                return 136
+                return 142
                 break;
             case 1:
-                return 148
+                return 154
                 break;
             case 2:
                 return 110
                 break;
             case 3:
-                return 128
+                return 134
                 break;
             default:
                 return cellWidth
@@ -283,6 +381,6 @@ Item {
                 return musicAlbumDelegate
             }
         }
-        Theme { id: theme }
     }
+    Theme { id: theme }
 }
