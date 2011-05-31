@@ -119,41 +119,23 @@ Item {
     }
 
     Image {
-        width: gridView.cellWidth - spacing
-        height: gridView.cellHeight - spacing
-        anchors.centerIn: parent
+        id: content
+        width: 214
+        height: 138
+
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.left: parent.left
 
         asynchronous: true
 
-        Image {
-            id: delegateHeader
-            source: delegateHeaderSource
-            anchors.bottom: thumbnailClipper.top
-            anchors.left:  thumbnailClipper.left
-            width: thumbnailClipper.width
-            visible: delegateHeaderVisible
-            asynchronous: true
-        }
-
-        BorderImage {
-            id: thumbnailClipper
-            anchors.fill:parent
-            z: -10
-            asynchronous: true
-
-            source: borderImageSource
-            border.top: borderImageTop
-            border.bottom: borderImageBottom
-            border.left: borderImageLeft
-            border.right: borderImageRight
-
-            Item {
+        Item {
                 id: wrapper
                 anchors.fill: parent
-                anchors.topMargin: thumbnailClipper.border.top - borderImageInnerMargin
-                anchors.bottomMargin: thumbnailClipper.border.bottom - borderImageInnerMargin
-                anchors.leftMargin: thumbnailClipper.border.left - borderImageInnerMargin
-                anchors.rightMargin: thumbnailClipper.border.right - borderImageInnerMargin
+                anchors.topMargin: 5
+                anchors.bottomMargin: 9
+                anchors.leftMargin: 4
+                anchors.rightMargin: 4
                 transformOrigin: Item.Center
                 rotation: extension.orientation * 90
 
@@ -180,45 +162,6 @@ Item {
                     id: extension
                     source: muri
                 }
-            }
-
-            Rectangle {
-                id: textBackground
-                width: wrapper.width
-                height: 63
-                color: theme_mediaGridTitleBackgroundColor
-                opacity: theme_mediaGridTitleBackgroundAlpha
-                anchors.bottom: wrapper.bottom
-                anchors.left: wrapper.left
-                z: 1
-                visible: (type != 2)
-                Text {
-                    id: titleText
-                    text: mtitle
-                    anchors.top: parent.top
-                    anchors.topMargin: 10
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    width: parent.width - 20
-                    elide: Text.ElideRight
-                    font.pixelSize: theme_fontPixelSizeMedium
-                    font.bold: true
-                    color:theme_fontColorMediaHighlight
-                }
-                Text {
-                    id: artistText
-                    text: (type == 1)?((formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))):martist
-                    font.pixelSize: theme_fontPixelSizeMedium
-                    anchors.top: titleText.bottom
-                    anchors.topMargin: 4
-                    anchors.left: parent.left
-                    anchors.leftMargin: 10
-                    width: parent.width - 20
-                    elide: Text.ElideRight
-                    color:theme_fontColorMediaHighlight
-                    visible: text
-                }
-            }
             Item {
                 id: frame
                 anchors.fill: wrapper
@@ -240,35 +183,9 @@ Item {
             }
         }
         Image {
-            id: delegateFooter
-            source: delegateFooterSource
-            anchors.top: thumbnailClipper.bottom
-            anchors.left:  thumbnailClipper.left
-            width: thumbnailClipper.width
-            asynchronous: true
-            visible: delegateFooterVisible
-        }
-
-        MouseArea {
-            id: mouseArea
-
-            anchors.fill:parent
-
-            onClicked:{
-                container.clicked(mouseX,mouseY, dinstance);
-            }
-            onPressAndHold: {
-                container.longPressAndHold(mouseX,mouseY,dinstance);
-            }
-            onDoubleClicked: {
-                container.doubleClicked(mouseX,mouseY,dinstance);
-            }
-            onReleased: {
-                container.released(mouseX,mouseY,dinstance);
-            }
-            onPositionChanged: {
-                container.positionChanged(mouseX,mouseY,dinstance);
-            }
+            z: 10
+            anchors.fill: parent
+            source: "image://themedimage/widgets/apps/media/tile-border-videos"
         }
 
         states: [
@@ -306,6 +223,56 @@ Item {
             }
         ]
     }
+
+    MouseArea {
+        id: mouseArea
+
+        anchors.fill:parent
+
+        onClicked:{
+            container.clicked(mouseX,mouseY, dinstance);
+        }
+        onPressAndHold: {
+            container.longPressAndHold(mouseX,mouseY,dinstance);
+        }
+        onDoubleClicked: {
+            container.doubleClicked(mouseX,mouseY,dinstance);
+        }
+        onReleased: {
+            container.released(mouseX,mouseY,dinstance);
+        }
+        onPositionChanged: {
+            container.positionChanged(mouseX,mouseY,dinstance);
+        }
+    }
+    Column {
+        id: textBackground
+        width: parent.width - content.width - 5
+        height: 138
+        opacity: theme_mediaGridTitleBackgroundAlpha
+        anchors.top: parent.top
+        anchors.topMargin: 10
+        anchors.right: parent.right
+        z: 1
+        Text {
+            id: titleText
+            text: mtitle
+            width: parent.width
+            wrapMode: Text.Wrap
+            font.pixelSize: theme_fontPixelSizeNormal
+            font.bold: true
+            color: theme_fontColorHighlight
+        }
+        Text {
+            id: durationText
+            text: (formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))
+            font.pixelSize: theme_fontPixelSizeNormal
+            width: titleText.width
+            elide: Text.ElideRight
+            color: theme_fontColorMedium
+        }
+    }
 }
+
 
 
