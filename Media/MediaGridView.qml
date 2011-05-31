@@ -311,6 +311,7 @@ Item {
     GridView {
         id: gridView
 
+        maximumFlickVelocity: 1000
         anchors.fill: parent
         clip: true
 
