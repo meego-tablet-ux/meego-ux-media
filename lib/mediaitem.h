@@ -479,6 +479,7 @@ public:
     void setFavorite(const bool &favorite);
     void setCoverArt(const QString &thumburi);
     bool thumbExists(const QString &name = "");
+    static bool fileExists(const QString &name);
 
     bool m_isvirtual;
     bool m_favorite;

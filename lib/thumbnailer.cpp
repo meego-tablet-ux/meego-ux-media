@@ -154,7 +154,7 @@ void Thumbnailer::tumblerReady(const unsigned int &handle, const QStringList &ur
 
     for(int i = 0; i < queue.count(); i++)
     {
-        if(urls.contains(queue[i]->m_uri))
+        if(urls.contains(queue[i]->m_uri)&&(MediaItem::fileExists(queue[i]->m_thumburi)))
         {
             queue[i]->m_thumburi_exists = true;
             queue[i]->m_thumburi_ignore = false;
@@ -174,7 +174,7 @@ void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QStri
 
     for(int i = 0; i < queue.count(); i++)
     {
-        if(queue[i]->m_id == reqid)
+        if((queue[i]->m_id == reqid)&&(MediaItem::fileExists(queue[i]->m_thumburi)))
         {
             queue[i]->m_thumburi_exists = true;
             queue[i]->m_thumburi_ignore = false;

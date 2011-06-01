@@ -498,15 +498,21 @@ void MediaItem::setCoverArt(const QString &thumburi)
         m_thumburi_exists = true;
 }
 
-bool MediaItem::thumbExists(const QString &name)
+bool MediaItem::fileExists(const QString &name)
 {
-    QString temp;
     if(name.isEmpty())
-        temp = m_thumburi;
-    else
-        temp = name;
+        return false;
+    QString temp = name;
     temp.replace("file://", "");
     return QFile::exists(temp);
+}
+
+bool MediaItem::thumbExists(const QString &name)
+{
+    if(name.isEmpty())
+        return fileExists(m_thumburi);
+    else
+        return fileExists(name);
 }
 
 QString MediaItem::fileFormatted(const QString &file)
