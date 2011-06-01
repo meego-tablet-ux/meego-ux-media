@@ -157,6 +157,10 @@ Item {
         return min
     }
 
+    function positionViewAtIndex(index, mode){
+        gridView.positionViewAtIndex(index,mode);
+    }
+
     Component {
         id: headerComponent
         Item {
