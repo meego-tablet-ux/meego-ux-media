@@ -23,7 +23,7 @@ void MediaQML::registerTypes(const char *uri)
     qmlRegisterType<VideoListModel>(uri, 0, 0, "VideoListModel");
     qmlRegisterType<DocumentListModel>(uri, 0, 0, "DocumentListModel");
     qmlRegisterType<ResourceManager>(uri, 0, 0, "ResourceManager");
-    qmlRegisterType<ResourceManager>(uri, 0, 0, "DebugToFile");
+    qmlRegisterType<DebugToFile>(uri, 0, 0, "DebugToFile");
 }
 
 void MediaQML::initializeEngine(QDeclarativeEngine *engine, const char *uri)
