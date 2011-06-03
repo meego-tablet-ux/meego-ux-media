@@ -7,7 +7,8 @@
 class DebugToFile : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString file READ getFile WRITE setFile NOTIFY fileChanged);
+    Q_PROPERTY(QString file READ getFile WRITE setFile NOTIFY fileChanged)
+
 public:
     explicit DebugToFile(QObject *parent = 0);
 
@@ -22,8 +23,6 @@ public slots:
     void print(const QString &text);
 
 private:
-    bool fileReady();
-
     QString m_file;
     QFile fp;
     bool ready;
