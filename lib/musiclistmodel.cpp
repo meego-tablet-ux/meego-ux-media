@@ -145,6 +145,12 @@ void MusicListModel::setType(const int type)
             if(tempList[i]->isSong())
                 newItemList << tempList[i];
     }
+    else if(m_type == ListofFavorites)
+    {
+        for(int i = 0; i < tempList.count(); i++)
+            if(tempList[i]->isSong()&&tempList[i]->m_favorite)
+                newItemList << tempList[i];
+    }
     else if(m_type == ListofUserSongs)
     {
         for(int i = 0; i < tempList.count(); i++)
@@ -522,6 +528,12 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(list->at(i)->isSong())
+                newItemList << list->at(i);
+    }
+    else if(m_type == ListofFavorites)
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(list->at(i)->isSong()&&list->at(i)->m_favorite)
                 newItemList << list->at(i);
     }
     else if(m_type == ListofUserSongs)
