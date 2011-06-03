@@ -41,6 +41,7 @@ PhotoListModel::PhotoListModel(QObject *parent)
     isVirtualAlbum = false;
 
     connect(PhotoDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
+    connect(PhotoDatabase::instance(),SIGNAL(databaseInitComplete()),this,SIGNAL(databaseInitComplete()));
 }
 
 PhotoListModel::~PhotoListModel()
@@ -394,7 +395,7 @@ void PhotoListModel::setViewed(const QStringList &ids)
 
 void PhotoListModel::addItems(const QStringList &ids)
 {
-    if(m_type != PhotoAlbum)
+    if((m_type != PhotoAlbum)&&(m_type != Editor))
     {
         qDebug() << "You can't add items to this model";
         return;
@@ -409,7 +410,8 @@ void PhotoListModel::addItems(const QStringList &ids)
 
     if (!newItemList.isEmpty()) {
       displayNewItems(newItemList);
-      saveAlbum(m_album, newItemList, QList< MediaItem* >());
+      if(m_type == PhotoAlbum)
+          saveAlbum(m_album, newItemList, QList< MediaItem* >());
     }
 }
 
@@ -537,7 +539,7 @@ void PhotoListModel::setCoverArt(const QString &thumburi)
 
 void PhotoListModel::clear()
 {
-    if(m_type != PhotoAlbum && m_type != ListofRecentlyViewed)
+    if(m_type != PhotoAlbum && m_type != ListofRecentlyViewed && m_type != Editor)
     {
         qDebug() << "You can't remove items from this model";
         return;

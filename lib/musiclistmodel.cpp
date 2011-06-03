@@ -49,7 +49,7 @@ MusicListModel::MusicListModel(QObject *parent)
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
     connect(MusicDatabase::instance(),SIGNAL(songItemAvailable(const QString)),this,SIGNAL(songItemAvailable(const QString)));
-    connect(MusicDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(databaseInitComplete()));
+    connect(MusicDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(initComplete()));
 }
 
 MusicListModel::~MusicListModel()
@@ -143,6 +143,12 @@ void MusicListModel::setType(const int type)
     {
         for(int i = 0; i < tempList.count(); i++)
             if(tempList[i]->isSong())
+                newItemList << tempList[i];
+    }
+    else if(m_type == ListofFavorites)
+    {
+        for(int i = 0; i < tempList.count(); i++)
+            if(tempList[i]->isSong()&&tempList[i]->m_favorite)
                 newItemList << tempList[i];
     }
     else if(m_type == ListofUserSongs)
@@ -522,6 +528,12 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     {
         for(int i = 0; i < list->count(); i++)
             if(list->at(i)->isSong())
+                newItemList << list->at(i);
+    }
+    else if(m_type == ListofFavorites)
+    {
+        for(int i = 0; i < list->count(); i++)
+            if(list->at(i)->isSong()&&list->at(i)->m_favorite)
                 newItemList << list->at(i);
     }
     else if(m_type == ListofUserSongs)
@@ -1135,8 +1147,9 @@ void MusicListModel::playAllSongs()
         loadplayqueue = true;
 }
 
-void MusicListModel::databaseInitComplete()
+void MusicListModel::initComplete()
 {
     loadplayqueue = false;
     needplaycall = false;
+    emit databaseInitComplete();
 }

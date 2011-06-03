@@ -48,7 +48,8 @@ public:
                       NowPlaying = 10,
                       Editor = 11,
                       MixedList = 12,
-                      ListofUserSongs = 13
+                      ListofUserSongs = 13,
+                      ListofFavorites = 14
                    };
 
     enum MixedType {  Songs = 1,
@@ -123,12 +124,13 @@ signals:
     void playStatusChanged(const int playstatus);
     void shuffleChanged(const bool shuffle);
     void beginPlayback();
+    void databaseInitComplete();
 
 protected slots:
     /* from MusicDatabase signals */
     void itemsAdded(const QList<MediaItem *> *list);
     void itemsChanged(const QStringList &ids, int reason);
-    void databaseInitComplete();
+    void initComplete();
 
 protected:
     /* private filter functions which respond to setting the filter property */
