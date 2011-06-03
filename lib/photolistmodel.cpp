@@ -41,6 +41,7 @@ PhotoListModel::PhotoListModel(QObject *parent)
     isVirtualAlbum = false;
 
     connect(PhotoDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
+    connect(PhotoDatabase::instance(),SIGNAL(databaseInitComplete()),this,SIGNAL(databaseInitComplete()));
 }
 
 PhotoListModel::~PhotoListModel()

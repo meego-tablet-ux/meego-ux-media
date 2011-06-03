@@ -72,6 +72,7 @@ signals:
     void albumChanged(const QString &album);
     void typeChanged(const int type);
     void coverArtChanged(const QString &coveruri);
+    void databaseInitComplete();
 
 protected slots:
     /* from MusicDatabase signals */

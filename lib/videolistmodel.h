@@ -56,6 +56,7 @@ public slots:
 
 signals:
     void typeChanged(const int type);
+    void databaseInitComplete();
 
 protected slots:
     /* from MusicDatabase signals */

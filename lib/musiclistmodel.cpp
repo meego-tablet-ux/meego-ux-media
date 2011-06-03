@@ -49,7 +49,7 @@ MusicListModel::MusicListModel(QObject *parent)
 
     connect(MusicDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
     connect(MusicDatabase::instance(),SIGNAL(songItemAvailable(const QString)),this,SIGNAL(songItemAvailable(const QString)));
-    connect(MusicDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(databaseInitComplete()));
+    connect(MusicDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(initComplete()));
 }
 
 MusicListModel::~MusicListModel()
@@ -1147,8 +1147,9 @@ void MusicListModel::playAllSongs()
         loadplayqueue = true;
 }
 
-void MusicListModel::databaseInitComplete()
+void MusicListModel::initComplete()
 {
     loadplayqueue = false;
     needplaycall = false;
+    emit databaseInitComplete();
 }
