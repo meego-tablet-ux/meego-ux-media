@@ -6,13 +6,13 @@ DebugToFile::DebugToFile(QObject *parent) :
     ready = false;
 }
 
-bool DebugToFile::fileReady()
+void DebugToFile::setFile(const QString &file)
 {
-    if(ready)
-        return true;
+    if(m_file == file)
+        return;
 
     if(m_file.isEmpty())
-        return false;
+        return;
 
     QString filePath = QDir::toNativeSeparators(QDir::homePath()) + QDir::separator() + m_file;
     fp.setFileName(filePath);
@@ -21,7 +21,7 @@ bool DebugToFile::fileReady()
 
 void DebugToFile::print(const QString &text)
 {
-    if(!fileReady())
+    if(!ready)
         return;
 
     fp.write(text.toAscii());
