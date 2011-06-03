@@ -38,8 +38,7 @@ SOURCES += \
     videodatabase.cpp \
     videolistmodel.cpp \
     playlistimageprovider.cpp \
-    resourcemanager.cpp \
-    debugtofile.cpp
+    resourcemanager.cpp
 
 # these are the external interfaces exposed to clients in /usr/include
 INSTALL_HEADERS += \
@@ -63,8 +62,7 @@ HEADERS += \
     videodatabase.h \
     mediainfoplugininterface.h \
     playlistimageprovider.h \
-    resourcemanager.h \
-    debugtofile.h
+    resourcemanager.h
 
 OTHER_FILES += \
     meego-ux-media.pc
