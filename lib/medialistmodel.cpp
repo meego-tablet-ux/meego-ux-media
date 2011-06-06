@@ -491,6 +491,7 @@ void MediaListModel::setSort(const int sort)
     case SortByTrackNum:
     case SortByURNList:
     case SortAsIs:
+    case SortByActivity:
         m_sort = sort;
         redisplay();
         break;
@@ -771,18 +772,31 @@ bool MediaListModel::isItemDisplayed(MediaItem *item)
 
 bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
 {
-    if((m_sort == SortByAccessTime)||(m_sort == SortByCreationTime))
+    if((m_sort == SortByAccessTime)||(m_sort == SortByCreationTime)||(m_sort == SortByActivity))
     {
         QDateTime xtime, ytime;
         if(m_sort == SortByAccessTime)
         {
             xtime = QDateTime::fromString(x->m_lastplayedtime, Qt::ISODate);
             ytime = QDateTime::fromString(y->m_lastplayedtime, Qt::ISODate);
-        }
-        else
+        } else if (m_sort == SortByCreationTime)
         {
             xtime = x->m_addedtime;
             ytime = y->m_addedtime;
+        } else {
+            if (QDateTime::fromString(x->m_lastplayedtime, Qt::ISODate) > x->m_addedtime)
+            {
+                xtime = QDateTime::fromString(x->m_lastplayedtime, Qt::ISODate);
+            } else {
+                xtime = x->m_addedtime;
+            }
+
+            if (QDateTime::fromString(y->m_lastplayedtime, Qt::ISODate) > y->m_addedtime)
+            {
+                ytime = QDateTime::fromString(y->m_lastplayedtime, Qt::ISODate);
+            } else {
+                ytime = y->m_addedtime;
+            }
         }
         return(ytime > xtime);
     }
@@ -820,7 +834,7 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
         return;
 
     if((sort == SortByAccessTime)||(sort == SortByCreationTime)||
-       (sort == SortByAddedTime)||(sort == SortByUnwatched))
+       (sort == SortByAddedTime)||(sort == SortByUnwatched)||(sort == SortByActivity))
     {
         QMap<QDateTime, MediaItem *> map;
 
@@ -829,13 +843,30 @@ void MediaListModel::sortItems(QList<MediaItem *> &list, int sort)
         {
             QDateTime ptime;
             if((sort == SortByAccessTime)||(sort == SortByUnwatched))
+            {
                 ptime = QDateTime::fromString(list[i]->m_lastplayedtime, Qt::ISODate);
+            }
             else if((sort == SortByAddedTime)||(sort ==SortByFavorite))
+            {
                 ptime = list[i]->m_addedtime;
+            }
+            else if(sort == SortByActivity)
+            {
+                if (QDateTime::fromString(list[i]->m_lastplayedtime, Qt::ISODate) > list[i]->m_addedtime)
+                {
+                    ptime = QDateTime::fromString(list[i]->m_lastplayedtime, Qt::ISODate);
+                } else {
+                    ptime = list[i]->m_addedtime;
+                }
+            }
             else if(!list[i]->m_creationtime.isEmpty())
+            {
                 ptime = QDateTime::fromString(list[i]->m_creationtime, Qt::ISODate);
+            }
             else
+            {
                 ptime = list[i]->m_addedtime;
+            }
             map.insertMulti(ptime, list[i]);
         }
 

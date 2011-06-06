@@ -53,7 +53,8 @@ public:
         SortByFavorite = 6,
         SortByTrackNum = 7,
         SortByURNList = 8,
-        SortAsIs = 9
+        SortAsIs = 9,
+        SortByActivity = 10
     };
 
     enum PlayType {
