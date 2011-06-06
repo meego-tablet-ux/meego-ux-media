@@ -108,11 +108,12 @@ import MeeGo.Media 0.1
 Item {
     id: container
 
-    // apptype: 0=music, 1=video, 2=photo, 3=photoalbum
+    // apptype: 0=music, 1=video, 2=photo, 3=photoalbum, 4=document
     property int musictype: 0
     property int videotype: 1
     property int phototype: 2
     property int photoalbumtype: 3
+    property int documenttype: 4
     property int type: 0
     property int spacing: 2
     property bool showHeader: false
@@ -209,6 +210,11 @@ Item {
     Component {
         id: videoDelegate
         MediaGridVideoDelegate { }
+    }
+
+    Component {
+        id: documentDelegate
+        MediaGridDocumentDelegate { }
     }
 
     GridView {
@@ -334,6 +340,9 @@ Item {
             case 3:
                 return 326
                 break;
+            case 4:
+                return theme.thumbSize
+                break;
             default:
                 return theme.thumbSize
             }
@@ -353,6 +362,9 @@ Item {
                 break;
             case 3:
                 return 134
+                break;
+            case 4:
+                return cellWidth
                 break;
             default:
                 return cellWidth
@@ -382,7 +394,11 @@ Item {
             case 3:
                 return photoAlbumDelegate
                 break;
+            case 4:
+                return documentDelegate
+                break;
             default:
+		console.log("unknown apptype: using default(musicAlbumDelegate)")
                 return musicAlbumDelegate
             }
         }
