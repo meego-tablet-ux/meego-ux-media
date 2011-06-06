@@ -91,7 +91,6 @@ void PhotoDatabase::processPhoto(MediaItem *item)
 {
     QList<MediaItem *> values = albumItemsHash.values();
     QStringList ids;
-    bool orphan = true;
 
     /* check if this photo belongs to an album that has */
     /* no cover art, set it as the cover if so */
@@ -103,8 +102,6 @@ void PhotoDatabase::processPhoto(MediaItem *item)
         {
             if(item->m_urn == album->children[j])
             {
-                orphan = false;
-
                 /* if the album has cover art, skip it */
                 if(!album->m_thumburi.isEmpty())
                     break;
@@ -126,10 +123,7 @@ void PhotoDatabase::processPhoto(MediaItem *item)
     if(!ids.isEmpty())
         emit itemsChanged(ids, PhotoDatabase::Thumbnail);
 
-    if(!orphan)
-        return;
-
-    /* this photo's an orphan, add it to a virtual album */
+    /* add it to a virtual album */
     QString timestring = (item->m_creationtime.isEmpty())?item->m_addedtime.toString(Qt::ISODate):item->m_creationtime;
     if(timestring.isEmpty())
         return;

@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include/awdapi
+
+Name: awdapi
+Description: AcerWidgetsDaemon API C++ library
+Version: 0.0.1
+Libs: -L${libdir} -lawdapi
+Cflags: -I${includedir}
