@@ -237,9 +237,6 @@ Item {
                     anchors.margins: 10
                     source: "image://themedimage/images/media/photos_selected_tick"
                 }
-                onVisibleChanged: {
-                    console.log("MAXMAXMAX/visibilityChanged to/"+visible);
-                }
             }
         }
         Image {

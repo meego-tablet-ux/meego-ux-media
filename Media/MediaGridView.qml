@@ -398,6 +398,7 @@ Item {
                 return documentDelegate
                 break;
             default:
+		console.log("unknown apptype: using default(musicAlbumDelegate)")
                 return musicAlbumDelegate
             }
         }
