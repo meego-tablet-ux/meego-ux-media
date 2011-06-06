@@ -13,9 +13,22 @@ Item {
     signal cancelPressed()
     signal deletePressed()
     signal sharePressed(real fingerX, real fingerY)
-    property bool showadd: false
-    signal addPressed()
-    property int itemwidth: background.width/((showadd)?4:3)
+    signal favouritePressed()
+    signal unfavouritePressed()
+    signal rmFromQueuePressed()
+    signal rmFromPlaylistPressed()
+    signal addToQueuePressed()
+    signal addToPlaylistPressed()
+
+    property bool showfavourite: false
+    property bool showunfavourite: false
+    property bool showrmfromqueue: false
+    property bool showrmfromplaylist: false
+    property bool showaddtoqueue: false
+    property bool showaddtoplaylist: false
+    property bool showdelete: true
+    property int itemsvisible: 2+(showdelete?1:0)+(showfavourite?1:0)+(showunfavourite?1:0)+(showrmfromqueue?1:0)+(showrmfromplaylist?1:0)+(showaddtoqueue?1:0)+(showaddtoplaylist?1:0)
+    property int itemwidth: background.width/itemsvisible
 
     Item {
         anchors.fill: parent
@@ -29,35 +42,90 @@ Item {
         }
 
         MediaToolbarButton {
-            id: btShare
+            id: btFavourite
             anchors.left: parent.left
             anchors.top:parent.top
             height: parent.height
-            width: itemwidth
-            visible: true
-            bgSourceUp: "image://themedimage/images/media/icn_share_up"
-            bgSourceDn: "image://themedimage/images/media/icn_share_up"
-            onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
+            width: showfavourite?itemwidth:0
+            visible: showfavourite
+            bgSourceUp: "image://themedimage/icons/actionbar/favourite"
+            bgSourceDn: "image://themedimage/icons/actionbar/favourite"
+            onClicked: container.favouritePressed()
         }
         MediaToolbarButton {
-            id: btAdd
+            id: btUnfavourite
+            anchors.left: btFavourite.right
+            anchors.top:parent.top
+            height: parent.height
+            width: showunfavourite?itemwidth:0
+            visible: showunfavourite
+            bgSourceUp: "image://themedimage/icons/actionbar/unfavourite"
+            bgSourceDn: "image://themedimage/icons/actionbar/unfavourite"
+            onClicked: container.unfavouritePressed()
+        }
+        MediaToolbarButton {
+            id: btAddToQueue
             anchors.left: btShare.right
             anchors.top:parent.top
             height: parent.height
-            width: (showadd)?itemwidth:0
-            visible: showadd
-            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
-            onClicked: container.addPressed()
+            width: showaddtoqueue?itemwidth:0
+            visible: showaddtoqueue
+            bgSourceUp: "image://themedimage/icons/actionbar/add-to-play-queue"
+            bgSourceDn: "image://themedimage/icons/actionbar/add-to-play-queue"
+            onClicked: container.addToQueuePressed()
         }
         MediaToolbarButton {
-            id: btDelete
-            anchors.left: btAdd.right
-            anchors.top: parent.top
+            id: btAddToPlaylist
+            anchors.left: btAddToQueue.right
+            anchors.top:parent.top
+            height: parent.height
+            width: showaddtoplaylist?itemwidth:0
+            visible: showaddtoplaylist
+            bgSourceUp: "image://themedimage/icons/actionbar/add-to-play-list"
+            bgSourceDn: "image://themedimage/icons/actionbar/add-to-play-list"
+            onClicked: container.addToPlaylistPressed()
+        }
+        MediaToolbarButton {
+            id: btShare
+            anchors.left: btRmFromPlaylist.right
+            anchors.top:parent.top
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://themedimage/images/media/icn_trash_up"
+            bgSourceUp: "image://themedimage/icons/actionbar/share"
+            bgSourceDn: "image://themedimage/icons/actionbar/share"
+            onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
+        }
+        MediaToolbarButton {
+            id: btRmFromQueue
+            anchors.left: btUnfavourite.right
+            anchors.top:parent.top
+            height: parent.height
+            width: showrmfromqueue?itemwidth:0
+            visible: showrmfromqueue
+            bgSourceUp: "image://themedimage/icons/actionbar/remove-from-play-queue"
+            bgSourceDn: "image://themedimage/icons/actionbar/remove-from-play-queue"
+            onClicked: container.rmFromQueuePressed()
+        }
+        MediaToolbarButton {
+            id: btRmFromPlaylist
+            anchors.left: btRmFromQueue.right
+            anchors.top:parent.top
+            height: parent.height
+            width: showrmfromplaylist?itemwidth:0
+            visible: showrmfromplaylist
+            bgSourceUp: "image://themedimage/icons/actionbar/remove-from-play-list"
+            bgSourceDn: "image://themedimage/icons/actionbar/remove-from-play-list"
+            onClicked: container.rmFromPlaylistPressed()
+        }
+        MediaToolbarButton {
+            id: btDelete
+            anchors.left: btAddToPlaylist.right
+            anchors.top: parent.top
+            height: parent.height
+            width: showdelete?itemwidth:0
+            visible: showdelete
+            bgSourceUp: "image://themedimage/icons/actionbar/edit-delete"
             bgSourceDn: "image://themedimage/images/media/icn_trash_dn"
             onClicked: container.deletePressed()
         }
@@ -68,11 +136,9 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://themedimage/images/media/icn_cancel_ms_up"
+            bgSourceUp: "image://themedimage/icons/actionbar/edit-cancel"
             bgSourceDn: "image://themedimage/images/media/icn_cancel_ms_dn"
-            onClicked: {
-                container.cancelPressed();
-            }
+            onClicked: container.cancelPressed()
         }
     }
     TopItem { id: topItem }
