@@ -48,8 +48,8 @@ Item {
             height: parent.height
             width: showfavourite?itemwidth:0
             visible: showfavourite
-            bgSourceUp: "image://themedimage/icons/actionbar/favourite"
-            bgSourceDn: "image://themedimage/icons/actionbar/favourite"
+            bgSourceUp: "image://themedimage/icons/toolbar/contact-favorite-selected"
+            bgSourceDn: "image://themedimage/icons/toolbar/contact-favorite-selected-active"
             onClicked: container.favouritePressed()
         }
         MediaToolbarButton {
@@ -59,8 +59,8 @@ Item {
             height: parent.height
             width: showunfavourite?itemwidth:0
             visible: showunfavourite
-            bgSourceUp: "image://themedimage/icons/actionbar/unfavourite"
-            bgSourceDn: "image://themedimage/icons/actionbar/unfavourite"
+            bgSourceUp: "image://themedimage/icons/toolbar/contact-favorite"
+            bgSourceDn: "image://themedimage/icons/toolbar/contact-favorite-active"
             onClicked: container.unfavouritePressed()
         }
         MediaToolbarButton {
@@ -70,8 +70,8 @@ Item {
             height: parent.height
             width: showaddtoqueue?itemwidth:0
             visible: showaddtoqueue
-            bgSourceUp: "image://themedimage/icons/actionbar/add-to-play-queue"
-            bgSourceDn: "image://themedimage/icons/actionbar/add-to-play-queue"
+            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
             onClicked: container.addToQueuePressed()
         }
         MediaToolbarButton {
@@ -81,8 +81,8 @@ Item {
             height: parent.height
             width: showaddtoplaylist?itemwidth:0
             visible: showaddtoplaylist
-            bgSourceUp: "image://themedimage/icons/actionbar/add-to-play-list"
-            bgSourceDn: "image://themedimage/icons/actionbar/add-to-play-list"
+            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
             onClicked: container.addToPlaylistPressed()
         }
         MediaToolbarButton {
@@ -92,8 +92,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://themedimage/icons/actionbar/share"
-            bgSourceDn: "image://themedimage/icons/actionbar/share"
+            bgSourceUp: "image://themedimage/images/media/icn_share_up"
+            bgSourceDn: "image://themedimage/images/media/icn_share_up"
             onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
         }
         MediaToolbarButton {
@@ -103,8 +103,8 @@ Item {
             height: parent.height
             width: showrmfromqueue?itemwidth:0
             visible: showrmfromqueue
-            bgSourceUp: "image://themedimage/icons/actionbar/remove-from-play-queue"
-            bgSourceDn: "image://themedimage/icons/actionbar/remove-from-play-queue"
+            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
             onClicked: container.rmFromQueuePressed()
         }
         MediaToolbarButton {
@@ -114,8 +114,8 @@ Item {
             height: parent.height
             width: showrmfromplaylist?itemwidth:0
             visible: showrmfromplaylist
-            bgSourceUp: "image://themedimage/icons/actionbar/remove-from-play-list"
-            bgSourceDn: "image://themedimage/icons/actionbar/remove-from-play-list"
+            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
+            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
             onClicked: container.rmFromPlaylistPressed()
         }
         MediaToolbarButton {
