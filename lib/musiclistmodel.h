@@ -138,8 +138,6 @@ protected:
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
 
-    void savePlaylist(const QString &playlist, QList<MediaItem *> itemsAdded, QList<MediaItem *> itemsRemoved);
-
     /* properties for this model */
     int m_type;
     int m_mix;
