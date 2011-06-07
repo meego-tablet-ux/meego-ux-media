@@ -787,32 +787,28 @@ void MediaDatabase::itemChanged(MediaItem *item, int reason)
     newItemsList << item->m_id;
     emit itemsChanged(newItemsList, reason);
 }
-void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved)
+void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &newList)
 {
     // qDebug() << "Current list: " << mediaList->children;
-    // qDebug() << "Items to add: " << itemsAdded;
-    // qDebug() << "Items to remove: " << itemsRemoved;
     QString sql = "";
-    if (!itemsRemoved.isEmpty()) {
-        QString remove = "DELETE { ?entry a nfo:MediaFileListEntry} WHERE { <%1> nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?value . FILTER (?value IN(";
-        QString removeEntry = "'%1',";
-        sql += remove.arg(mediaList->m_urn);
-        foreach (MediaItem * i, itemsRemoved) {
-            sql += removeEntry.arg(i->m_urn);
-            mediaList->children.removeAll(i->m_urn);
-        }
-        // remove the last ','
-        sql.chop(1);
-        sql += "))};";
+
+    // delete all MediaFileListEntry references from this MediaFileList
+    QString  clearEntries = "DELETE { <%1> nfo:hasMediaFileListEntry ?v} WHERE { <%1> nfo:hasMediaFileListEntry ?v };";
+    sql += clearEntries.arg(mediaList->m_urn);
+
+    mediaList->children.clear();
+    // add new items to list
+    foreach(MediaItem *i, newList) {
+        mediaList->children.append(i->m_urn);
     }
-    int addIndex = mediaList->children.count();
-    if (!itemsAdded.isEmpty()) {
+    // insert MediaFileListEntry objects
+    if (!mediaList->children.isEmpty()) {
         QString insert = "INSERT DATA { <%1> ";
         QString insertEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition '%2'];";
         sql += insert.arg(mediaList->m_urn);
-        foreach(MediaItem *i, itemsAdded) {
-            mediaList->children.append(i->m_urn);
-            sql += insertEntry.arg(i->m_urn).arg(addIndex);
+        int addIndex = 1;
+        foreach(const QString &urn, mediaList->children) {
+            sql += insertEntry.arg(urn).arg(addIndex);
             addIndex++;
         }
         // remove the last ';'
@@ -820,6 +816,7 @@ void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &it
         sql += "};";
     }
     // qDebug() << "New list: " << mediaList->children;
+    // update entryCounter
     QString updateCounter = "INSERT OR REPLACE DATA { <%1> nfo:entryCounter '%2'}";
     sql += updateCounter.arg(mediaList->m_urn).arg(mediaList->children.count());
     qDebug() << sql;

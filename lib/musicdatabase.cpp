@@ -420,11 +420,13 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
 
     QString SqlCmd, sql;
 
-    /* if this is an overwrite of an existing playlist, delete it first */
+    /* if this is an update of an existing playlist */
     if(item != NULL)
     {
-        SqlCmd = "DELETE { ?playlist a nmm:Playlist } WHERE { ?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} ";
-        sql = QString(SqlCmd).arg(title);
+        updatePlaylist(item, list);
+        return;
+        // SqlCmd = "DELETE { ?playlist a nmm:Playlist } WHERE { ?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} ";
+        // sql = QString(SqlCmd).arg(title);
     }
 
     /* create a new playlist */
@@ -484,22 +486,11 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
         }
     }
 }
-void MusicDatabase::updatePlaylist(QList<MediaItem *> &itemsAdded, QList<MediaItem *> &itemsRemoved, const QString &title)
+void MusicDatabase::updatePlaylist(MediaItem *item, QList<MediaItem *> &newList)
 {
-    /* see if the playlist already exists */
-    MediaItem *item = NULL;
-    for(int i = 0; i < mediaItemsList.count(); i++)
-        if(mediaItemsList[i]->isMusicPlaylist()&&(mediaItemsList[i]->m_title == title))
-            item = mediaItemsList[i];
+    updateMediaList(item, newList);
 
-    if(item == NULL) {
-        savePlaylist(itemsAdded, title);
-        return;
-    }
-    updateMediaList(item, itemsAdded, itemsRemoved);
-
-    QList<MediaItem *> list = getItemsByURN(item->children);
-    createPlaylistThumb(list, title);
+    createPlaylistThumb(newList, item->m_title);
     generatePlaylistThumbId(item);
     item->m_thumburi_exists = true;
 
