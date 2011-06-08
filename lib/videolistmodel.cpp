@@ -36,7 +36,7 @@ VideoListModel::VideoListModel(QObject *parent)
     m_type = -1;
 
     connect(VideoDatabase::instance(),SIGNAL(itemAvailable(const QString)),this,SIGNAL(itemAvailable(const QString)));
-    connect(VideoDatabase::instance(),SIGNAL(databaseInitComplete()),this,SIGNAL(databaseInitComplete()));
+    connect(VideoDatabase::instance(),SIGNAL(databaseInitComplete()),this,SLOT(defaultDatabaseInitComplete()));
 }
 
 VideoListModel::~VideoListModel()

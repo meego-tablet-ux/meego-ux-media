@@ -124,7 +124,6 @@ signals:
     void playStatusChanged(const int playstatus);
     void shuffleChanged(const bool shuffle);
     void beginPlayback();
-    void databaseInitComplete();
 
 protected slots:
     /* from MusicDatabase signals */

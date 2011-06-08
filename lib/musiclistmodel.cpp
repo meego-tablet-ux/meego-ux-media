@@ -1119,6 +1119,7 @@ void MusicListModel::playAllSongs()
 
 void MusicListModel::initComplete()
 {
+    m_database_initialized = true;
     loadplayqueue = false;
     needplaycall = false;
     emit databaseInitComplete();
