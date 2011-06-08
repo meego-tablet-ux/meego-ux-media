@@ -22,12 +22,19 @@ MediaListModel::MediaListModel(QObject *parent)
     firstsort = true;
     datesearch = false;
     disable_filter = false;
+    m_database_initialized = false;
 }
 
 MediaListModel::~MediaListModel()
 {
     mediaItemsList.clear();
     mediaItemsDisplay.clear();
+}
+
+void MediaListModel::defaultDatabaseInitComplete()
+{
+    m_database_initialized = true;
+    emit databaseInitComplete();
 }
 
 bool MediaListModel::isURN(const QString &val)

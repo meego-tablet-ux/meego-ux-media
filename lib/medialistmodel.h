@@ -29,6 +29,7 @@ class MediaListModel : public QAbstractListModel
     /* total is the total number of items displayed or not */
     Q_PROPERTY(int total READ getTotal NOTIFY totalChanged);
     Q_PROPERTY(QString search READ getSearch WRITE setSearch NOTIFY searchChanged);
+    Q_PROPERTY(bool databaseinitcomplete READ getDatabaseInitComplete NOTIFY databaseInitComplete);
 
 public:
     MediaListModel(QObject *parent = 0);
@@ -94,6 +95,8 @@ public:
         { return mediaItemsDisplay.count(); }
     int getTotal() const
         { return mediaItemsList.count(); }
+    bool getDatabaseInitComplete() const
+        { return m_database_initialized; }
 
 public slots:
     /* MediaItem property retrieval functions */
@@ -139,9 +142,11 @@ signals:
     void countChanged(const int count);
     void itemAvailable(const QString identifier);
     void songItemAvailable(const QString identifier);
+    void databaseInitComplete();
 
 protected slots:
     void itemsRemoved(const QStringList &ids);
+    void defaultDatabaseInitComplete();
 
 protected:
     /* private filter functions which respond to setting the filter property */
@@ -160,6 +165,7 @@ protected:
     QStringList hiddenURNsList;
     QStringList urnSortList;
     bool disable_filter;
+    bool m_database_initialized;
 
     void notifyChanged(const QStringList &ids);
     void redisplay(const QModelIndex &parent = QModelIndex());
