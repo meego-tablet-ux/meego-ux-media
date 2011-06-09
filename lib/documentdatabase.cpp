@@ -188,7 +188,7 @@ void DocumentDatabase::requestItem(QString identifier)
         SqlCmd = TRACKER_DOCUMENT;
     else
         SqlCmd = TRACKER_DOCUMENT_URL;
-    QString sql = QString(SqlCmd).arg(identifier);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(identifier));
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))
