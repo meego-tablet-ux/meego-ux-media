@@ -50,6 +50,8 @@ public:
     QString getCoverArt() const
         { return m_coveruri; }
 
+    Q_INVOKABLE bool hasAlbumByTitle(const QString& title);
+
 public slots:
     void setFavorite(const QStringList &ids, bool val);
     void setViewed(const QStringList &ids);
