@@ -283,10 +283,10 @@ Item {
     Column {
         id: textBackground
         width: parent.width - content.width - 5
-        height: 138
+        height: wrapper.height - (wrapper.anchors.topMargin * 2)
         opacity: theme_mediaGridTitleBackgroundAlpha
         anchors.top: parent.top
-        anchors.topMargin: 10
+        anchors.topMargin: content.anchors.topMargin + wrapper.anchors.topMargin
         anchors.right: parent.right
         z: 1
         Text {
