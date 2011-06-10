@@ -665,6 +665,12 @@ void MusicListModel::itemsChanged(const QStringList &ids, int reason)
     {
         if(ids.contains(mediaItemsDisplay[i]->getID()))
         {
+            if(m_type == ListofPlaylists)
+            {
+                if (!mediaItemsDisplay[i]->m_thumburi_exists && mediaItemsDisplay[i]->thumbExists(mediaItemsDisplay[i]->thumbPlaylist(mediaItemsDisplay[i]->getTitle()))) {
+                    mediaItemsDisplay[i]->m_thumburi_exists = true;
+                }
+            }
             if(i1 < 0)
             {
                 i1 = i;
