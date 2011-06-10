@@ -27,7 +27,6 @@ DocumentListModel::DocumentListModel(QObject *parent)
     roles.insert(MediaItem::Favorite, "favorite");
     roles.insert(MediaItem::RecentlyAdded, "recentlyadded");
     roles.insert(MediaItem::RecentlyViewed, "recentlyviewed");
-    roles.insert(MediaItem::Index, "index");
     roles.insert(MediaItem::UserContent, "usercontent");
     setRoleNames(roles);
 
@@ -324,9 +323,6 @@ QVariant DocumentListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::RecentlyViewed)
         return mediaItemsDisplay[index.row()]->getRecentlyViewed();
-
-    if (role == MediaItem::Index)
-        return index.row();
 
     if (role == MediaItem::PlayStatus)
         return mediaItemsDisplay[index.row()]->m_playstatus;

@@ -125,6 +125,8 @@ protected:
     QDBusInterface *trackerinterface;
     bool fileExists(const QString &name);
 
+    QString sparqlEscape(const QString &s);
+
     /* recently viewed functionality */
     void clearRecentlyViewedTags();
     void getRecentKeyVal();
