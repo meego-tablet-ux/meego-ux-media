@@ -299,7 +299,7 @@ void MediaDatabase::changeTitleByURN(QString urn, QString title)
          "DELETE { <%1> nie:title ?title } WHERE { <%1> nie:title ?title } " \
          "INSERT { <%1> nie:title '%2' }";
 
-    QString sql = QString(SqlCmd).arg(urn, title);
+    QString sql = QString(SqlCmd).arg(urn, sparqlEscape(title));
     trackerCall(sql);
 
     if(item != NULL)
@@ -326,7 +326,7 @@ void MediaDatabase::changeTitle(QString uri, QString title)
          "DELETE { ?object nie:title ?unknown } WHERE { ?object nie:url '%1' ; nie:title ?unknown } " \
          "INSERT { ?object nie:title '%2' } WHERE { ?object nie:url '%1' } ";
 
-    QString sql = QString(SqlCmd).arg(uri, title);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(uri), sparqlEscape(title));
     trackerCallAsync(sql);
 
     for(int i = 0; i < mediaItemsList.count(); i++)
@@ -821,4 +821,31 @@ void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &ne
     sql += updateCounter.arg(mediaList->m_urn).arg(mediaList->children.count());
     qDebug() << sql;
     trackerCallAsync(sql);
+}
+QString MediaDatabase::sparqlEscape(const QString &s)
+{
+    QString res;
+    foreach(const QChar c, s) {
+        if (c == '\t') {
+            res.append("\\t");
+        } else if (c == '\r') {
+            res.append("\\r");
+        } else if (c == '\n') {
+            res.append("\\n");
+        } else if (c == '\b') {
+            res.append("\\b");
+        } else if (c == '\f') {
+            res.append("\\f");
+        } else if (c == '\"') {
+            res.append("\\\"");
+        } else if (c == '\'') {
+            res.append("\\'");
+        } else if (c == '\\') {
+            res.append("\\\\");
+        } else {
+            res.append(c);
+        }
+    }
+    // qDebug() << s << " => " << res;
+    return res;
 }

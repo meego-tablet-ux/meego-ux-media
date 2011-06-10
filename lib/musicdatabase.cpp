@@ -432,7 +432,7 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
     /* create a new playlist */
     QString SqlInsertBegin = "INSERT { _:a a nmm:Playlist; nie:title '%1' ; nfo:entryCounter %2 ";
     QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition %2 ] ";
-    sql += QString(SqlInsertBegin).arg(title).arg(list.count());
+    sql += QString(SqlInsertBegin).arg(sparqlEscape(title)).arg(list.count());
 
     int j = 0;
     for (int  i = 0; i < list.count(); i++) {
@@ -447,19 +447,19 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
         if(item->m_favorite)
         {
             QString SqlTag = FAVORITETAG;
-            sql += QString(SqlTag).arg(title);
+            sql += QString(SqlTag).arg(sparqlEscape(title));
         }
         if(!item->m_lastplayedtime.isEmpty())
         {
             QString SqlTag = VIEWEDTAG;
-            sql += QString(SqlTag).arg(title).arg(item->m_lastplayedtime);
+            sql += QString(SqlTag).arg(sparqlEscape(title)).arg(item->m_lastplayedtime);
         }
     }
 
     /* delete/insert the list */
     trackerCall(sql);
     SqlCmd = TRACKER_PLAYLIST_TITLE;
-    sql = QString(SqlCmd).arg(title);
+    sql = QString(SqlCmd).arg(sparqlEscape(title));
 
     QVector<QStringList> info;
     /* pull in the new list */
@@ -509,7 +509,7 @@ QStringList MusicDatabase::loadPlaylist(const QString &title, bool bytitle)
     else
         SqlCmd = TRACKER_PLAYLIST_CONTENTS_BY_URN;
 
-    QString sql = QString(SqlCmd).arg(title);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(title));
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))
@@ -721,7 +721,7 @@ void MusicDatabase::requestSongItems(int type, QString identifier)
     default:
         return;
     }
-    QString sql = QString(SqlCmd).arg(identifier);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(identifier));
     QVector<QStringList> info;
     if(trackerCall(info, sql))
     {
@@ -782,7 +782,7 @@ void MusicDatabase::requestItem(int type, QString identifier)
         SqlCmd = TRACKER_PLAYLIST;
         break;
     }
-    QString sql = QString(SqlCmd).arg(identifier);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(identifier));
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))

@@ -166,7 +166,7 @@ void VideoDatabase::requestItem(QString identifier)
         SqlCmd = TRACKER_VIDEO;
     else
         SqlCmd = TRACKER_VIDEO_URL;
-    QString sql = QString(SqlCmd).arg(identifier);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(identifier));
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))

@@ -251,7 +251,7 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
             MediaItem *item = new MediaItem(MediaItem::PhotoAlbumItem, recenttime, *i);
 
             QString SqlCmd = TRACKER_ALBUMPHOTOS;
-            QString sql = QString(SqlCmd).arg(item->m_title);
+            QString sql = QString(SqlCmd).arg(sparqlEscape(item->m_title));
             QVector<QStringList> info;
             if(trackerCall(info, sql))
             {
@@ -417,7 +417,7 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
     /* create a new album */
     QString SqlInsertBegin = "INSERT { _:a a nmm:ImageList; nie:title '%1' ; nfo:entryCounter %2 ";
     QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition %2 ] ";
-    sql += QString(SqlInsertBegin).arg(title).arg(list.count());
+    sql += QString(SqlInsertBegin).arg(sparqlEscape(title)).arg(list.count());
 
     int j = 0;
     for (int  i = 0; i < list.count(); i++) {
@@ -432,17 +432,17 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
         if(item->m_favorite)
         {
             QString SqlTag = FAVORITETAG;
-            sql += QString(SqlTag).arg(title);
+            sql += QString(SqlTag).arg(sparqlEscape(title));
         }
         if(!item->m_lastplayedtime.isEmpty())
         {
             QString SqlTag = VIEWEDTAG;
-            sql += QString(SqlTag).arg(title).arg(item->m_lastplayedtime);
+            sql += QString(SqlTag).arg(sparqlEscape(title)).arg(item->m_lastplayedtime);
         }
         if(!item->m_thumburi.isEmpty())
         {
             QString SqlTag = COVERARTTAG;
-            sql += QString(SqlTag).arg(title).arg(item->m_thumburi);
+            sql += QString(SqlTag).arg(sparqlEscape(title)).arg(item->m_thumburi);
         }
         else if(list.count() > 0)
         {
@@ -451,7 +451,7 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
             item->m_thumburi_exists = list[0]->m_thumburi_exists;
             item->m_thumburi_ignore = list[0]->m_thumburi_ignore;
             QString SqlTag = COVERARTTAG;
-            sql += QString(SqlTag).arg(title).arg(item->m_thumburi);
+            sql += QString(SqlTag).arg(sparqlEscape(title)).arg(item->m_thumburi);
             QStringList ids;
             ids << item->m_id;
             ids << list[0]->m_id;
@@ -462,7 +462,7 @@ void PhotoDatabase::saveAlbum(QList<MediaItem *> &list, const QString &title)
     /* delete/insert the list */
     trackerCall(sql);
     SqlCmd = TRACKER_PHOTOALBUM_TITLE;
-    sql = QString(SqlCmd).arg(title);
+    sql = QString(SqlCmd).arg(sparqlEscape(title));
 
     QVector<QStringList> info;
     /* pull in the new list */
@@ -533,7 +533,7 @@ void PhotoDatabase::setCoverArt(const QString &title, const QString &thumburi)
         "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'coverart' . ?object nao:hasTag _:tag }" \
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }";
 
-    QString sql = QString(SqlCmd).arg(title, thumburi);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(title), thumburi);
     trackerCallAsync(sql);
 }
 
@@ -556,7 +556,7 @@ void PhotoDatabase::destroyItem(MediaItem *item)
     if(item->m_type == MediaItem::PhotoAlbumItem)
     {
         QString SqlCmd = "DELETE { ?album a nmm:ImageList } WHERE { ?album a nmm:ImageList . FILTER (nie:title(?album) = '%1')} ";
-        QString sql = QString(SqlCmd).arg(item->m_title);
+        QString sql = QString(SqlCmd).arg(sparqlEscape(item->m_title));
         trackerCallAsync(sql);
         albumItemsHash.remove(item->m_title);
     }
@@ -635,7 +635,7 @@ void PhotoDatabase::requestItem(int type, QString identifier)
     }
     else
         SqlCmd = TRACKER_PHOTOALBUM;
-    QString sql = QString(SqlCmd).arg(identifier);
+    QString sql = QString(SqlCmd).arg(sparqlEscape(identifier));
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))
