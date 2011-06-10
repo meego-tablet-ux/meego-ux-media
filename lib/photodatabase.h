@@ -34,6 +34,8 @@ public slots:
     void trackerAlbumAdded(int sid);
     void trackerGetPhotosFinished(QDBusPendingCallWatcher *call);
     void thumbReady(const MediaItem *item);
+private slots:
+    void onItemsChanged(const QStringList &ids, int reason);
 
 private:
     static PhotoDatabase *photoDatabaseInstance;

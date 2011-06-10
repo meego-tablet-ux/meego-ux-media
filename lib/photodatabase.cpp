@@ -41,6 +41,7 @@ PhotoDatabase::PhotoDatabase(QObject *parent)
     connect(this,SIGNAL(photoItemAdded(int)),this,SLOT(trackerPhotoAdded(int)));
     connect(this,SIGNAL(photoAlbumItemAdded(int)),this,SLOT(trackerAlbumAdded(int)));
     connect(&thumb,SIGNAL(success(const MediaItem *)),this,SLOT(thumbReady(const MediaItem *)));
+    connect(this ,SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(onItemsChanged(const QStringList &, int)));
 
     qDebug() << "Initializing the database";
     trackerGetPhotos(trackerindex, trackeritems);
@@ -49,6 +50,26 @@ PhotoDatabase::PhotoDatabase(QObject *parent)
 PhotoDatabase::~PhotoDatabase()
 {
     qDebug() << "~PhotoListModel";
+}
+void PhotoDatabase::onItemsChanged(const QStringList &ids, int reason)
+{
+    if (reason == MediaDatabase::Title)
+    {
+        QList<MediaItem *> changedItems;
+        QList<MediaItem *> values = albumItemsHash.values();
+        foreach(MediaItem* item, values)
+        {
+            if (ids.contains(item->m_id)) {
+                changedItems << item;
+            }
+        }
+        foreach(MediaItem *item, changedItems)
+        {
+            const QString key = albumItemsHash.key(item);
+            albumItemsHash.remove(key);
+            albumItemsHash.insert(item->m_title, item);
+        }
+    }
 }
 
 MediaItem* PhotoDatabase::getAlbumItem(const QString &title)

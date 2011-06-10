@@ -156,6 +156,10 @@ void PhotoListModel::setType(const int type)
     connectSignals(true, true, true);
 }
 
+bool PhotoListModel::hasAlbumByTitle(const QString& title)
+{
+    return PhotoDatabase::instance()->getAlbumItem(title) != NULL;
+}
 void PhotoListModel::setAlbum(const QString &album)
 {
     m_album = album;
