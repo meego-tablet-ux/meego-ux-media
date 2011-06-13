@@ -284,10 +284,10 @@ Item {
         id: textBackground
         width: parent.width - content.width - 5
         height: wrapper.height - (wrapper.anchors.topMargin * 2)
-        opacity: theme_mediaGridTitleBackgroundAlpha
         anchors.top: parent.top
         anchors.topMargin: content.anchors.topMargin + wrapper.anchors.topMargin
-        anchors.right: parent.right
+        anchors.left: content.right
+        anchors.leftMargin: 10
         z: 1
         Text {
             id: titleText
