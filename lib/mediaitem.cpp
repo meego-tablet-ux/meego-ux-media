@@ -285,7 +285,7 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     else if(isAnyVideoType() && (args.count() == VID_ARGS))
     {
         m_uri = (QUrl::fromEncoded(args.at(IDX_VID_URI).toAscii())).toString();
-        m_title = (QUrl::fromEncoded(args.at(IDX_VID_TITLE).toAscii())).toString();
+        m_title = args.at(IDX_VID_TITLE);
         if(!args.at(IDX_VID_DURATION).isEmpty())
             m_length = args.at(IDX_VID_DURATION).toInt();
         m_mimetype = args.at(IDX_VID_MIME);

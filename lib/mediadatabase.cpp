@@ -86,7 +86,8 @@ bool MediaDatabase::getTrackerIDs()
                      "tracker:id(nmm:Photo) tracker:id(nmm:ImageList) " \
                      "tracker:id(nmm:MusicPiece) tracker:id(nmm:MusicAlbum) " \
                      "tracker:id(nmm:Artist) tracker:id(nmm:Playlist) " \
-                     "tracker:id(nmm:Video) tracker:id(nao:Tag) {}";
+                     "tracker:id(nmm:Video) tracker:id(nao:Tag) "\
+                     "tracker:id(nfo:entryCounter) {}";
 
     QVector<QStringList> info;
     if(trackerCall(info, SqlCmd))
@@ -95,11 +96,11 @@ bool MediaDatabase::getTrackerIDs()
         {
             TrackerIDs temp;
             QStringList ids = (*i);
-            if(ids.count() != 10)
+            if(ids.count() != 11)
                 return false;
 
             temp.valid = true;
-            for(int i = 0; i < 10; i++)
+            for(int i = 0; i < 11; i++)
             {
                 bool ok;
                 int val = ids[i].toInt(&ok);
@@ -136,6 +137,9 @@ bool MediaDatabase::getTrackerIDs()
                     break;
                 case 9:
                     temp.nao_Tag = val;
+                    break;
+                case 10:
+                    temp.nfo_entryCounter = val;
                     break;
                 }
             }
@@ -734,6 +738,16 @@ void MediaDatabase::trackerUpdates(QString classname, QVector<Quad> deletes, QVe
             }
             if(!processed.isEmpty())
                 emit itemsChanged(processed, MediaDatabase::Title);
+        }
+        else if(classname.endsWith("nmm#Playlist"))
+        {
+            if(predicate == tid.nfo_entryCounter && mediaItemsSidHash.contains(subject))
+            {
+                QStringList changed;
+                MediaItem *item = mediaItemsSidHash[subject];
+                changed << item->m_id;
+                emit itemsChanged(changed, MediaDatabase::Other);
+            }
         }
     }
 

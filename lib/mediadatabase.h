@@ -36,6 +36,7 @@ struct TrackerIDs
     int nmm_Playlist;
     int nmm_Video;
     int nao_Tag;
+    int nfo_entryCounter;
 };
 
 QDebug operator<<(QDebug d, Quad const &t);
