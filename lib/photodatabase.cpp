@@ -282,6 +282,10 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
     {
         for (QVector<QStringList>::iterator i = trackerreply.begin(); i != trackerreply.end(); i++)
         {
+            // ignore any photos found in the music directory, they're probably album covers.
+            if(MediaItem::isInMusicDir((*i)[IDX_PHO_URI]))
+                continue;
+
             /* if this item is already in our list, skip it */
             if(mediaItemsUrnHash.contains((*i)[IDX_URN]))
             {
