@@ -461,6 +461,13 @@ QString MediaItem::thumbPlaylistDir()
     return thumbnail_folder;
 }
 
+bool MediaItem::isInMusicDir(QString path)
+{
+    QString homePath = QDir::toNativeSeparators(QDir::homePath());
+    QString music = homePath + QDir::separator() + QString("Music");
+    return path.contains(music);
+}
+
 QString MediaItem::thumbPlaylist(const QString &title)
 {
     if(title.isEmpty())

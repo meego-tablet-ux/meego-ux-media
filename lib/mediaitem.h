@@ -523,6 +523,7 @@ public:
     static QString thumbPlaylist(const QString &title);
     static QString thumbPlaylistImageProvider(const QString &title);
     static QString thumbPlaylistDir();
+    static bool isInMusicDir(QString path);
 private:
     /* internal data for the item */
     QByteArray md5Result;
