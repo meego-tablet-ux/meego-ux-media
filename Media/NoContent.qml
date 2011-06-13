@@ -53,6 +53,7 @@ NoContentBase {
                         font.pixelSize: theme_fontPixelSizeLarge
                         wrapMode: Text.WordWrap
                         height: desc.visible ? paintedHeight + 20 : undefined
+                        color: theme_fontColorNormal
                     }
                     Text {
                         id: desc
@@ -61,7 +62,7 @@ NoContentBase {
                         text: description
                         font.pixelSize: theme_fontPixelSizeNormal
                         wrapMode: Text.WordWrap
-                        height: paintedHeight
+                        color: theme_fontColorNormal
                     }
                 }
             }
@@ -80,6 +81,7 @@ NoContentBase {
                     Button {
                         id: button1
                         text: button1Text
+                        active: true
                         onClicked: {
                             if (showButton1ContextMenu) {
                                 var pos = mapToItem(topItem.topItem, width-(height/2),height/2);
@@ -98,6 +100,7 @@ NoContentBase {
                     }
                     Button {
                         id: button2
+                        active: true
                         visible: button2Text != ""
                         text: button2Text
                         onClicked: {

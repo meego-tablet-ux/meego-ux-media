@@ -22,10 +22,6 @@ Item {
     Column {
         id: col
         width: parent.width
-        Loader {
-            width: parent.width
-            sourceComponent: separator
-        }
         Item {
             id: notificationContent
             //TODO check margins
