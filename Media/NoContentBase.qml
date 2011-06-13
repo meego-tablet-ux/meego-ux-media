@@ -23,35 +23,61 @@ Item {
         id: col
         width: parent.width
         Item {
+            width: parent.width - noContentSpacing
+            height: noContentSpacing
+        }
+        Item {
             id: notificationContent
             //TODO check margins
-            width: parent.width - 2*10
+            width: parent.width - 2*noContentSpacing
             height: childrenRect.height
             anchors.horizontalCenter: parent.horizontalCenter
         }
+        Item {
+            width: parent.width - noContentSpacing
+            height: noContentSpacing
+        }
         Loader {
-            width: parent.width
+            width: parent.width - 2*noContentSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
             sourceComponent: separator
+        }
+        Item {
+            width: parent.width - 2*noContentSpacing
+            height: noContentSpacing
         }
         Item {
             id: helpContent
             //TODO check margins
             width: parent.width
-            height: noContents.height - 2*20 - notificationContent.height
+            height: noContents.height - 2*noContentSpacing - notificationContent.height
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }
     Component {
         id: separator
         Item {
+            height: 2
             width: parent.width
-            // TODO check margin
-            height: 20
-            Image {
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width
-                // TODO this probably is not correct separator
-                source: "image://themedimage/images/dialog-separator"
+            Rectangle {
+                id: spaceLineDark
+                // TODO: Use defined values from theme
+                color: "#cbc9c9"//separatorDarkColor
+                opacity: 1.0 //separatorDarkAlpha
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.top: parent.top
+            }
+            Rectangle {
+                id: spaceLineLight
+                // TODO: Use defined values from theme
+                color: "#FFFFFF"//separatorLightColor
+                opacity: 1.0 //separatorLightAlpha
+                height: 1
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
             }
         }
     }

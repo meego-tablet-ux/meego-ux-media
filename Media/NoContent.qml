@@ -37,7 +37,8 @@ NoContentBase {
         width: parent.width
         height: isLandscape ? Math.max(col.height, buttons.height) : col.height + buttons.height
         Grid {
-            width: parent.width
+            width: parent.width - 2*noContentSpacing
+            anchors.horizontalCenter: parent.horizontalCenter
             columns: isLandscape ? 2 : 1
             Item {
                 id: textArea

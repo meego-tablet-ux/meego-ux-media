@@ -25,13 +25,13 @@ Item {
         columns: landscape ? 1 : 2
         Item {
             id: imageArea
-            width: landscape ? parent.width : screenshot.width + noContentSpacing
-            height: landscape ? screenshot.height + noContentSpacing : parent.height
+            width: landscape ? parent.width : screenshot.width + 2*noContentSpacing
+            height: landscape ? screenshot.height + 2*noContentSpacing : parent.height
             Image {
                 id: screenshot
                 visible: headingText.text != ""
                 anchors.top: parent.top
-                anchors.topMargin: noContentSpacing
+                anchors.topMargin: 2*noContentSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
                 width: source != "" ? sourceSize.width : 384
                 height: source != "" ? sourceSize.height : 232
@@ -51,7 +51,7 @@ Item {
                     visible: text != ""
                     active: true
                     anchors.bottom: parent.bottom
-                    anchors.bottomMargin: noContentSpacing
+                    anchors.bottomMargin: 2*noContentSpacing
                     anchors.horizontalCenter: parent.horizontalCenter
                     onClicked: {
                         helpItem.buttonClicked();
@@ -63,21 +63,21 @@ Item {
             width: landscape ? parent.width : parent.width - imageArea.width
             Item {
                 width: parent.width
-                height: 2*noContentSpacing
+                height: 4*noContentSpacing
             }
             Text {
                 id: headingText
-                width: parent.width - 4*noContentSpacing
+                width: parent.width - 8*noContentSpacing
                 anchors.horizontalCenter: parent.horizontalCenter
                 font.pixelSize: theme_fontPixelSizeLarge
                 wrapMode: Text.WordWrap
-                height: paintedHeight + noContentSpacing
+                height: paintedHeight + 2*noContentSpacing
                 color: theme_fontColorNormal
             }
             Text {
                 id: helpText
                 anchors.horizontalCenter: parent.horizontalCenter
-                width: parent.width - 4*noContentSpacing
+                width: parent.width - 8*noContentSpacing
                 font.pixelSize: theme_fontPixelSizeNormal
                 wrapMode: Text.WordWrap
                 color: theme_fontColorMedium
