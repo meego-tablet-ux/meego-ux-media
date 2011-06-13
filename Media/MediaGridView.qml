@@ -329,16 +329,16 @@ Item {
         cellWidth: {
             switch(type) {
             case 0:
-                return 326
+                return Math.floor(parent.width / Math.floor(parent.width / 326))
                 break;
             case 1:
-                return 370
+                return Math.floor(parent.width / Math.floor(parent.width / 365))
                 break;
             case 2:
                 return 110
                 break;
             case 3:
-                return 326
+                return Math.floor(parent.width / Math.floor(parent.width / 326))
                 break;
             case 4:
                 return theme.thumbSize
