@@ -70,6 +70,40 @@ void PhotoDatabase::onItemsChanged(const QStringList &ids, int reason)
             albumItemsHash.insert(item->m_title, item);
         }
     }
+    else if(reason == MediaDatabase::Contents)
+    {
+        foreach(const QString &id, ids)
+        {
+            if (mediaItemsIdHash.contains(id))
+            {
+                MediaItem *item = mediaItemsIdHash[id];
+                // id photo album then reload photo list
+                if (item->isPhotoAlbum())
+                {
+                    // qDebug() << "reloading photo list for: " << item->m_title;
+                    QString sql = QString(TRACKER_ALBUMPHOTOS).arg(sparqlEscape(item->m_title));
+                    QVector<QStringList> info;
+                    trackerSync();
+                    if(trackerCall(info, sql))
+                    {
+                        item->children.clear();
+                        for (QVector<QStringList>::iterator j = info.begin(); j != info.end(); j++)
+                        {
+                            QString urn = (*j)[IDX_URN];
+                            if(!urn.isEmpty())
+                                item->children << urn;
+                        }
+                    }
+                    // re-generate thumb, just in case previous thumbnail photo was removed
+                    item->m_thumburi = "";
+                    item->m_thumburi_exists = false;
+                    processAlbum(item);
+                    // qDebug() << "photo list count: " << item->children.count();
+                    // qDebug() << "photo list thumbnail: " << item->m_thumburi;
+                }
+            }
+        }
+    }
 }
 
 MediaItem* PhotoDatabase::getAlbumItem(const QString &title)
@@ -229,7 +263,6 @@ void PhotoDatabase::trackerGetPhotos(const int offset, const int limit)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
                      this, SLOT(trackerGetPhotosFinished(QDBusPendingCallWatcher*)));
 }
-
 void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority)
 {
     QList<MediaItem *> newItemsList;
@@ -269,7 +302,6 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
             mediaItemsSidHash.insert(item->m_sid, item);
             albumItemsHash.insert(item->m_title, item);
             processAlbum(item);
-
             /* tell the world we have new data */
             itemAdded(item);
 
@@ -504,7 +536,8 @@ void PhotoDatabase::updateAlbum(MediaItem *item, QList<MediaItem *> &newList)
         // remove thumburi if album is now empty
         item->m_thumburi = "";
     } else {
-        // processAlbum generates a thumburi if album doesn't have it already
+        // re-generate thumb, just in case previous thumbnail photo was removed
+        item->m_thumburi = "";
         processAlbum(item);
     }
 
