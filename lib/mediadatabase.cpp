@@ -217,6 +217,12 @@ bool MediaDatabase::trackerCall(QVector<QStringList> &out, const QString &cmd)
     return true;
 }
 
+void MediaDatabase::trackerSync()
+{
+    QList<QVariant> argumentList;
+    trackerinterface->callWithArgumentList(QDBus::BlockWithGui,
+                QLatin1String("Sync"), argumentList);
+}
 void MediaDatabase::trackerCall(const QString &cmd)
 {
     QList<QVariant> argumentList;
@@ -739,14 +745,14 @@ void MediaDatabase::trackerUpdates(QString classname, QVector<Quad> deletes, QVe
             if(!processed.isEmpty())
                 emit itemsChanged(processed, MediaDatabase::Title);
         }
-        else if(classname.endsWith("nmm#Playlist"))
+        else if(classname.endsWith("nmm#Playlist") || classname.endsWith("nmm#ImageList"))
         {
             if(predicate == tid.nfo_entryCounter && mediaItemsSidHash.contains(subject))
             {
                 QStringList changed;
                 MediaItem *item = mediaItemsSidHash[subject];
                 changed << item->m_id;
-                emit itemsChanged(changed, MediaDatabase::Other);
+                emit itemsChanged(changed, MediaDatabase::Contents);
             }
         }
     }
@@ -759,7 +765,6 @@ void MediaDatabase::trackerUpdates(QString classname, QVector<Quad> deletes, QVe
 
         int subject = deletes[i].subject;
         int object = deletes[i].object;
-
         if((classname.endsWith("nmm#Photo")&&(object == tid.nmm_Photo))||
            (classname.endsWith("nmm#ImageList")&&(object == tid.nmm_ImageList))||
            (classname.endsWith("nmm#MusicPiece")&&(object == tid.nmm_MusicPiece))||
@@ -834,7 +839,8 @@ void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &ne
     QString updateCounter = "INSERT OR REPLACE DATA { <%1> nfo:entryCounter '%2'}";
     sql += updateCounter.arg(mediaList->m_urn).arg(mediaList->children.count());
     qDebug() << sql;
-    trackerCallAsync(sql);
+    trackerCall(sql);
+    trackerSync();
 }
 QString MediaDatabase::sparqlEscape(const QString &s)
 {
