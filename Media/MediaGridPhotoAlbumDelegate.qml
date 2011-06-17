@@ -249,10 +249,10 @@ Item {
         id: textBackground
         width: content.width * 2
         height: 108
-        opacity: theme_mediaGridTitleBackgroundAlpha
         anchors.top: parent.top
         anchors.topMargin: 10
-        anchors.right: parent.right
+        anchors.left: content.right
+        anchors.leftMargin: 10
         z: 1
         Text {
             id: titleText
@@ -274,7 +274,7 @@ Item {
             anchors.leftMargin: 5
             Text {
                 id: photocountText
-                text: (mphotocount == 1)? qsTr("1 Photo") : qsTr("%1 Photos").arg(mphotocount)
+                text:qsTr("%n Photo(s)", "", mphotocount)
                 font.pixelSize: theme_fontPixelSizeNormal
                 width: titleText.width
                 elide: Text.ElideRight

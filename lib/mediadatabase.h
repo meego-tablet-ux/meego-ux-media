@@ -36,6 +36,7 @@ struct TrackerIDs
     int nmm_Playlist;
     int nmm_Video;
     int nao_Tag;
+    int nfo_entryCounter;
 };
 
 QDebug operator<<(QDebug d, Quad const &t);
@@ -83,6 +84,7 @@ public:
     void setFavoriteMulti(const QStringList &ids, bool val);
     void setViewedMulti(const QStringList &ids);
     void setPlayStatus(const QString &id, int playstatus);
+    void trackerSync();
     bool trackerCall(QVector<QStringList> &out, const QString &cmd);
     void trackerCall(const QString &cmd);
     void trackerCallAsync(const QString &cmd);

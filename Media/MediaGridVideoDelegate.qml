@@ -284,10 +284,10 @@ Item {
         id: textBackground
         width: parent.width - content.width - 5
         height: wrapper.height - (wrapper.anchors.topMargin * 2)
-        opacity: theme_mediaGridTitleBackgroundAlpha
         anchors.top: parent.top
         anchors.topMargin: content.anchors.topMargin + wrapper.anchors.topMargin
-        anchors.right: parent.right
+        anchors.left: content.right
+        anchors.leftMargin: 10
         z: 1
         Text {
             id: titleText
@@ -300,7 +300,7 @@ Item {
         }
         Text {
             id: durationText
-            text: (formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))
+            text:qsTr("%n Minute(s)", "", formatMinutes(length))
             font.pixelSize: theme_fontPixelSizeNormal
             width: titleText.width
             elide: Text.ElideRight

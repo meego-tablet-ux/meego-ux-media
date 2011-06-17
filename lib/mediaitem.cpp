@@ -285,7 +285,7 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     else if(isAnyVideoType() && (args.count() == VID_ARGS))
     {
         m_uri = (QUrl::fromEncoded(args.at(IDX_VID_URI).toAscii())).toString();
-        m_title = (QUrl::fromEncoded(args.at(IDX_VID_TITLE).toAscii())).toString();
+        m_title = args.at(IDX_VID_TITLE);
         if(!args.at(IDX_VID_DURATION).isEmpty())
             m_length = args.at(IDX_VID_DURATION).toInt();
         m_mimetype = args.at(IDX_VID_MIME);
@@ -459,6 +459,13 @@ QString MediaItem::thumbPlaylistDir()
     QString homePath = QDir::toNativeSeparators(QDir::homePath());
     QString thumbnail_folder = homePath + QDir::separator() + QString(".thumbnails") + QDir::separator() + QString("playlists");
     return thumbnail_folder;
+}
+
+bool MediaItem::isInMusicDir(QString path)
+{
+    QString homePath = QDir::toNativeSeparators(QDir::homePath());
+    QString music = homePath + QDir::separator() + QString("Music");
+    return path.contains(music);
 }
 
 QString MediaItem::thumbPlaylist(const QString &title)

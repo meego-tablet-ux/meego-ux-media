@@ -48,8 +48,8 @@ Item {
             height: parent.height
             width: showfavourite?itemwidth:0
             visible: showfavourite
-            bgSourceUp: "image://themedimage/icons/toolbar/contact-favorite-selected"
-            bgSourceDn: "image://themedimage/icons/toolbar/contact-favorite-selected-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/favorite-active"
+            bgSourceDn: "image://themedimage/icons/actionbar/favorite-active"
             onClicked: container.favouritePressed()
         }
         MediaToolbarButton {
@@ -59,8 +59,8 @@ Item {
             height: parent.height
             width: showunfavourite?itemwidth:0
             visible: showunfavourite
-            bgSourceUp: "image://themedimage/icons/toolbar/contact-favorite"
-            bgSourceDn: "image://themedimage/icons/toolbar/contact-favorite-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/favorite"
+            bgSourceDn: "image://themedimage/icons/actionbar/favorite"
             onClicked: container.unfavouritePressed()
         }
         MediaToolbarButton {
@@ -70,8 +70,8 @@ Item {
             height: parent.height
             width: showaddtoqueue?itemwidth:0
             visible: showaddtoqueue
-            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-playqueue-add"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-playqueue-add"
             onClicked: container.addToQueuePressed()
         }
         MediaToolbarButton {
@@ -81,8 +81,8 @@ Item {
             height: parent.height
             width: showaddtoplaylist?itemwidth:0
             visible: showaddtoplaylist
-            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-playlist-add"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-playlist-add"
             onClicked: container.addToPlaylistPressed()
         }
         MediaToolbarButton {
@@ -92,8 +92,8 @@ Item {
             height: parent.height
             width: itemwidth
             visible: true
-            bgSourceUp: "image://themedimage/images/media/icn_share_up"
-            bgSourceDn: "image://themedimage/images/media/icn_share_up"
+            bgSourceUp: "image://themedimage/icons/actionbar/share"
+            bgSourceDn: "image://themedimage/icons/actionbar/share"
             onClicked: container.sharePressed(btShare.x + btShare.width/2, btShare.y)
         }
         MediaToolbarButton {
@@ -103,8 +103,8 @@ Item {
             height: parent.height
             width: showrmfromqueue?itemwidth:0
             visible: showrmfromqueue
-            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-playqueue-remove-active"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-playqueue-remove-active"
             onClicked: container.rmFromQueuePressed()
         }
         MediaToolbarButton {
@@ -114,8 +114,8 @@ Item {
             height: parent.height
             width: showrmfromplaylist?itemwidth:0
             visible: showrmfromplaylist
-            bgSourceUp: "image://themedimage/images/media/icn_addtoalbum_up"
-            bgSourceDn: "image://themedimage/images/media/icn_addtoalbum_dn"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-playlist-remove"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-playlist-remove"
             onClicked: container.rmFromPlaylistPressed()
         }
         MediaToolbarButton {
@@ -126,7 +126,7 @@ Item {
             width: showdelete?itemwidth:0
             visible: showdelete
             bgSourceUp: "image://themedimage/icons/actionbar/edit-delete"
-            bgSourceDn: "image://themedimage/images/media/icn_trash_dn"
+            bgSourceDn: "image://themedimage/icons/actionbar/edit-delete"
             onClicked: container.deletePressed()
         }
         MediaToolbarButton {
@@ -137,7 +137,7 @@ Item {
             width: itemwidth
             visible: true
             bgSourceUp: "image://themedimage/icons/actionbar/edit-cancel"
-            bgSourceDn: "image://themedimage/images/media/icn_cancel_ms_dn"
+            bgSourceDn: "image://themedimage/icons/actionbar/edit-cancel"
             onClicked: container.cancelPressed()
         }
     }

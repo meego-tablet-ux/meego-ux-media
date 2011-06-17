@@ -490,9 +490,15 @@ void MusicDatabase::updatePlaylist(MediaItem *item, QList<MediaItem *> &newList)
 {
     updateMediaList(item, newList);
 
-    createPlaylistThumb(newList, item->m_title);
-    generatePlaylistThumbId(item);
-    item->m_thumburi_exists = true;
+    if (newList.count() > 0) {
+        createPlaylistThumb(newList, item->m_title);
+        generatePlaylistThumbId(item);
+        item->m_thumburi_exists = true;
+    } else {
+        QFile f(MediaItem::thumbPlaylist(item->m_title));
+        f.remove();
+        item->m_thumburi_exists = false;
+    }
 
     QStringList temp;
     temp << item->m_id;
