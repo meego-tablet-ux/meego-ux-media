@@ -40,7 +40,7 @@ Item {
         catch(error) {
             console.log("Catch error in convertTempToData()")
             try {
-                awdClient.parent.setDeafultData();
+                awdClient.parent.setDefaultData();
             }
             catch(error) {
                 console.log("Catch error in catch(error) in convertTempToData()")
