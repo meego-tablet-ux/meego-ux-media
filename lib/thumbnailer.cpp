@@ -121,7 +121,7 @@ void Thumbnailer::thumbnailerResumeLoop()
 
 void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QString data)
 {
-    qDebug() << "Media Info Ready: " << reqid << type << info << data;
+    //qDebug() << "Media Info Ready: " << reqid << type << info << data;
     QList<MediaItem *> removeList;
     QStringList args = info.split("|", QString::KeepEmptyParts);
     QString thumburi = QString("file://") + args.last();
@@ -147,7 +147,7 @@ void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QStri
 
 void Thumbnailer::downloadError(QString reqid, QString type, QString info, QString errorString)
 {
-    qDebug() << "Media Downloader Error: " << reqid << type << info << errorString;
+    //qDebug() << "Media Downloader Error: " << reqid << type << info << errorString;
     QList<MediaItem *> removeList;
 
     for(int i = 0; i < queue.count(); i++)

@@ -35,8 +35,8 @@ public slots:
     void downloadReady(QString reqid, QString type, QString info, QString data);
 
 signals:
-    void success(const MediaItem *item);
-    void failure(const MediaItem *item);
+    void success(MediaItem *item);
+    void failure(MediaItem *item);
 
 private:
     QList<MediaItem *> queue;
