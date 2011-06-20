@@ -48,6 +48,7 @@ VideoDatabase::~VideoDatabase()
 void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority)
 {
     QList<MediaItem *> newItemsList;
+    QList<MediaItem *> thumbList;
 
     if(type == MediaItem::VideoItem)
     {
@@ -66,6 +67,8 @@ void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
             {
                 MediaItem *item = new MediaItem(type, recenttime, *i);
                 newItemsList << item;
+                if(item->m_thumbtype != MediaItem::VideoThumb)
+                    thumbList << item;
                 mediaItemsSidHash.insert(item->m_sid, item);
                 mediaItemsUrnHash.insert(item->m_urn, item);
                 mediaItemsIdHash.insert(item->m_id, item);
@@ -74,7 +77,7 @@ void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
     }
 
     mediaItemsList += newItemsList;
-    thumb.queueRequests(newItemsList);
+    thumb.queueRequests(thumbList);
 
     /* tell the world we have new data */
     emit itemsAdded(&newItemsList);

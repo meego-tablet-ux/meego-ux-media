@@ -316,7 +316,7 @@
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
 #define VIEWEDTAG "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'viewed' . ?object nao:hasTag _:tag } " \
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
-#define DEFAULT_FLAVOR        "large"
+#define DEFAULT_FLAVOR        "square"
 #define USER_CONTENT_STRING "MeeGo User Generated Content"
 
 class MediaItem: public QObject {
@@ -520,13 +520,13 @@ public:
 
     static QString thumbMusicAlbum(const QString &artist, const QString &album);
     static QString thumbMusicArtist(const QString &artist);
+    static QString thumbVideo(const QString &uri);
     static QString thumbPlaylist(const QString &title);
     static QString thumbPlaylistImageProvider(const QString &title);
     static QString thumbPlaylistDir();
     static bool isInMusicDir(QString path);
 private:
     /* internal data for the item */
-    QByteArray md5Result;
     static QString stripInvalidEntities(const QString& src);
     QString thumbPhoto(const QString &uri);
     QString fileFormatted(const QString &file);

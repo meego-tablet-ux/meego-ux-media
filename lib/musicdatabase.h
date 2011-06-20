@@ -56,7 +56,6 @@ private:
     void generatePlaylistThumbId(MediaItem *item);
     void requestSongItems(int type, QString identifier);
     int playlistthumbid;
-    QStringList notifyUrns;
 
     /* music database hashes for easy lookup */
     QHash<QString, MediaItem *> artistItemHash;
