@@ -571,18 +571,12 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::ThumbURI)
     {
-        /* tell the database we need a thumbnail if one isn't ready */
-        if(mediaItemsDisplay[index.row()]->m_thumburi_ignore)
-        {
-            return "";
-        }
-        else if(mediaItemsDisplay[index.row()]->m_thumburi_exists)
+        if(mediaItemsDisplay[index.row()]->m_thumburi_exists)
         {
             return mediaItemsDisplay[index.row()]->getThumbURI();
         }
         else
         {
-            PhotoDatabase::instance()->requestThumbnail(mediaItemsDisplay[index.row()]);
             return "";
         }
     }
@@ -600,7 +594,6 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
         }
         else
         {
-            PhotoDatabase::instance()->requestThumbnail(mediaItemsDisplay[index.row()]->albumitem);
             return "";
         }
     }

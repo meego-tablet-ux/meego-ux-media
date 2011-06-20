@@ -274,7 +274,7 @@ Item {
             anchors.leftMargin: 5
             Text {
                 id: photocountText
-                text: (mphotocount == 1)? qsTr("1 Photo") : qsTr("%1 Photos").arg(mphotocount)
+                text:qsTr("%n Photo(s)", "", mphotocount)
                 font.pixelSize: theme_fontPixelSizeNormal
                 width: titleText.width
                 elide: Text.ElideRight

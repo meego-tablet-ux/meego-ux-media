@@ -1,4 +1,4 @@
-VERSION = 0.2.21
+VERSION = 0.2.23
 
 PROJECT_NAME = meego-ux-media
 

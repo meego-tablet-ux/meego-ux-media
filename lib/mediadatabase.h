@@ -84,6 +84,7 @@ public:
     void setFavoriteMulti(const QStringList &ids, bool val);
     void setViewedMulti(const QStringList &ids);
     void setPlayStatus(const QString &id, int playstatus);
+    void trackerSync();
     bool trackerCall(QVector<QStringList> &out, const QString &cmd);
     void trackerCall(const QString &cmd);
     void trackerCallAsync(const QString &cmd);
@@ -118,7 +119,6 @@ protected:
     QHash<QString, MediaItem *> mediaItemsUrnHash;
     QHash<QString, MediaItem *> mediaItemsIdHash;
     QHash<int, MediaItem *> mediaItemsSidHash;
-    QList<MediaItem *> needThumbList;
     void itemAdded(MediaItem *item);
     void itemChanged(MediaItem *item, int reason);
 
@@ -143,9 +143,6 @@ protected:
     bool classNameIsMediaItem(QString);
     bool getTrackerIDs();
     TrackerIDs tid;
-
-    /* variables used in thumbnail loops */
-    QTimer thumbnailerTimer;
 };
 
 #endif // MEDIADATABASE_H

@@ -40,7 +40,6 @@ PhotoDatabase::PhotoDatabase(QObject *parent)
 
     connect(this,SIGNAL(photoItemAdded(int)),this,SLOT(trackerPhotoAdded(int)));
     connect(this,SIGNAL(photoAlbumItemAdded(int)),this,SLOT(trackerAlbumAdded(int)));
-    connect(&thumb,SIGNAL(success(const MediaItem *)),this,SLOT(thumbReady(const MediaItem *)));
     connect(this ,SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(onItemsChanged(const QStringList &, int)));
 
     qDebug() << "Initializing the database";
@@ -68,6 +67,40 @@ void PhotoDatabase::onItemsChanged(const QStringList &ids, int reason)
             const QString key = albumItemsHash.key(item);
             albumItemsHash.remove(key);
             albumItemsHash.insert(item->m_title, item);
+        }
+    }
+    else if(reason == MediaDatabase::Contents)
+    {
+        foreach(const QString &id, ids)
+        {
+            if (mediaItemsIdHash.contains(id))
+            {
+                MediaItem *item = mediaItemsIdHash[id];
+                // id photo album then reload photo list
+                if (item->isPhotoAlbum())
+                {
+                    // qDebug() << "reloading photo list for: " << item->m_title;
+                    QString sql = QString(TRACKER_ALBUMPHOTOS).arg(sparqlEscape(item->m_title));
+                    QVector<QStringList> info;
+                    trackerSync();
+                    if(trackerCall(info, sql))
+                    {
+                        item->children.clear();
+                        for (QVector<QStringList>::iterator j = info.begin(); j != info.end(); j++)
+                        {
+                            QString urn = (*j)[IDX_URN];
+                            if(!urn.isEmpty())
+                                item->children << urn;
+                        }
+                    }
+                    // re-generate thumb, just in case previous thumbnail photo was removed
+                    item->m_thumburi = "";
+                    item->m_thumburi_exists = false;
+                    processAlbum(item);
+                    // qDebug() << "photo list count: " << item->children.count();
+                    // qDebug() << "photo list thumbnail: " << item->m_thumburi;
+                }
+            }
         }
     }
 }
@@ -229,7 +262,6 @@ void PhotoDatabase::trackerGetPhotos(const int offset, const int limit)
     QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
                      this, SLOT(trackerGetPhotosFinished(QDBusPendingCallWatcher*)));
 }
-
 void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority)
 {
     QList<MediaItem *> newItemsList;
@@ -269,7 +301,6 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
             mediaItemsSidHash.insert(item->m_sid, item);
             albumItemsHash.insert(item->m_title, item);
             processAlbum(item);
-
             /* tell the world we have new data */
             itemAdded(item);
 
@@ -312,7 +343,6 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
                 processPhoto(item);
            }
         }
-        thumb.queueRequests(newItemsList);
 
         /* tell the world we have new data */
         emit itemsAdded(&newItemsList);
@@ -367,10 +397,6 @@ void PhotoDatabase::trackerGetPhotosFinished(QDBusPendingCallWatcher *call)
      }
 
      trackerAddItems(targetitemtype, photos);
-
-     /* generate the thumbnails after the items have been sent out */
-     if(targetitemtype == MediaItem::PhotoItem)
-         thumb.startLoop();
 
      /* go get more from tracker */
      trackerindex += trackeritems;
@@ -504,7 +530,8 @@ void PhotoDatabase::updateAlbum(MediaItem *item, QList<MediaItem *> &newList)
         // remove thumburi if album is now empty
         item->m_thumburi = "";
     } else {
-        // processAlbum generates a thumburi if album doesn't have it already
+        // re-generate thumb, just in case previous thumbnail photo was removed
+        item->m_thumburi = "";
         processAlbum(item);
     }
 
@@ -539,19 +566,6 @@ void PhotoDatabase::setCoverArt(const QString &title, const QString &thumburi)
 
     QString sql = QString(SqlCmd).arg(sparqlEscape(title), thumburi);
     trackerCallAsync(sql);
-}
-
-/* high priority request from the view itself */
-void PhotoDatabase::requestThumbnail(MediaItem *item)
-{
-    thumb.requestImmediate(item);
-}
-
-void PhotoDatabase::thumbReady(const MediaItem *item)
-{
-    QStringList temp;
-    temp << item->m_id;
-    emit itemsChanged(temp, PhotoDatabase::Thumbnail);
 }
 
 void PhotoDatabase::destroyItem(MediaItem *item)

@@ -318,7 +318,7 @@ Item {
             }
             Text {
                 id: durationText
-                text: (formatMinutes(length)==1)?qsTr("%1 Minute").arg(formatMinutes(length)):qsTr("%1 Minutes").arg(formatMinutes(length))
+                text: qsTr("%n Minute(s)", "", formatMinutes(length))
                 font.pixelSize: theme_fontPixelSizeNormal
                 width: titleText.width
                 elide: Text.ElideRight
