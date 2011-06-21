@@ -130,6 +130,12 @@ QVariant MediaListModel::datafromItem(MediaItem *item, int role)
     if (role == MediaItem::Height)
         return item->getHeight();
 
+    if (role == MediaItem::PreviewURI)
+        return item->thumbFlavor("preview");
+
+    if (role == MediaItem::FullscreenURI)
+        return item->thumbFlavor("fullscreen");
+
     return QVariant();
 }
 

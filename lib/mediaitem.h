@@ -380,7 +380,9 @@ public:
         Width = Qt::UserRole + 23,
         Height = Qt::UserRole + 24,
         UserContent = Qt::UserRole + 25,
-        PhotoCount = Qt::UserRole + 26
+        PhotoCount = Qt::UserRole + 26,
+        PreviewURI = Qt::UserRole + 27,
+        FullscreenURI = Qt::UserRole + 28
     };
 
     enum ItemType {
@@ -475,6 +477,7 @@ public:
     int getHeight() const
         { return m_height; }
 
+    QString thumbFlavor(QString flavor);
     void setRecentlyViewed(const QString &timestamp);
     void setFavorite(const bool &favorite);
     void setCoverArt(const QString &thumburi);
