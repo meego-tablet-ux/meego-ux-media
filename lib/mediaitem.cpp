@@ -294,11 +294,25 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
 
         if(!m_uri.isEmpty())
         {
-            m_thumbtype = VideoThumb;
-            m_thumburi = thumbPhoto(m_uri);
             m_thumburi_ignore = false;
+
+            /* downloaded video thumbs have priority */
+            m_thumbtype = VideoThumb;
+            m_thumburi = QString("file://") + thumbVideo(m_uri);
+
             if(thumbExists())
+            {
+                /* if the downloaded thumb exists, we're done */
                 m_thumburi_exists = true;
+            }
+            else
+            {
+                /* if the downloaded thumb doesn't exist, use the video frame snapshot */
+                m_thumbtype = PhotoThumb;
+                m_thumburi = thumbPhoto(m_uri);
+                if(thumbExists())
+                    m_thumburi_exists = true;
+            }
         }
         if(m_title.isEmpty()&&!m_uri.isEmpty())
         {
@@ -444,11 +458,20 @@ QString MediaItem::thumbMusicArtist(const QString &artist)
     return thumb;
 }
 
+QString MediaItem::thumbVideo(const QString &uri)
+{
+    QByteArray md5Result = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
+    QString thumburi = QDir::toNativeSeparators(QDir::homePath()) +
+        QDir::separator() + QString(".cache/media-art/video-") +
+        md5Result.toHex() + ".jpeg";
+    return thumburi;
+}
+
 QString MediaItem::thumbPhoto(const QString &uri)
 {
+    QByteArray md5Result = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
     QString homePath = QDir::toNativeSeparators(QDir::homePath());
     QString thumbnail_folder = QDir::separator() + QString(".thumbnails") + QDir::separator() + QString(DEFAULT_FLAVOR);
-    md5Result = QCryptographicHash::hash(uri.toUtf8(), QCryptographicHash::Md5);
     QString thumburi = QString("file://") + homePath + thumbnail_folder +
         QDir::separator() + md5Result.toHex() + ".png";
     return thumburi;
@@ -528,4 +551,14 @@ QString MediaItem::fileFormatted(const QString &file)
     if(!newfile.startsWith("file://"))
         newfile.prepend("file://");
     return newfile;
+}
+
+QString MediaItem::thumbFlavor(QString flavor)
+{
+    QStringList args = m_thumburi.split("/", QString::KeepEmptyParts);
+    QString homePath = QDir::toNativeSeparators(QDir::homePath());
+    QString thumbnail_folder = QDir::separator() + QString(".thumbnails") + QDir::separator() + flavor;
+    QString thumburi = QString("file://") + homePath + thumbnail_folder +
+        QDir::separator() + args.last();
+    return thumburi;
 }

@@ -11,7 +11,7 @@
 
 #include "mediadatabase.h"
 #include "mediaitem.h"
-#include "mediainfodownloader.h"
+#include "thumbnailer.h"
 
 class MusicDatabase : public MediaDatabase {
     Q_OBJECT
@@ -34,15 +34,12 @@ public slots:
     void trackerGetMusicFinished(QDBusPendingCallWatcher *call);
 
 private slots:
-    void error(QString reqid, QString type, QString info, QString errorString);
-    void ready(QString reqid, QString type, QString info, QString data);
-    void startThumbnailerLoop();
+    void thumbReady(MediaItem *item);
+    void thumbError(MediaItem *item);
 
 private:
     static MusicDatabase *musicDatabaseInstance;
-
-    MediaInfoDownloader mediaart;
-    bool disable_mediaart;
+    Thumbnailer thumb;
 
     /* tracker calls */
     void trackerGetMusic(const int offset, const int limit);
@@ -56,7 +53,6 @@ private:
     void generatePlaylistThumbId(MediaItem *item);
     void requestSongItems(int type, QString identifier);
     int playlistthumbid;
-    QStringList notifyUrns;
 
     /* music database hashes for easy lookup */
     QHash<QString, MediaItem *> artistItemHash;
