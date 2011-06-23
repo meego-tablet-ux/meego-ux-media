@@ -11,6 +11,7 @@
 
 #include "mediadatabase.h"
 #include "mediaitem.h"
+#include "thumbnailer.h"
 
 class PhotoDatabase : public MediaDatabase {
     Q_OBJECT
@@ -20,6 +21,7 @@ public:
     PhotoDatabase(QObject *parent = 0);
     ~PhotoDatabase();
 
+    void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void saveAlbum(QList<MediaItem *> &list, const QString &title);
     QList<MediaItem *> loadAlbum(const QString &title);
@@ -31,12 +33,13 @@ public slots:
     void trackerPhotoAdded(int sid);
     void trackerAlbumAdded(int sid);
     void trackerGetPhotosFinished(QDBusPendingCallWatcher *call);
-
+    void thumbReady(const MediaItem *item);
 private slots:
     void onItemsChanged(const QStringList &ids, int reason);
 
 private:
     static PhotoDatabase *photoDatabaseInstance;
+    Thumbnailer thumb;
     QHash<QString, MediaItem *> albumItemsHash;
 
     void updateAlbum(MediaItem *item, QList<MediaItem *> &newList);

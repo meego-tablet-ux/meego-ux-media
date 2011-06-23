@@ -10,6 +10,10 @@
 #include <QDebug>
 #include "thumbnailer.h"
 
+#define TUMBLER_SERVICE       "org.freedesktop.thumbnails.Thumbnailer1"
+#define TUMBLER_PATH          "/org/freedesktop/thumbnails/Thumbnailer1"
+#define TUMBLER_INTERFACE     "org.freedesktop.thumbnails.Thumbnailer1"
+#define DEFAULT_SCHEDULER     "foreground"
 #define THUMBNAILPAUSE        5000
 
 Thumbnailer::Thumbnailer(QObject *parent)
@@ -18,14 +22,29 @@ Thumbnailer::Thumbnailer(QObject *parent)
     thumbnailerlooppause = false;
     thumbnailerinuse = false;
     connect(&thumbnailerTimer, SIGNAL(timeout()), this, SLOT(thumbnailerResumeLoop()));
-    connect(&mediaart,SIGNAL(error(QString, QString, QString, QString)),
-            this,SLOT(downloadError(QString, QString, QString, QString)));
-    connect(&mediaart,SIGNAL(ready(QString, QString, QString, QString)),
-            this,SLOT(downloadReady(QString, QString, QString, QString)));
 
-    videosupport = mediaart.supported("dvdimage");
-    artistsupport = mediaart.supported("artistimage");
-    albumsupport = mediaart.supported("albumimage");
+    tumblerinterface = new QDBusInterface(TUMBLER_SERVICE, TUMBLER_PATH, TUMBLER_INTERFACE);
+
+    QDBusConnection::sessionBus().connect(TUMBLER_SERVICE, TUMBLER_PATH, TUMBLER_INTERFACE,
+        "Ready", this, SLOT(tumblerReady(const unsigned int, const QStringList)));
+    QDBusConnection::sessionBus().connect(TUMBLER_SERVICE, TUMBLER_PATH, TUMBLER_INTERFACE,
+        "Error", this, SLOT(tumblerError(const unsigned int, const QStringList, \
+                                                const int, const QString )));
+    QDBusConnection::sessionBus().connect(TUMBLER_SERVICE, TUMBLER_PATH, TUMBLER_INTERFACE,
+        "Finished", this, SLOT(tumblerFinished(const unsigned int)));
+
+    if(!mediaart.supported("dvdimage"))
+    {
+        disable_mediaart = true;
+    }
+    else
+    {
+        disable_mediaart = false;
+        connect(&mediaart,SIGNAL(error(QString, QString, QString, QString)),
+                this,SLOT(downloadError(QString, QString, QString, QString)));
+        connect(&mediaart,SIGNAL(ready(QString, QString, QString, QString)),
+                this,SLOT(downloadReady(QString, QString, QString, QString)));
+    }
 }
 
 Thumbnailer::~Thumbnailer()
@@ -34,13 +53,12 @@ Thumbnailer::~Thumbnailer()
 
 bool Thumbnailer::isValid(MediaItem *item)
 {
-    /* if the thumbnail hasn't already tried and failed, */
-    /* and it's a video, music album, or music artist */
-    /* and we found support for video, album, or artist */
-    if(!item->m_thumburi_ignore&&
-       ((item->isAnyVideoType()&&videosupport)||
-        (item->isMusicArtist()&&artistsupport)||
-        (item->isMusicAlbum()&&!item->m_artist.isEmpty()&&albumsupport)))
+    /* it has no thumbnail already, and its */
+    /* thumbnail hasn't already tried and failed, */
+    /* and it's a photo or video file */
+    if(!item->m_thumburi_exists&&
+       !item->m_thumburi_ignore&&
+       (item->isPhoto()||item->isAnyVideoType()))
     {
         return true;
     }
@@ -49,10 +67,10 @@ bool Thumbnailer::isValid(MediaItem *item)
 
 void Thumbnailer::queueRequest(MediaItem *item)
 {
-    /* if we can process the item, and it's not already being processed */
     if(isValid(item)&&!queue.contains(item))
     {
         queue << item;
+        //qDebug() << "Tumbler Queueing: " <<  item->m_uri;
     }
 }
 
@@ -64,24 +82,21 @@ void Thumbnailer::queueRequests(QList<MediaItem *> &items)
 
 void Thumbnailer::sendDownloadRequest(MediaItem *item)
 {
-    if(item->isAnyVideoType())
-    {
-        QString thumburi = MediaItem::thumbVideo(item->m_uri);
-        mediaart.request(item->m_id, "dvdimage",
-            item->m_title + "|" + thumburi);
-    }
-    else if(item->isMusicArtist())
-    {
-        QString thumburi = MediaItem::thumbMusicArtist(item->m_title);
-        mediaart.request(item->m_id, "artistimage",
-            item->m_title + "|" + thumburi);
-    }
-    else if(item->isMusicAlbum())
-    {
-        QString thumburi = MediaItem::thumbMusicAlbum(item->m_artist[0], item->m_title);
-        mediaart.request(item->m_id, "albumimage",
-            item->m_artist[0] + "|" + item->m_title + "|" + thumburi);
-    }
+    QString thumburi = item->m_thumburi;
+    thumburi.replace("file://", "");
+    mediaart.request(item->m_id, "dvdimage",
+        item->m_title + "|" + thumburi);
+}
+
+void Thumbnailer::sendTumblerRequest(MediaItem *item)
+{
+    QStringList uris, mimetypes;
+    uris << item->m_uri;
+    mimetypes << item->m_mimetype;
+    quint32 handle = 0;
+    thumbnailerinuse = true;
+    tumblerinterface->asyncCall(QLatin1String("Queue"), uris, mimetypes,
+        DEFAULT_FLAVOR, DEFAULT_SCHEDULER, handle);
 }
 
 void Thumbnailer::startLoop()
@@ -93,7 +108,10 @@ void Thumbnailer::startLoop()
     /* create a list of uris/mimetypes for the tumbler call */
     if(!queue.isEmpty())
     {
-        sendDownloadRequest(queue[0]);
+        if((queue[0]->isAnyVideoType())&&(!disable_mediaart))
+            sendDownloadRequest(queue[0]);
+        else
+            sendTumblerRequest(queue[0]);
     }
 }
 
@@ -107,7 +125,10 @@ void Thumbnailer::requestImmediate(MediaItem *item)
         thumbnailerlooppause = true;
         thumbnailerTimer.stop();
         thumbnailerTimer.start(THUMBNAILPAUSE);
-        sendDownloadRequest(item);
+        if((item->isAnyVideoType())&&(!disable_mediaart))
+            sendDownloadRequest(item);
+        else
+            sendTumblerRequest(item);
     }
 }
 
@@ -119,18 +140,22 @@ void Thumbnailer::thumbnailerResumeLoop()
     startLoop();
 }
 
-void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QString data)
+
+void Thumbnailer::tumblerFinished(const unsigned int &handle)
 {
-    //qDebug() << "Media Info Ready: " << reqid << type << info << data;
+    thumbnailerinuse = false;
+    if(!thumbnailerlooppause)
+        startLoop();
+}
+
+void Thumbnailer::tumblerReady(const unsigned int &handle, const QStringList &urls)
+{
     QList<MediaItem *> removeList;
-    QStringList args = info.split("|", QString::KeepEmptyParts);
-    QString thumburi = QString("file://") + args.last();
 
     for(int i = 0; i < queue.count(); i++)
     {
-        if((queue[i]->m_id == reqid)&&(MediaItem::fileExists(thumburi)))
+        if(urls.contains(queue[i]->m_uri)&&(MediaItem::fileExists(queue[i]->m_thumburi)))
         {
-            queue[i]->m_thumburi = thumburi;
             queue[i]->m_thumburi_exists = true;
             queue[i]->m_thumburi_ignore = false;
             removeList << queue[i];
@@ -140,20 +165,38 @@ void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QStri
 
     for(int i = 0; i < removeList.count(); i++)
         queue.removeAll(removeList[i]);
-
-    if(!thumbnailerlooppause)
-        startLoop();
 }
 
-void Thumbnailer::downloadError(QString reqid, QString type, QString info, QString errorString)
+void Thumbnailer::downloadReady(QString reqid, QString type, QString info, QString data)
 {
-    //qDebug() << "Media Downloader Error: " << reqid << type << info << errorString;
+    qDebug() << "Media Info Ready: " << reqid << type << info << data;
     QList<MediaItem *> removeList;
 
     for(int i = 0; i < queue.count(); i++)
     {
-        if(queue[i]->m_id == reqid)
+        if((queue[i]->m_id == reqid)&&(MediaItem::fileExists(queue[i]->m_thumburi)))
         {
+            queue[i]->m_thumburi_exists = true;
+            queue[i]->m_thumburi_ignore = false;
+            removeList << queue[i];
+            emit success(queue[i]);
+        }
+    }
+
+    for(int i = 0; i < removeList.count(); i++)
+        queue.removeAll(removeList[i]);
+}
+
+void Thumbnailer::tumblerError(const unsigned int &handle, const QStringList &urls, const int &errorCode, const QString &message)
+{
+    QList<MediaItem *> removeList;
+
+    for(int i = 0; i < queue.count(); i++)
+    {
+        if(urls.contains(queue[i]->m_uri))
+        {
+            queue[i]->m_thumburi_exists = false;
+            queue[i]->m_thumburi_ignore = true;
             removeList << queue[i];
             emit failure(queue[i]);
         }
@@ -161,7 +204,15 @@ void Thumbnailer::downloadError(QString reqid, QString type, QString info, QStri
 
     for(int i = 0; i < removeList.count(); i++)
         queue.removeAll(removeList[i]);
+}
 
-    if(!thumbnailerlooppause)
-        startLoop();
+void Thumbnailer::downloadError(QString reqid, QString type, QString info, QString errorString)
+{
+    qDebug() << "Media Downloader Error: " << reqid << type << info << errorString;
+    for(int i = 0; i < queue.count(); i++)
+        if(queue[i]->m_id == reqid)
+        {
+            sendTumblerRequest(queue[i]);
+            return;
+        }
 }

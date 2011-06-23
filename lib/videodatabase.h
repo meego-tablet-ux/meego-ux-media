@@ -27,8 +27,7 @@ public:
 public slots:
     void trackerVideoAdded(int sid);
     void trackerGetVideosFinished(QDBusPendingCallWatcher *call);
-    void thumbReady(MediaItem *item);
-    void thumbError(MediaItem *item);
+    void thumbReady(const MediaItem *item);
 
 private:
     static VideoDatabase *videoDatabaseInstance;
