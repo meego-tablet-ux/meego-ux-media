@@ -69,15 +69,20 @@ MediaItem* MusicDatabase::getArtistItem(const QString &title)
 
     return artistItemHash[title];
 }
+
 MediaItem* MusicDatabase::getPlaylistItem(const QString &title)
 {
     if(title.isEmpty())
         return NULL;
 
-    if(!playlistItemHash.contains(title))
-        return NULL;
-
-    return playlistItemHash[title];
+    for(int i = 0; i < mediaItemsList.count(); i++)
+    {
+        MediaItem *m = mediaItemsList[i];
+        if(m->isMusicPlaylist()&&
+          (m->m_title == title))
+          return m;
+    }
+    return NULL;
 }
 
 MediaItem* MusicDatabase::getAlbumItem(QString artist, QString album)
@@ -259,7 +264,6 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          if(type == MediaItem::MusicArtistItem)
              artistItemHash.insert(item->m_title, item);
          if(type == MediaItem::MusicPlaylistItem) {
-             playlistItemHash.insert(item->m_title, item);
              // Get playlist songs
              item->children = loadPlaylist(item->m_urn, false);
          }

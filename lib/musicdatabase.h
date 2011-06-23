@@ -60,7 +60,6 @@ private:
 
     /* music database hashes for easy lookup */
     QHash<QString, MediaItem *> artistItemHash;
-    QHash<QString, MediaItem *> playlistItemHash;
 };
 
 #endif // MUSICDATABASE_H
