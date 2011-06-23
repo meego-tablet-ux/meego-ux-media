@@ -1,7 +1,7 @@
 TEMPLATE = lib
 CONFIG += qt plugin meegotouch
-TARGET  = $$qtLibraryTarget(awd_plugin)
-TARGETPATH = AcerWidgetsDaemonInterface
+TARGET  = $$qtLibraryTarget(WidgetInterface)
+TARGETPATH = MeeGo/WidgetInterface
 PLUGIN_TYPE = declarative
 
 QT += declarative
@@ -12,11 +12,11 @@ MOC_DIR = .moc
 QML_FILES = *.qml *.js
 
 HEADERS += \
-    ../lib/awdaddress.h
+    ../lib/meegomediawidget.h
 
 SOURCES += \
-    awdplugin.cpp \
-    ../lib/awdaddress.cpp
+    widgetclientqml.cpp \
+    ../lib/meegomediawidget.cpp
 
 OTHER_FILES += $${QML_FILES}
 

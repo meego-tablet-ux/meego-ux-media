@@ -1,0 +1,2 @@
+plugin WidgetInterface
+WidgetClient 0.1 WidgetClient.qml

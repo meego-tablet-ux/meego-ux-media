@@ -2,7 +2,7 @@ include(common.pri)
 CONFIG += ordered
 TEMPLATE = subdirs
 
-SUBDIRS += lib libqml Media content awdapi
+SUBDIRS += lib libqml Media content widget
 
 QML_FILES = *.qml
 
