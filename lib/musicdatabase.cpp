@@ -36,10 +36,22 @@ MusicDatabase::MusicDatabase(QObject *parent)
     targetitemtype = MediaItem::MusicPlaylistItem;
     playlistthumbid = 0;
 
+    if(!mediaart.supported("artistimage")&&!mediaart.supported("albumimage"))
+    {
+        disable_mediaart = true;
+    }
+    else
+    {
+        disable_mediaart = false;
+        connect(&thumbnailerTimer, SIGNAL(timeout()), this, SLOT(startThumbnailerLoop()));
+        connect(&mediaart,SIGNAL(error(QString, QString, QString, QString)),
+                this,SLOT(error(QString, QString, QString, QString)));
+        connect(&mediaart,SIGNAL(ready(QString, QString, QString, QString)),
+                this,SLOT(ready(QString, QString, QString, QString)));
+    }
+
     connect(this,SIGNAL(songItemAdded(int)),this,SLOT(trackerSongAdded(int)));
     connect(this,SIGNAL(playlistItemAdded(int)),this,SLOT(trackerPlaylistAdded(int)));
-    connect(&thumb,SIGNAL(success(MediaItem *)),this,SLOT(thumbReady(MediaItem *)));
-    connect(&thumb,SIGNAL(failure(MediaItem *)),this,SLOT(thumbError(MediaItem *)));
     trackerGetMusic(trackerindex, trackeritems);
 }
 
@@ -198,8 +210,6 @@ void MusicDatabase::trackerGetMusic(const int offset, const int limit)
 
 void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, int priority)
 {
-    QList<MediaItem *> thumbList;
-
     /* organize new items into musics and albums */
     for (QVector<QStringList>::iterator i = trackerreply.begin(); i != trackerreply.end(); i++)
     {
@@ -255,10 +265,11 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          }
 
          /* if this is an album or artist (from a command line call) get the thumb */
-         if(((((type == MediaItem::MusicArtistItem)||(type == MediaItem::MusicAlbumItem))&&(!item->m_thumburi_exists)&&(!item->m_thumburi_ignore))||
+         if(!disable_mediaart&&
+            ((((type == MediaItem::MusicArtistItem)||(type == MediaItem::MusicAlbumItem))&&(!item->m_thumburi_exists)&&(!item->m_thumburi_ignore))||
             ((type == MediaItem::MusicAlbumItem)&&(item->m_thumbtype == MediaItem::ArtistThumb))))
          {
-            thumbList << item;
+            needThumbList << item;
          }
 
          /* tell the world we have new data */
@@ -281,8 +292,8 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
     }
 
     /* generate the thumbnails after the items have been sent out */
-    thumb.queueRequests(thumbList);
-    thumb.startLoop();
+    if(!disable_mediaart)
+        thumbnailerTimer.start(DOWNLOADERPAUSE);
 }
 
 void MusicDatabase::trackerGetMusicFinished(QDBusPendingCallWatcher *call)
@@ -542,21 +553,48 @@ void MusicDatabase::trackerSongAdded(int sid)
         trackerAddItems(MediaItem::SongItem, info);
 }
 
-void MusicDatabase::thumbError(MediaItem *item)
+void MusicDatabase::error(QString reqid, QString type, QString info, QString errorString)
 {
-    /* if the thumb still isn't there after a download attempt */
-    /* set it to ignore so it won't keep trying */
-    if(!item->m_thumburi_exists)
-        item->m_thumburi_ignore = true;
+    QStringList args = info.split("|", QString::KeepEmptyParts);
+    QString thumburi;
+    if(type == "artistimage")
+        thumburi = args[1];
+    else if(type == "albumimage")
+        thumburi = args[2];
+    else
+        return;
+
+//    qDebug() << "Error requesting " << type << " (" << info << "): " << errorString;
+    /* set ignore on any matching thumburis */
+    for(int i = 0; i < mediaItemsList.count(); i++)
+    {
+        MediaItem *m = mediaItemsList[i];
+        //qDebug() << "TESTING: " << m->m_title << ", " << m->m_thumburi;
+        if((!m->m_thumburi_ignore)&&
+           (!m->m_thumburi_exists)&&
+           (m->m_thumburi == thumburi))
+        {
+            m->m_thumburi_ignore = true;
+            m->m_thumburi_exists = false;
+            needThumbList.removeAll(m);
+//            if(m->isSong())
+//                qDebug() << "SONG: " << m->m_urn << ", " << "Thumbnail FAILED";
+//            else if(m->isMusicAlbum())
+//                qDebug() << "ALBUM: " << m->m_urn << ", " << "Thumbnail FAILED";
+//            else if(m->isMusicArtist())
+//                qDebug() << "ARTIST: " << m->m_urn << ", " << "Thumbnail FAILED";
+        }
+    }
 }
 
-void MusicDatabase::thumbReady(MediaItem *item)
+void MusicDatabase::ready(QString reqid, QString type, QString info, QString data)
 {
+    QStringList args = info.split("|", QString::KeepEmptyParts);
     QStringList ids;
-    if(item->isMusicAlbum())
+    if(type == "albumimage")
     {
-        QString album = item->m_title;
-        QString thumburi = item->m_thumburi;
+        QString album = args[1];
+        QString thumburi = args[2];
 
         for(int i = 0; i < mediaItemsList.count(); i++)
         {
@@ -572,13 +610,18 @@ void MusicDatabase::thumbReady(MediaItem *item)
                 m->m_thumburi_ignore = false;
                 m->m_thumburi_exists = true;
                 ids << m->m_id;
+                needThumbList.removeAll(m);
+//                if(m->isSong())
+//                    qDebug() << "SONG: " << m->m_urn << ", " << "Downloaded Album Thumbnail EXISTS";
+//                else if(m->isMusicAlbum())
+//                    qDebug() << "ALBUM: " << m->m_urn << ", " << "Downloaded Album Thumbnail EXISTS";
             }
         }
     }
-    else if(item->isMusicArtist())
+    else if(type == "artistimage")
     {
-        QString artist = item->m_title;
-        QString thumburi = item->m_thumburi;
+        QString artist = args[0];
+        QString thumburi = args[1];
 
         for(int i = 0; i < mediaItemsList.count(); i++)
         {
@@ -596,6 +639,13 @@ void MusicDatabase::thumbReady(MediaItem *item)
                 m->m_thumburi_ignore = false;
                 m->m_thumburi_exists = true;
                 ids << m->m_id;
+                needThumbList.removeAll(m);
+//                if(m->isSong())
+//                    qDebug() << "SONG: " << m->m_urn << ", " << "Downloaded Artist Thumbnail EXISTS";
+//                else if(m->isMusicAlbum())
+//                    qDebug() << "ALBUM: " << m->m_urn << ", " << "Downloaded Artist Thumbnail EXISTS";
+//                else if(m->isMusicArtist())
+//                    qDebug() << "ARTIST: " << m->m_urn << ", " << "Downloaded Artist Thumbnail EXISTS";
             }
         }
     }
@@ -611,33 +661,11 @@ void MusicDatabase::requestThumbnail(MediaItem *item)
     {
         if(item->albumitem != NULL)
         {
-            if(item->albumitem->m_thumburi_exists)
-            {
-                item->m_thumbtype = item->albumitem->m_thumbtype;
-                item->m_thumburi = item->albumitem->m_thumburi;
-                item->m_thumburi_ignore = false;
-                item->m_thumburi_exists = true;
-                itemChanged(item, MusicDatabase::Thumbnail);
-            }
-            else
-            {
-                requestThumbnail(item->albumitem);
-            }
+            requestThumbnail(item->albumitem);
         }
         else if(item->artistitem != NULL)
         {
-            if(item->artistitem->m_thumburi_exists)
-            {
-                item->m_thumbtype = item->artistitem->m_thumbtype;
-                item->m_thumburi = item->artistitem->m_thumburi;
-                item->m_thumburi_ignore = false;
-                item->m_thumburi_exists = true;
-                itemChanged(item, MusicDatabase::Thumbnail);
-            }
-            else
-            {
-                requestThumbnail(item->artistitem);
-            }
+            requestThumbnail(item->artistitem);
         }
         else
         {
@@ -647,7 +675,39 @@ void MusicDatabase::requestThumbnail(MediaItem *item)
         return;
     }
 
-    thumb.requestImmediate(item);
+    if(!needThumbList.contains(item))
+        return;
+
+    QString artist, album;
+
+    switch(item->m_type) {
+    case MediaItem::MusicArtistItem:
+        artist = item->m_title;
+        needThumbList.removeAll(item);
+        mediaart.request(item->m_id, "artistimage",
+            artist + "|" + MediaItem::thumbMusicArtist(artist));
+        break;
+    case MediaItem::MusicAlbumItem:
+        artist = item->m_artist.first();
+        album = item->m_title;
+        needThumbList.removeAll(item);
+        mediaart.request(item->m_id, "albumimage",
+            artist + "|" + album + "|" + MediaItem::thumbMusicAlbum(artist, album));
+        break;
+    }
+}
+
+void MusicDatabase::startThumbnailerLoop()
+{
+    if(!needThumbList.isEmpty())
+    {
+        MediaItem *item = needThumbList.first();
+        requestThumbnail(item);
+    }
+    else
+    {
+        thumbnailerTimer.stop();
+    }
 }
 
 void MusicDatabase::requestSongItems(int type, QString identifier)

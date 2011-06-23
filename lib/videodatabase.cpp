@@ -34,8 +34,7 @@ VideoDatabase::VideoDatabase(QObject *parent)
     targetitemtype = MediaItem::VideoItem;
 
     connect(this,SIGNAL(videoItemAdded(int)),this,SLOT(trackerVideoAdded(int)));
-    connect(&thumb,SIGNAL(success(MediaItem *)),this,SLOT(thumbReady(MediaItem *)));
-    connect(&thumb,SIGNAL(failure(MediaItem *)),this,SLOT(thumbError(MediaItem *)));
+    connect(&thumb,SIGNAL(success(const MediaItem *)),this,SLOT(thumbReady(const MediaItem *)));
 
     qDebug() << "Initializing the database";
     trackerGetVideos(trackerindex, trackeritems);
@@ -49,7 +48,6 @@ VideoDatabase::~VideoDatabase()
 void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply, bool priority)
 {
     QList<MediaItem *> newItemsList;
-    QList<MediaItem *> thumbList;
 
     if(type == MediaItem::VideoItem)
     {
@@ -68,8 +66,6 @@ void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
             {
                 MediaItem *item = new MediaItem(type, recenttime, *i);
                 newItemsList << item;
-                if(item->m_thumbtype != MediaItem::VideoThumb)
-                    thumbList << item;
                 mediaItemsSidHash.insert(item->m_sid, item);
                 mediaItemsUrnHash.insert(item->m_urn, item);
                 mediaItemsIdHash.insert(item->m_id, item);
@@ -78,7 +74,7 @@ void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
     }
 
     mediaItemsList += newItemsList;
-    thumb.queueRequests(thumbList);
+    thumb.queueRequests(newItemsList);
 
     /* tell the world we have new data */
     emit itemsAdded(&newItemsList);
@@ -89,9 +85,6 @@ void VideoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
         for(int i = 0; i < newItemsList.count(); i++)
             emit itemAvailable(newItemsList[i]->m_urn);
     }
-
-    /* generate the thumbnails after the items have been sent out */
-    thumb.startLoop();
 }
 
 void VideoDatabase::trackerGetVideos(const int offset, const int limit)
@@ -133,6 +126,9 @@ void VideoDatabase::trackerGetVideosFinished(QDBusPendingCallWatcher *call)
 
      QVector<QStringList> videos = reply.value();
      trackerAddItems(targetitemtype, videos);
+
+     /* generate the thumbnails after the items have been sent out */
+     thumb.startLoop();
 
      /* go get more from tracker */
      trackerindex += trackeritems;
@@ -176,6 +172,8 @@ void VideoDatabase::requestItem(QString identifier)
     if(trackerCall(info, sql))
     {
         trackerAddItems(MediaItem::VideoItem, info, true);
+        /* generate the thumbnails after the items have been sent out */
+        thumb.startLoop();
         return;
     }
 
@@ -209,17 +207,9 @@ void VideoDatabase::requestThumbnail(MediaItem *item)
     thumb.requestImmediate(item);
 }
 
-void VideoDatabase::thumbReady(MediaItem *item)
+void VideoDatabase::thumbReady(const MediaItem *item)
 {
     QStringList temp;
     temp << item->m_id;
     emit itemsChanged(temp, VideoDatabase::Thumbnail);
-}
-
-void VideoDatabase::thumbError(MediaItem *item)
-{
-    /* if the thumb still isn't there after a download attempt */
-    /* set it to ignore so it won't keep trying */
-    if(!item->m_thumburi_exists)
-        item->m_thumburi_ignore = true;
 }

@@ -40,6 +40,7 @@ PhotoDatabase::PhotoDatabase(QObject *parent)
 
     connect(this,SIGNAL(photoItemAdded(int)),this,SLOT(trackerPhotoAdded(int)));
     connect(this,SIGNAL(photoAlbumItemAdded(int)),this,SLOT(trackerAlbumAdded(int)));
+    connect(&thumb,SIGNAL(success(const MediaItem *)),this,SLOT(thumbReady(const MediaItem *)));
     connect(this ,SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(onItemsChanged(const QStringList &, int)));
 
     qDebug() << "Initializing the database";
@@ -343,6 +344,7 @@ void PhotoDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
                 processPhoto(item);
            }
         }
+        thumb.queueRequests(newItemsList);
 
         /* tell the world we have new data */
         emit itemsAdded(&newItemsList);
@@ -397,6 +399,10 @@ void PhotoDatabase::trackerGetPhotosFinished(QDBusPendingCallWatcher *call)
      }
 
      trackerAddItems(targetitemtype, photos);
+
+     /* generate the thumbnails after the items have been sent out */
+     if(targetitemtype == MediaItem::PhotoItem)
+         thumb.startLoop();
 
      /* go get more from tracker */
      trackerindex += trackeritems;
@@ -566,6 +572,19 @@ void PhotoDatabase::setCoverArt(const QString &title, const QString &thumburi)
 
     QString sql = QString(SqlCmd).arg(sparqlEscape(title), thumburi);
     trackerCallAsync(sql);
+}
+
+/* high priority request from the view itself */
+void PhotoDatabase::requestThumbnail(MediaItem *item)
+{
+    thumb.requestImmediate(item);
+}
+
+void PhotoDatabase::thumbReady(const MediaItem *item)
+{
+    QStringList temp;
+    temp << item->m_id;
+    emit itemsChanged(temp, PhotoDatabase::Thumbnail);
 }
 
 void PhotoDatabase::destroyItem(MediaItem *item)
