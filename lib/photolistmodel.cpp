@@ -34,6 +34,9 @@ PhotoListModel::PhotoListModel(QObject *parent)
     roles.insert(MediaItem::Height, "height");
     roles.insert(MediaItem::UserContent, "usercontent");
     roles.insert(MediaItem::PhotoCount, "photocount");
+    roles.insert(MediaItem::PreviewURI, "previewuri");
+    roles.insert(MediaItem::FullscreenURI, "fullscreenuri");
+
     setRoleNames(roles);
 
     m_type = -1;
@@ -639,6 +642,12 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::PhotoCount)
         return mediaItemsDisplay[index.row()]->children.count();
+
+    if (role == MediaItem::PreviewURI)
+        return mediaItemsDisplay[index.row()]->thumbFlavor("preview");
+
+    if (role == MediaItem::FullscreenURI)
+        return mediaItemsDisplay[index.row()]->thumbFlavor("fullscreen");
 
     return QVariant();
 }

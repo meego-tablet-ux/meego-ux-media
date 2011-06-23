@@ -552,3 +552,13 @@ QString MediaItem::fileFormatted(const QString &file)
         newfile.prepend("file://");
     return newfile;
 }
+
+QString MediaItem::thumbFlavor(QString flavor)
+{
+    QStringList args = m_thumburi.split("/", QString::KeepEmptyParts);
+    QString homePath = QDir::toNativeSeparators(QDir::homePath());
+    QString thumbnail_folder = QDir::separator() + QString(".thumbnails") + QDir::separator() + flavor;
+    QString thumburi = QString("file://") + homePath + thumbnail_folder +
+        QDir::separator() + args.last();
+    return thumburi;
+}
