@@ -1,0 +1,10 @@
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include/meegomediawidget
+
+Name: meegomediawidget
+Description: MeeGo Ux Media Widget Daemon API C++ library
+Version: 0.0.1
+Libs: -L${libdir} -lmeegomediawidget
+Cflags: -I${includedir}

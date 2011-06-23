@@ -1,9 +1,9 @@
 import Qt 4.7
-import AcerWidgetsDaemonInterface 0.1
-import "awd-client.js" as AwdClientJS
+import MeeGo.WidgetInterface 0.1
+import "client.js" as WidgetClientJS
 
 Item {
-    id: awdClient
+    id: widgetClient
 
     property string name : ""
     property string type : ""
@@ -13,34 +13,34 @@ Item {
     property string thisArrivedData : ""    //data just arrived
     property string currentData : ""        //data of current states
 
-    function currentAwdData()
+    function currentWidgetData()
     {
-        return AwdClientJS.tempAwdData;
+        return WidgetClientJS.tempWidgetData;
     }
 
     function setCurrentData(data) {
-        AwdClientJS.tempAwdData = data;
-        updateAwdData(data);
+        WidgetClientJS.tempWidgetData = data;
+        updateWidgetData(data);
     }
 
     function convertDataToTemp() {
         try {
             var targetStringData = "{";
-            for(var x = 0; x < AwdClientJS.awdData.paths.length; x++) {
+            for(var x = 0; x < WidgetClientJS.widgetData.paths.length; x++) {
                 var eventString = "";
-                eventString = AwdClientJS.Obj2JSON(AwdClientJS.awdData.paths[x]) + ":"
-                        + AwdClientJS.Obj2JSON(AwdClientJS.awdData.data[x]);
+                eventString = WidgetClientJS.Obj2JSON(WidgetClientJS.widgetData.paths[x]) + ":"
+                        + WidgetClientJS.Obj2JSON(WidgetClientJS.widgetData.data[x]);
                 if(x != 0)
                      targetStringData += ","
                 targetStringData += eventString
             }
             targetStringData += "}"
-            AwdClientJS.tempAwdData = AwdClientJS.JSON2Obj(targetStringData);
+            WidgetClientJS.tempWidgetData = WidgetClientJS.JSON2Obj(targetStringData);
         }
         catch(error) {
             console.log("Catch error in convertTempToData()")
             try {
-                awdClient.parent.setDefaultData();
+                widgetClient.parent.setDefaultData();
             }
             catch(error) {
                 console.log("Catch error in catch(error) in convertTempToData()")
@@ -48,9 +48,9 @@ Item {
         }
     }
 
-    function updateAwdData(data) {
+    function updateWidgetData(data) {
         try {
-            var orgString = AwdClientJS.Obj2JSON(data);
+            var orgString = WidgetClientJS.Obj2JSON(data);
             var subString = orgString.substring(1, orgString.length-1);
             var subStringObj = subString.split(",");
             var pathsString = "";
@@ -65,54 +65,54 @@ Item {
                 dataString += sendSubString[1];
             }
             var targetStringData = "{\"paths\":["+pathsString+"\"],\"data\":["+dataString+"]}";
-            AwdClientJS.awdData = AwdClientJS.JSON2Obj(targetStringData);
+            WidgetClientJS.widgetData = WidgetClientJS.JSON2Obj(targetStringData);
         }
         catch(error) {
-            console.log("Catch error in updateAwdData()")
+            console.log("Catch error in updateWidgetData()")
         }
     }
 
     function getData(path) {
         var pathIndex = -1;
-        for(var x in AwdClientJS.awdData.paths)
+        for(var x in WidgetClientJS.widgetData.paths)
         {
-            if(AwdClientJS.awdData.paths[x].indexOf(path)==0 && path.indexOf(AwdClientJS.awdData.paths[x])==0)
+            if(WidgetClientJS.widgetData.paths[x].indexOf(path)==0 && path.indexOf(WidgetClientJS.widgetData.paths[x])==0)
                 pathIndex = x;
         }
         if(pathIndex == -1) {
-            pathIndex = AwdClientJS.awdData.paths.length;
-            AwdClientJS.awdData.paths.push(path);
+            pathIndex = WidgetClientJS.widgetData.paths.length;
+            WidgetClientJS.widgetData.paths.push(path);
         }
-        return AwdClientJS.awdData.data[pathIndex];
+        return WidgetClientJS.widgetData.data[pathIndex];
     }
 
     function setData(path, data) {
         var pathIndex = -1;
-        for(var x in AwdClientJS.awdData.paths)
+        for(var x in WidgetClientJS.widgetData.paths)
         {
-            if(AwdClientJS.awdData.paths[x].indexOf(path)==0 && path.indexOf(AwdClientJS.awdData.paths[x])==0)
+            if(WidgetClientJS.widgetData.paths[x].indexOf(path)==0 && path.indexOf(WidgetClientJS.widgetData.paths[x])==0)
                 pathIndex = x;
         }
         if(pathIndex == -1) {
-            pathIndex = AwdClientJS.awdData.paths.length;
-            AwdClientJS.awdData.paths.push(path);
+            pathIndex = WidgetClientJS.widgetData.paths.length;
+            WidgetClientJS.widgetData.paths.push(path);
         }
-        AwdClientJS.awdData.data[pathIndex] = data;
+        WidgetClientJS.widgetData.data[pathIndex] = data;
     }
 
     function startup() {
-        AwdClientJS.initRequestInfo();
+        WidgetClientJS.initRequestInfo();
     }
 
     function shootData() {
         convertDataToTemp();
-        lastArrivedData = AwdClientJS.Obj2JSON(AwdClientJS.tempAwdData);
-        AwdClientJS.sendDataRequest(lastArrivedData);
+        lastArrivedData = WidgetClientJS.Obj2JSON(WidgetClientJS.tempWidgetData);
+        WidgetClientJS.sendDataRequest(lastArrivedData);
     }
 
-    AwdAddress {
-        id: awdHttpAddress
-        name: awdClient.name
-        type: awdClient.type
+    WidgetAddress {
+        id: widgetHttpAddress
+        name: widgetClient.name
+        type: widgetClient.type
     }
 }

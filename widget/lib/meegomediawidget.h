@@ -1,9 +1,9 @@
-#ifndef AWDADDRESS_H
-#define AWDADDRESS_H
+#ifndef MEEGOMEDIAWIDGET_H
+#define MEEGOMEDIAWIDGET_H
 
 #include <QObject>
 
-class AwdAddress : public QObject
+class WidgetAddress : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString localPort READ localPort CONSTANT)
@@ -13,7 +13,7 @@ class AwdAddress : public QObject
     Q_PROPERTY(QString widgetId READ widgetId WRITE setWidgetId NOTIFY widgetIdChanged)
     Q_PROPERTY(QString sendDataMode READ sendDataMode WRITE setSendDataMode NOTIFY sendDataModeChanged)
 public:
-    explicit AwdAddress(QObject *parent = 0);
+    explicit WidgetAddress(QObject *parent = 0);
 
     QString localPort() const { return m_localPort; }
 
@@ -51,4 +51,4 @@ private:
     QString m_sdm;
 };
 
-#endif // AWDADDRESS_H
+#endif // MEEGOMEDIAWIDGET_H

@@ -1,9 +1,9 @@
-var awdData = {
+var widgetData = {
     "paths" : [],
     "data" : []
     }
 
-var tempAwdData = {};
+var tempWidgetData = {};
 
 //basic functions for handling XMLHttpRequest
 var xmlHttpStartUpRequest,
@@ -13,7 +13,7 @@ var xmlHttpStartUpRequest,
 function initRequestInfo()
 {
     xmlHttpStartUpRequest=new XMLHttpRequest();
-    xmlHttpStartUpRequest.open("Get", awdHttpAddress.getAddress("StartUp"), true);
+    xmlHttpStartUpRequest.open("Get", widgetHttpAddress.getAddress("StartUp"), true);
     xmlHttpStartUpRequest.onreadystatechange = handleStartUpResponse;
     xmlHttpStartUpRequest.send(null);
 }
@@ -21,7 +21,7 @@ function initRequestInfo()
 function standByRequest()
 {
     xmlHttpStandByRequest=new XMLHttpRequest();
-    xmlHttpStandByRequest.open("Get", awdHttpAddress.getAddress("StandBy"), true);
+    xmlHttpStandByRequest.open("Get", widgetHttpAddress.getAddress("StandBy"), true);
     xmlHttpStandByRequest.onreadystatechange = handleStandByResponse;
     xmlHttpStandByRequest.send(null);
 }
@@ -29,7 +29,7 @@ function standByRequest()
 function sendDataRequest(data)
 {
     xmlHttpSendDataRequest=new XMLHttpRequest();
-    xmlHttpSendDataRequest.open("Get", awdHttpAddress.getAddress("SendData", data), true);
+    xmlHttpSendDataRequest.open("Get", widgetHttpAddress.getAddress("SendData", data), true);
     xmlHttpSendDataRequest.onreadystatechange = handleSendDataResponse;
     xmlHttpSendDataRequest.send(null);
 }
@@ -95,7 +95,7 @@ function handleSendData(data)
 
 function handleStartUpData(data)
 {
-    awdClient.currentData = Obj2JSON(tempAwdData);
+    widgetClient.currentData = Obj2JSON(tempWidgetData);
     try {
         var recoverTest = JSON.parse(data);
         if(recoverTest.currentContext) {
@@ -105,33 +105,32 @@ function handleStartUpData(data)
             data = recoverTest.anotherContext.data;
         }
         if(data === "" || !data)
-            data = awdClient.currentData;
+            data = widgetClient.currentData;
         console.log("My data : "+data+"\n");
     }
     catch(error) {
         console.log("Catch error... set back to default value~~~\n")
-        data = awdClient.currentData;
+        data = widgetClient.currentData;
     }
     standByRequest();
 
-    awdClient.thisArrivedData = data;
+    widgetClient.thisArrivedData = data;
 
-    if(awdClient.lastArrivedData == awdClient.thisArrivedData && awdClient.thisArrivedData != awdClient.currentData) {
+    if(widgetClient.lastArrivedData == widgetClient.thisArrivedData && widgetClient.thisArrivedData != widgetClient.currentData) {
         console.log("[app::handleStandByData]: Data received is out-of-date. Do nothing!!\n");
     }
-    else if(awdClient.thisArrivedData == awdClient.currentData) {
+    else if(widgetClient.thisArrivedData == widgetClient.currentData) {
         console.log("[app::handleStandByData]: Data received is as same as current one. Do nothing!!\n");
     }
-    else if(awdClient.lastArrivedData != awdClient.thisArrivedData && awdClient.thisArrivedData != awdClient.currentData) {
+    else if(widgetClient.lastArrivedData != widgetClient.thisArrivedData && widgetClient.thisArrivedData != widgetClient.currentData) {
 
-        awdClient.lastArrivedData = awdClient.thisArrivedData;
+        widgetClient.lastArrivedData = widgetClient.thisArrivedData;
         console.log("[app::handleStandByData]: " + data);
 
         //Parse your DATA here.
-        tempAwdData = JSON2Obj(data);
-        console.log("---------------------------tempawd dtata"+data)
-        updateAwdData(tempAwdData);
-        awdClient.parent.startUpControlHandle();
+        tempWidgetData = JSON2Obj(data);
+        updateWidgetData(tempWidgetData);
+        widgetClient.parent.startUpControlHandle();
     }
     xmlHttpStartUpRequest = undefined;
 }
@@ -140,7 +139,7 @@ function handleStandByData(data)
 {
     xmlHttpStandByRequest = undefined;
     standByRequest();
-    awdClient.currentData = Obj2JSON(tempAwdData);
+    widgetClient.currentData = Obj2JSON(tempWidgetData);
     try {
         var recoverTest = JSON.parse(data);
         if(recoverTest.currentContext) {
@@ -150,30 +149,30 @@ function handleStandByData(data)
             data = recoverTest.anotherContext.data;
         }
         if(data === "" || !data)
-            data = awdClient.currentData;
+            data = widgetClient.currentData;
         console.log("My data : "+data+"\n");
     }
     catch(error) {
         console.log("Catch error... set back to default value~~~\n")
-        data = awdClient.currentData;
+        data = widgetClient.currentData;
     }
 
-    awdClient.thisArrivedData = data;
+    widgetClient.thisArrivedData = data;
 
-    if(awdClient.lastArrivedData == awdClient.thisArrivedData && awdClient.thisArrivedData != awdClient.currentData) {
+    if(widgetClient.lastArrivedData == widgetClient.thisArrivedData && widgetClient.thisArrivedData != widgetClient.currentData) {
         console.log("[app::handleStandByData]: Data received is out-of-date. Do nothing!!\n");
     }
-    else if(awdClient.thisArrivedData == awdClient.currentData) {
+    else if(widgetClient.thisArrivedData == widgetClient.currentData) {
         console.log("[app::handleStandByData]: Data received is as same as current one. Do nothing!!\n");
     }
-    else if(awdClient.lastArrivedData != awdClient.thisArrivedData && awdClient.thisArrivedData != awdClient.currentData) {
+    else if(widgetClient.lastArrivedData != widgetClient.thisArrivedData && widgetClient.thisArrivedData != widgetClient.currentData) {
 
-        awdClient.lastArrivedData = awdClient.thisArrivedData;
+        widgetClient.lastArrivedData = widgetClient.thisArrivedData;
         console.log("[app::handleStandByData]: " + data);
 
         //Parse your DATA here.
-        tempAwdData = JSON2Obj(data);
-        updateAwdData(tempAwdData);
-        awdClient.parent.controlHandle();
+        tempWidgetData = JSON2Obj(data);
+        updateWidgetData(tempWidgetData);
+        widgetClient.parent.controlHandle();
     }
 }
