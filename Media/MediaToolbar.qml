@@ -96,8 +96,8 @@ Item {
             anchors.top: parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: "image://themedimage/icons/actionbar/media-backward"
-            bgSourceDn: "image://themedimage/icons/actionbar/media-backward-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-previous"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-previous-active"
             onClicked: container.prevPressed();
         }
         MediaToolbarButton {
@@ -165,8 +165,8 @@ Item {
             anchors.top:parent.top
             height: parent.height
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
-            bgSourceUp: "image://themedimage/icons/actionbar/media-forward"
-            bgSourceDn: "image://themedimage/icons/actionbar/media-forward-active"
+            bgSourceUp: "image://themedimage/icons/actionbar/media-next"
+            bgSourceDn: "image://themedimage/icons/actionbar/media-next-active"
             onClicked: container.nextPressed();
         }
         Item {
