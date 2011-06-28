@@ -15,12 +15,18 @@ PKGCONFIG += \
     gconf-2.0 \
     libresourceqt1 \
     mlite \
-    libexif
+    libexif \
+    icu-i18n \
+    icu-uc \
+    meegolocale
+
 MOBILITY = publishsubscribe
 TARGET = $$qtLibraryTarget($$TARGET)
 
 OBJECTS_DIR = .obj
 MOC_DIR = .moc
+
+INCLUDEPATH += /usr/include/mlite
 
 # Input
 SOURCES += \
