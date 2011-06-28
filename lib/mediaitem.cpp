@@ -244,7 +244,7 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     }
     else if(isPhoto() && (args.count() == PHO_ARGS))
     {
-        m_uri = (QUrl::fromEncoded(args.at(IDX_PHO_URI).toAscii())).toString();
+        m_uri = args.at(IDX_PHO_URI).toUtf8();
         m_creationtime = args.at(IDX_PHO_CTIME);
         m_mimetype = args.at(IDX_PHO_MIME);
         m_title = args.at(IDX_PHO_TITLE);
@@ -284,7 +284,7 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     }
     else if(isAnyVideoType() && (args.count() == VID_ARGS))
     {
-        m_uri = (QUrl::fromEncoded(args.at(IDX_VID_URI).toAscii())).toString();
+        m_uri = args.at(IDX_VID_URI).toUtf8();
         m_title = args.at(IDX_VID_TITLE);
         if(!args.at(IDX_VID_DURATION).isEmpty())
             m_length = args.at(IDX_VID_DURATION).toInt();
