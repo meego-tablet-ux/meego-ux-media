@@ -13,6 +13,7 @@ PKGCONFIG += meego-ux-content meego-ux-media
 INCLUDEPATH += $$system(pkg-config --cflags meego-ux-content \
     | tr \' \' \'\\n\' | grep ^-I | cut -d 'I' -f 2-)
 INCLUDEPATH += ../lib
+INCLUDEPATH += /usr/include/mlite
 
 # this is just for building within the tree
 LIBS += -L../lib -lmeegouxmedia
