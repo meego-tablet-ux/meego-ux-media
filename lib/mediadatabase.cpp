@@ -816,9 +816,11 @@ void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &ne
     sql += clearEntries.arg(mediaList->m_urn);
 
     mediaList->children.clear();
+    mediaList->m_length = 0;
     // add new items to list
     foreach(MediaItem *i, newList) {
         mediaList->children.append(i->m_urn);
+        mediaList->m_length += i->m_length;
     }
     // insert MediaFileListEntry objects
     if (!mediaList->children.isEmpty()) {

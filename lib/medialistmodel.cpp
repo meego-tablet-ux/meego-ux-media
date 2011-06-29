@@ -11,6 +11,10 @@
 #include <QDir>
 #include <QDebug>
 #include <QtDeclarative/qdeclarative.h>
+#include "meegolocale.h"
+
+using namespace meego;
+static const Locale g_locale;
 
 MediaListModel::MediaListModel(QObject *parent)
     : QAbstractListModel(parent)
@@ -812,7 +816,7 @@ bool MediaListModel::isYbeforeX(MediaItem *x, MediaItem *y)
         QString xtitle, ytitle;
         xtitle = x->m_title;
         ytitle = y->m_title;
-        return(ytitle < xtitle);
+        return g_locale.lessThan(ytitle, xtitle);
     }
     else if(m_sort == SortByTrackNum)
     {
