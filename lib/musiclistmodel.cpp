@@ -173,6 +173,18 @@ void MusicListModel::setType(const int type)
         for(int i = 0; i < tempList.count(); i++)
             if(tempList[i]->isMusicPlaylist())
                 newItemList << tempList[i];
+        //Prepare the playlist's length information
+        for( int i = 0; i < newItemList.count(); ++i )
+        {
+            QList<MediaItem *> childItems = MusicDatabase::instance()->getItemsByURN(newItemList[i]->children);
+            if( newItemList[i]->m_length == 0 )
+            {
+                for( int j=0;j < childItems.count(); ++j )
+                {
+                   newItemList[i]->m_length += childItems.at(j)->getLength();
+                }
+            }
+        }
     }
     else if(m_type == ListofRecentlyPlayed)
     {
