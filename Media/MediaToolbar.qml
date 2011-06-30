@@ -269,6 +269,11 @@ Item {
                         progressBarSlider.x = pos - (progressBarSlider.width/2);
                     }
                     onReleased: {
+                        progressBarConnection.target = null
+                        var pos = mouseX;
+                        pos = (pos < 0)?0:pos;
+                        pos = (pos > progressBar.width)?progressBar.width:pos;
+                        progressBarSlider.x = pos - (progressBarSlider.width/2);
                         sliderPosition = (progressBarSlider.x + (progressBarSlider.width/2))/(progressBar.width);
                         container.sliderMoved(sliderPosition);
                         progressBarConnection.target = container
