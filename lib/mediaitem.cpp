@@ -133,6 +133,11 @@ MediaItem::MediaItem(QObject *parent) :
 void MediaItem::changeData(QDateTime recenttime, QStringList args)
 {
     m_urn = args.at(IDX_URN);
+
+    //Workaround for MusicPicker returning uri for playlists and albums
+    // This way everyone has unique "uri" even if not real
+    m_uri = m_urn;
+
     if(!args.at(IDX_SUBJECTID).isEmpty())
         m_sid = args.at(IDX_SUBJECTID).toInt();
     m_addedtime = QDateTime::fromString(args.at(IDX_ADDTIME), Qt::ISODate);
