@@ -380,7 +380,7 @@ public:
         Width = Qt::UserRole + 23,
         Height = Qt::UserRole + 24,
         UserContent = Qt::UserRole + 25,
-        PhotoCount = Qt::UserRole + 26
+        ChildCount = Qt::UserRole + 26
     };
 
     enum ItemType {

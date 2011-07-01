@@ -36,6 +36,7 @@ MusicListModel::MusicListModel(QObject *parent)
     roles.insert(MediaItem::Virtual, "isvirtual");
     roles.insert(MediaItem::PlayStatus, "playstatus");
     roles.insert(MediaItem::UserContent, "usercontent");
+    roles.insert(MediaItem::ChildCount, "albumcount");
     setRoleNames(roles);
 
     m_type = -1;
@@ -1058,6 +1059,9 @@ QVariant MusicListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::UserContent)
         return mediaItemsDisplay[index.row()]->m_isusercontent;
+
+    if (role == MediaItem::ChildCount)
+        return mediaItemsDisplay[index.row()]->children.count();
 
     return QVariant();
 }

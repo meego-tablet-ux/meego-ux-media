@@ -33,7 +33,7 @@ PhotoListModel::PhotoListModel(QObject *parent)
     roles.insert(MediaItem::Width, "width");
     roles.insert(MediaItem::Height, "height");
     roles.insert(MediaItem::UserContent, "usercontent");
-    roles.insert(MediaItem::PhotoCount, "photocount");
+    roles.insert(MediaItem::ChildCount, "photocount");
     setRoleNames(roles);
 
     m_type = -1;
@@ -644,7 +644,7 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
     if (role == MediaItem::UserContent)
         return mediaItemsDisplay[index.row()]->m_isusercontent;
 
-    if (role == MediaItem::PhotoCount)
+    if (role == MediaItem::ChildCount)
         return mediaItemsDisplay[index.row()]->children.count();
 
     return QVariant();
