@@ -61,11 +61,12 @@ public:
     enum ChangeReason { Viewed = 0,
                         Unviewed = 1,
                         Favorited = 2,
-                        Thumbnail = 3,
-                        PlayStatus = 4,
-                        Contents = 5,
-                        Title = 6,
-                        Other = 7
+                        Unfavorited = 3,
+                        Thumbnail = 4,
+                        PlayStatus = 5,
+                        Contents = 6,
+                        Title = 7,
+                        Other = 8
                       };
 
     enum PrioritySignal { None = 0,

@@ -256,7 +256,7 @@ void VideoListModel::itemsChanged(const QStringList &ids, int reason)
         return;
     }
     else if(((m_filter == FilterFavorite)||(m_sort == SortByFavorite))&&
-            (reason == VideoDatabase::Favorited))
+            ((reason == VideoDatabase::Favorited)||(reason == VideoDatabase::Unfavorited)))
     {
         redisplay();
         return;

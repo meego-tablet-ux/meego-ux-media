@@ -338,7 +338,7 @@ void PhotoListModel::itemsChanged(const QStringList &ids, int reason)
         return;
     }
     else if((((m_filter == FilterFavorite)||(m_sort == SortByFavorite))&&
-             (reason == PhotoDatabase::Favorited))||
+             ((reason == PhotoDatabase::Favorited)||(reason == PhotoDatabase::Unfavorited)))||
             (((m_filter == FilterViewed)||(m_filter == FilterUnwatched)||(m_sort == SortByAccessTime)||(m_sort == SortByUnwatched))&&
              (reason == PhotoDatabase::Viewed)))
     {
