@@ -130,7 +130,10 @@ function handleStartUpData(data)
         //Parse your DATA here.
         tempWidgetData = JSON2Obj(data);
         updateWidgetData(tempWidgetData);
-        widgetClient.parent.startUpControlHandle();
+        if(widgetClient.enableStartUpHandler) {
+            widgetClient.parent.startUpControlHandle();
+            widgetClient.enableStartUpHandler = false;
+        }
     }
     xmlHttpStartUpRequest = undefined;
 }
