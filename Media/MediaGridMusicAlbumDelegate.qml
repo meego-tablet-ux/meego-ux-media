@@ -8,6 +8,8 @@ Item {
     height: gridView.cellHeight
 
     property int mindex: index
+    property int mtype: container.model.type
+    property int malbumcount
     property string mtitle
     property string malbum
     property string muri: uri
@@ -97,6 +99,16 @@ Item {
             return 0
         }
     }
+
+    malbumcount: {
+        try {
+            return albumcount;
+        }
+        catch(err) {
+            return 0
+        }
+    }
+
 
     martist: {
         var a;
@@ -315,6 +327,15 @@ Item {
                 width: titleText.width
                 elide: Text.ElideRight
                 color: theme_fontColorMedium
+            }
+            Text {
+                id: artistAlbumCount
+                text: (malbumcount == 1 ? qsTr("1 Album", "" ) : qsTr("%n Albums", "", malbumcount))
+                font.pixelSize: theme_fontPixelSizeNormal
+                width: titleText.width
+                elide: Text.ElideRight
+                color: theme_fontColorMedium
+                visible: ( mtype == MusicListModel.ListofArtists )?true:false
             }
             Text {
                 id: durationText

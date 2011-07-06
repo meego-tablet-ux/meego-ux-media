@@ -131,6 +131,14 @@ void MusicDatabase::processSong(MediaItem *item)
         }
     }
 
+    //Now that we have the item's artistitem, we can update the albumcount for it
+    if( item && item->artistitem )
+    {
+        if( !(item->artistitem->children.contains(item->m_album)))
+            item->artistitem->children << item->m_album;
+        itemChanged(item->artistitem, Other);
+    }
+
     if(!item->m_album_urn.isEmpty()&&
        mediaItemsUrnHash.contains(item->m_album_urn))
     {

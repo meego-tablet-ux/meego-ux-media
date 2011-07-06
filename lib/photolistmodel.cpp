@@ -33,7 +33,7 @@ PhotoListModel::PhotoListModel(QObject *parent)
     roles.insert(MediaItem::Width, "width");
     roles.insert(MediaItem::Height, "height");
     roles.insert(MediaItem::UserContent, "usercontent");
-    roles.insert(MediaItem::PhotoCount, "photocount");
+    roles.insert(MediaItem::ChildCount, "photocount");
     setRoleNames(roles);
 
     m_type = -1;
@@ -338,7 +338,7 @@ void PhotoListModel::itemsChanged(const QStringList &ids, int reason)
         return;
     }
     else if((((m_filter == FilterFavorite)||(m_sort == SortByFavorite))&&
-             (reason == PhotoDatabase::Favorited))||
+             ((reason == PhotoDatabase::Favorited)||(reason == PhotoDatabase::Unfavorited)))||
             (((m_filter == FilterViewed)||(m_filter == FilterUnwatched)||(m_sort == SortByAccessTime)||(m_sort == SortByUnwatched))&&
              (reason == PhotoDatabase::Viewed)))
     {
@@ -644,7 +644,7 @@ QVariant PhotoListModel::data(const QModelIndex &index, int role) const
     if (role == MediaItem::UserContent)
         return mediaItemsDisplay[index.row()]->m_isusercontent;
 
-    if (role == MediaItem::PhotoCount)
+    if (role == MediaItem::ChildCount)
         return mediaItemsDisplay[index.row()]->children.count();
 
     return QVariant();

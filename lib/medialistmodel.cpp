@@ -134,6 +134,9 @@ QVariant MediaListModel::datafromItem(MediaItem *item, int role)
     if (role == MediaItem::Height)
         return item->getHeight();
 
+    if (role == MediaItem::ChildCount)
+        return item->children.count();
+
     return QVariant();
 }
 

@@ -36,6 +36,7 @@ MusicListModel::MusicListModel(QObject *parent)
     roles.insert(MediaItem::Virtual, "isvirtual");
     roles.insert(MediaItem::PlayStatus, "playstatus");
     roles.insert(MediaItem::UserContent, "usercontent");
+    roles.insert(MediaItem::ChildCount, "albumcount");
     setRoleNames(roles);
 
     m_type = -1;
@@ -657,13 +658,27 @@ void MusicListModel::itemsChanged(const QStringList &ids, int reason)
             resortItems(newItemList);
         return;
     }
-    else if((reason == MusicDatabase::Unviewed)&&(m_type == ListofRecentlyPlayed))
+    else if(((reason == MusicDatabase::Unviewed)&&(m_type == ListofRecentlyPlayed))||
+            ((reason == MusicDatabase::Unfavorited)&&(m_type == ListofFavorites)))
     {
         itemsRemoved(ids);
         return;
     }
+    else if((reason == MusicDatabase::Favorited)&&(m_type == ListofFavorites))
+    {
+        // only add items that aren't already in the list
+        QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByID(ids);
+        for(int i = 0; i < mediaItemsList.count(); i++)
+            if(ids.contains(mediaItemsList[i]->m_id))
+            {
+                newItemList.removeAll(mediaItemsList[i]);
+            }
+        if(!newItemList.isEmpty())
+            displayNewItems(newItemList);
+        return;
+    }
     else if((((m_filter == FilterFavorite)||(m_sort == SortByFavorite))&&
-             (reason == MusicDatabase::Favorited))||
+             ((reason == MusicDatabase::Favorited)||(reason == MusicDatabase::Unfavorited)))||
             (((m_filter == FilterViewed)||(m_filter == FilterUnwatched)||
               (m_sort == SortByAccessTime)||(m_sort == SortByUnwatched))&&
              (reason == MusicDatabase::Viewed))||
@@ -1044,6 +1059,9 @@ QVariant MusicListModel::data(const QModelIndex &index, int role) const
 
     if (role == MediaItem::UserContent)
         return mediaItemsDisplay[index.row()]->m_isusercontent;
+
+    if (role == MediaItem::ChildCount)
+        return mediaItemsDisplay[index.row()]->children.count();
 
     return QVariant();
 }

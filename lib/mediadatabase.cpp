@@ -401,7 +401,7 @@ void MediaDatabase::setFavoriteMulti(const QStringList &ids, bool val)
             setFavorite(mediaItemsList[i]->m_urn, val);
         }
     }
-    broadcastMyChanges(ids, MediaDatabase::Favorited);
+    broadcastMyChanges(ids, (val)?(MediaDatabase::Favorited):(MediaDatabase::Unfavorited));
 }
 
 void MediaDatabase::setViewedMulti(const QStringList &ids)
@@ -698,8 +698,16 @@ void MediaDatabase::trackerUpdates(QString classname, QVector<Quad> deletes, QVe
                             qDebug() << "TAGCHANGE: " << item->m_title << ", " << tagname << ", " << tagvalue;
                             if(tagname == "favorite")
                             {
-                                reason = Favorited;
-                                item->setFavorite(tagvalue == "favorite");
+                                if(tagvalue == "favorite")
+                                {
+                                    reason = Favorited;
+                                    item->setFavorite(true);
+                                }
+                                else
+                                {
+                                    reason = Unfavorited;
+                                    item->setFavorite(false);
+                                }
                             }
                             else if(tagname == "viewed")
                             {
