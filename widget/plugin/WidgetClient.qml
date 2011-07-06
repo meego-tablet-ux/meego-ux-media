@@ -12,6 +12,7 @@ Item {
     property string lastArrivedData : ""    //currently lastArrivedData = lastSendData or last accepted data
     property string thisArrivedData : ""    //data just arrived
     property string currentData : ""        //data of current states
+    property bool enableStartUpHandler: true
 
     function currentWidgetData()
     {
@@ -104,10 +105,17 @@ Item {
         WidgetClientJS.initRequestInfo();
     }
 
-    function shootData() {
+    function shootData(mode) {
         convertDataToTemp();
         lastArrivedData = WidgetClientJS.Obj2JSON(WidgetClientJS.tempWidgetData);
-        WidgetClientJS.sendDataRequest(lastArrivedData);
+        if(mode) {
+            if(mode == "force")
+                widgetHttpAddress.sendDataMode = "force"
+            WidgetClientJS.sendDataRequest(lastArrivedData);
+            widgetHttpAddress.sendDataMode = "none"
+        }
+        else
+            WidgetClientJS.sendDataRequest(lastArrivedData);
     }
 
     WidgetAddress {
