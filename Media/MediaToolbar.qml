@@ -379,7 +379,7 @@ Item {
             width: (visible)?((showprogressbar)?iwidth:buttonwidth):0
             toggled: isrepeat
             bgSourceUp: "image://themedimage/icons/actionbar/media-repeat"
-            bgSourceUpToggled: "image://themedimage/icons/actionbar/media-repeat-active-selected"
+            bgSourceUpToggled: "image://themedimage/icons/actionbar/media-repeat-selected"
             bgSourceDn: "image://themedimage/icons/actionbar/media-repeat-active"
             onClicked: {
                 isrepeat = !isrepeat;
