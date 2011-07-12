@@ -316,7 +316,7 @@
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
 #define VIEWEDTAG "INSERT { _:tag a nao:Tag ; nao:prefLabel '%2' ; nao:identifier 'viewed' . ?object nao:hasTag _:tag } " \
         "WHERE { ?object a nie:InformationElement . FILTER (nie:title(?object) = '%1') }"
-#define DEFAULT_FLAVOR        "large"
+#define DEFAULT_FLAVOR        "small"
 #define USER_CONTENT_STRING "MeeGo User Generated Content"
 
 class MediaItem: public QObject {
