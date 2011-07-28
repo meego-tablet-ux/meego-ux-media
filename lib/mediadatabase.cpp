@@ -478,6 +478,15 @@ void MediaDatabase::destroyItem(MediaItem *item)
         qDebug() << sql;
         trackerCallAsync(sql);
 
+        QString uri = item->m_uri;
+        uri.replace("file://", "");
+
+        if(QFile::exists(uri))
+        {
+            QFile f(uri);
+            f.remove();
+        }
+
         /* remove the thumbnail as well */
         if(!item->m_title.isEmpty()&&QFile::exists(MediaItem::thumbPlaylist(item->m_title)))
         {
@@ -607,8 +616,8 @@ void MediaDatabase::destroyItem(MediaItem *item)
         mediaItemsList.removeAll(removedItemsList[i]);
         mediaItemsUrnHash.remove(removedItemsList[i]->m_urn);
         mediaItemsIdHash.remove(removedItemsList[i]->m_id);
-        mediaItemsSidHash.remove(removedItemsList[i]->m_sid);
-        /* delete should go here, but it needs to be delayed */
+        mediaItemsSidHash.remove(removedItemsList[i]->m_sid);        
+        item->deleteLater();
     }
 
     /* tell the world we have deletions */

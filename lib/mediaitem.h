@@ -148,13 +148,11 @@
         "nmm:artistName(?artist) ?artist nmm:albumTitle(?album) ?album nie:mimeType(?song) nfo:encodedBy(?song) " \
         "WHERE{?song a nmm:MusicPiece;tracker:added ?_added " \
         ". ?song nmm:musicAlbum ?album . ?song nmm:performer ?artist " \
-        ". FILTER (str(?song) = ?item) " \
+        ". FILTER (str(nie:url(?song)) = ?item) " \
         ". OPTIONAL {?song nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?song nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . } " \
-        ". { SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?item " \
-        ". ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . " \
-        "FILTER (str(?playlist) = '%1')} } } " \
-        "ORDER BY ?index }}"
+        ". { SELECT ?item WHERE { ?playlist a nmm:Playlist . ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?item " \
+        ". FILTER (str(?playlist) = '%1') } ORDER BY nfo:listPosition(?entry) } }"
 
 #define IDX_SNG_TITLE      IDX_CUSTOM_BEGIN
 #define IDX_SNG_URI        IDX_CUSTOM_BEGIN + 1
@@ -170,37 +168,32 @@
 #define SNG_ARGS           IDX_SNG_USER + 1
 
 /* MUSIC PLAYLIST */
-
-#define TRACKER_ALLPLAYLISTS "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?playlist) " \
-        "nfo:entryCounter(?playlist) WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
-        ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
+#define TRACKER_ALLPLAYLISTS "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:identifier(?tag) nie:url(?playlist) " \
+        "WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
+        ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . }" \
         ". OPTIONAL {?playlist nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }} " \
-        "ORDER BY nie:title(?playlist) LIMIT %1 OFFSET %2"
-#define TRACKER_PLAYLIST "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?playlist) " \
-        "nfo:entryCounter(?playlist) WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
+        "ORDER BY nie:url(?playlist) LIMIT %1 OFFSET %2"
+#define TRACKER_PLAYLIST "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:url(?playlist) " \
+        "WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
         ". FILTER (str(?playlist) = '%1') " \
         ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?playlist nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
-#define TRACKER_PLAYLIST_SID "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?playlist) " \
-        "nfo:entryCounter(?playlist) WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
+#define TRACKER_PLAYLIST_SID "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:url(?playlist) " \
+        "WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
         ". FILTER (tracker:id(?playlist) = '%1') " \
         ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?playlist nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
-#define TRACKER_PLAYLIST_TITLE "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:title(?playlist) " \
-        "nfo:entryCounter(?playlist) WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
+#define TRACKER_PLAYLIST_TITLE "SELECT ?playlist tracker:id(?playlist) ?_added nao:prefLabel(?tag2) nao:prefLabel(?tag) nie:url(?playlist) " \
+        "WHERE{?playlist a nmm:Playlist;tracker:added ?_added " \
         ". FILTER (nie:title(?playlist) = '%1') " \
         ". OPTIONAL {?playlist nao:hasTag ?tag . ?tag nao:identifier 'favorite' . } " \
         ". OPTIONAL {?playlist nao:hasTag ?tag2 . ?tag2 nao:identifier 'viewed' . }}"
-#define TRACKER_PLAYLIST_CONTENTS_BY_TITLE "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
-        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} } }" \
-        "ORDER BY ?index"
-#define TRACKER_PLAYLIST_CONTENTS_BY_URN "SELECT ?item WHERE { ?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl " \
-        "?item . ?entry nfo:listPosition ?index { SELECT ?playlist WHERE {?playlist a nmm:Playlist . FILTER (str(?playlist) = '%1')} } }" \
-        "ORDER BY ?index"
+#define TRACKER_PLAYLIST_CONTENTS_BY_URN "SELECT ?track WHERE { ?playlist a nmm:Playlist . " \
+        "?playlist nfo:hasMediaFileListEntry ?entry . ?entry nfo:entryUrl ?track . " \
+        "FILTER (str(?playlist) = '%1') } ORDER BY nfo:listPosition(?entry)"
 
-#define IDX_MPL_TITLE IDX_CUSTOM_BEGIN
-#define IDX_MPL_COUNT IDX_CUSTOM_BEGIN + 1
-#define MPL_ARGS      IDX_MPL_COUNT + 1
+#define IDX_MPL_URI IDX_CUSTOM_BEGIN
+#define MPL_ARGS    IDX_MPL_URI + 1
 
 /* MUSIC ALBUM */
 
@@ -523,13 +516,13 @@ public:
     static QString thumbPlaylist(const QString &title);
     static QString thumbPlaylistImageProvider(const QString &title);
     static QString thumbPlaylistDir();
+    static QString fileFormatted(const QString &file);
     static bool isInMusicDir(QString path);
 private:
     /* internal data for the item */
     QByteArray md5Result;
     static QString stripInvalidEntities(const QString& src);
     QString thumbPhoto(const QString &uri);
-    QString fileFormatted(const QString &file);
 };
 
 #endif // MEDIAITEM_H

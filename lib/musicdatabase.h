@@ -24,7 +24,8 @@ public:
     void requestThumbnail(MediaItem *item);
     void requestItem(int type, QString identifier);
     void savePlaylist(QList<MediaItem *> &list, const QString &title);
-    QStringList loadPlaylist(const QString &title, bool bytitle = true);
+    QString renamePlaylist(const QString &urn, const QString &title);
+    QStringList loadPlaylist(const QString &urn);
     MediaItem* getArtistItem(const QString &title);
     MediaItem* getPlaylistItem(const QString &title);
 

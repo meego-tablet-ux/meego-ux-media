@@ -235,9 +235,12 @@ void MediaItem::changeData(QDateTime recenttime, QStringList args)
     }
     else if(isMusicPlaylist() && (args.count() == MPL_ARGS))
     {
-        m_title = args.at(IDX_MPL_TITLE);
-        if(!args.at(IDX_MPL_COUNT).isEmpty())
-            m_tracknum = args.at(IDX_MPL_COUNT).toInt();
+        m_uri = (QUrl::fromEncoded(args.at(IDX_MPL_URI).toAscii())).toString();
+        /* the title is the filename */
+        m_title = m_uri.mid(m_uri.lastIndexOf("/")+1, m_uri.length()-m_uri.lastIndexOf("/"));
+        if(m_title.contains("."))
+            m_title.truncate(m_title.lastIndexOf("."));
+
         if(!m_title.isEmpty())
         {
             m_thumbtype = PlaylistThumb;

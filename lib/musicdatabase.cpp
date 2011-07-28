@@ -100,6 +100,18 @@ MediaItem* MusicDatabase::getAlbumItem(QString artist, QString album)
 
 void MusicDatabase::processSong(MediaItem *item)
 {
+    /* first check to see if the song is in any playlists */
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->isMusicPlaylist())
+            for(int j = 0; j < mediaItemsList[i]->children.count(); j++)
+            {
+                if(item->m_uri.compare(mediaItemsList[i]->children[j], Qt::CaseInsensitive) == 0)
+                {
+                    mediaItemsList[i]->children[j] = item->m_urn;
+                    itemChanged(mediaItemsList[i], Other);
+                }
+            }
+
     /* we need to pull out the artist and album item for each song*/
     if(!item->m_artist_urn.isEmpty()&&
        mediaItemsUrnHash.contains(item->m_artist_urn.first()))
@@ -273,7 +285,8 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
              artistItemHash.insert(item->m_title, item);
          if(type == MediaItem::MusicPlaylistItem) {
              // Get playlist songs
-             item->children = loadPlaylist(item->m_urn, false);
+             item->children = loadPlaylist(item->m_urn);
+             item->m_tracknum = item->children.count();
          }
 
          /* if this is an album or artist (from a command line call) get the thumb */
@@ -420,6 +433,30 @@ void MusicDatabase::generatePlaylistThumbId(MediaItem *item)
     item->m_thumburi = thumburi;
 }
 
+QString MusicDatabase::renamePlaylist(const QString &urn, const QString &title)
+{
+    if(urn.isEmpty())
+        return "";
+
+    if(mediaItemsUrnHash.contains(urn))
+    {
+        MediaItem *item = mediaItemsUrnHash[urn];
+        QString uri = item->m_uri;
+        uri.replace("file://", "");
+        if(item->m_title == title)
+            return uri;
+
+        QString uri2 = uri.mid(0, uri.lastIndexOf("/")+1) + title + ".m3u";
+        QFile::rename(uri, uri2);
+        item->m_uri = "file://" + uri2;
+        item->m_title = title;
+        itemChanged(item, Title);
+        return uri2;
+    }
+
+    return "";
+}
+
 void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
 {
     createPlaylistThumb(list, title);
@@ -430,74 +467,59 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
         if(mediaItemsList[i]->isMusicPlaylist()&&(mediaItemsList[i]->m_title == title))
             item = mediaItemsList[i];
 
-    QString SqlCmd, sql;
-
-    /* if this is an update of an existing playlist */
-    if(item != NULL)
+    QString homePath = QDir::toNativeSeparators(QDir::homePath()) + "/Music/";
+    QString uri;
+    if(item == NULL) /* new playlist */
     {
-        updatePlaylist(item, list);
-        return;
-        // SqlCmd = "DELETE { ?playlist a nmm:Playlist } WHERE { ?playlist a nmm:Playlist . FILTER (nie:title(?playlist) = '%1')} ";
-        // sql = QString(SqlCmd).arg(title);
+        uri = homePath + title + ".m3u";
     }
-
-    /* create a new playlist */
-    QString SqlInsertBegin = "INSERT { _:a a nmm:Playlist; nie:title '%1' ; nfo:entryCounter %2 ";
-    QString SqlListEntry = " nfo:hasMediaFileListEntry [ a nfo:MediaFileListEntry; nfo:entryUrl '%1'; nfo:listPosition %2 ] ";
-    sql += QString(SqlInsertBegin).arg(sparqlEscape(title)).arg(list.count());
-
-    int j = 0;
-    for (int  i = 0; i < list.count(); i++) {
-        QString sqlItem = QString(SqlListEntry).arg(list[i]->m_urn).arg(j++);
-        sql += QString(";") + sqlItem;
-    }
-    sql += " }";
-
-    /* preserve the tags */
-    if(item != NULL)
+    else /* existing playlist */
     {
-        if(item->m_favorite)
-        {
-            QString SqlTag = FAVORITETAG;
-            sql += QString(SqlTag).arg(sparqlEscape(title));
-        }
-        if(!item->m_lastplayedtime.isEmpty())
-        {
-            QString SqlTag = VIEWEDTAG;
-            sql += QString(SqlTag).arg(sparqlEscape(title)).arg(item->m_lastplayedtime);
-        }
-    }
+        item->children.clear();
+        item->m_length = 0;
+        item->m_tracknum = 0;
 
-    /* delete/insert the list */
-    trackerCall(sql);
-    SqlCmd = TRACKER_PLAYLIST_TITLE;
-    sql = QString(SqlCmd).arg(sparqlEscape(title));
-
-    QVector<QStringList> info;
-    /* pull in the new list */
-    if(trackerCall(info, sql))
-    {
-        if(item != NULL)
+        /* if the title has changed, rename the file */
+        if(item->m_title != title)
         {
-            for (QVector<QStringList>::iterator j = info.begin(); j != info.end(); j++)
-            {
-                mediaItemsUrnHash.remove(item->m_urn);
-                mediaItemsSidHash.remove(item->m_sid);
-                item->changeData(recenttime, *j);
-                generatePlaylistThumbId(item);
-                mediaItemsUrnHash.insert(item->m_urn, item);
-                mediaItemsSidHash.insert(item->m_sid, item);
-                QStringList temp;
-                temp << item->m_id;
-                emit itemsChanged(temp, MusicDatabase::Contents);
-            }
+            uri = renamePlaylist(item->m_urn, title);
         }
         else
         {
-            trackerAddItems(MediaItem::MusicPlaylistItem, info);
+            uri = item->m_uri;
+            uri.replace("file://", "");
         }
     }
+
+    QFile fp(uri);
+    if (!fp.open(QIODevice::WriteOnly | QIODevice::Text))
+        return;
+
+    QTextStream out(&fp);
+
+    out << "#EXTM3U" << endl;
+    for(int i = 0; i < list.count(); i++)
+    {
+        QString track = list[i]->m_uri;
+        QString homePath = QDir::toNativeSeparators(QDir::homePath()) + "/Music/";
+        track.replace("file://", "");
+        track.replace(homePath, "");
+        out << track << endl;
+        if(item != NULL)
+        {
+            item->children << list[i]->m_urn;
+            item->m_length += list[i]->m_length;
+            item->m_tracknum++;
+        }
+    }
+
+    out.flush();
+    fp.close();
+
+    if(item != NULL)
+        itemChanged(item, Contents);
 }
+
 void MusicDatabase::updatePlaylist(MediaItem *item, QList<MediaItem *> &newList)
 {
     updateMediaList(item, newList);
@@ -517,26 +539,20 @@ void MusicDatabase::updatePlaylist(MediaItem *item, QList<MediaItem *> &newList)
     emit itemsChanged(temp, MusicDatabase::Contents);
 }
 
-QStringList MusicDatabase::loadPlaylist(const QString &title, bool bytitle)
+QStringList MusicDatabase::loadPlaylist(const QString &urn)
 {
     QStringList playlistItems;
 
-    QString SqlCmd;
-    if(bytitle)
-        SqlCmd = TRACKER_PLAYLIST_CONTENTS_BY_TITLE;
-    else
-        SqlCmd = TRACKER_PLAYLIST_CONTENTS_BY_URN;
-
-    QString sql = QString(SqlCmd).arg(sparqlEscape(title));
+    QString sql = QString(TRACKER_PLAYLIST_CONTENTS_BY_URN).arg(urn);
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))
     {
         for (QVector<QStringList>::iterator j = info.begin(); j != info.end(); j++)
         {
-            QString urn = (*j)[0];
-            if(!urn.isEmpty())
-                playlistItems << urn;
+            QString track = (*j)[0];
+            if(!track.isEmpty())
+                playlistItems << MediaItem::fileFormatted(track);
         }
     }
 

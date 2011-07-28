@@ -119,7 +119,7 @@ void MusicListModel::setType(const int type)
     case MusicPlaylist:
         m_default_sort = SortByURNList;
         setSort(SortByDefault);
-        connectSignals(false, true, true);
+        connectSignals(true, true, true);
         if(!m_playlist.isEmpty())
             setPlaylist(m_playlist);
         return;
@@ -1076,9 +1076,21 @@ void MusicListModel::changeTitle(QString uri, QString title)
 
 void MusicListModel::changeTitleByURN(QString urn, QString title)
 {
-    MusicDatabase::instance()->changeTitleByURN(urn, title);
-    for (int i = 0; i < mediaItemsDisplay.count(); i++)
+    MediaItem *item = NULL;
+    for (int i = 0; i < mediaItemsList.count(); i++)
         if(mediaItemsList[i]->m_urn == urn)
+        {
+            item = mediaItemsList[i];
+            break;
+        }
+
+    if((item != NULL)&&(item->isMusicPlaylist()))
+        MusicDatabase::instance()->renamePlaylist(urn, title);
+    else
+        MusicDatabase::instance()->changeTitleByURN(urn, title);
+
+    for (int i = 0; i < mediaItemsDisplay.count(); i++)
+        if(mediaItemsDisplay[i]->m_urn == urn)
             emit dataChanged(index(i, 0), index(i, 0));
 }
 
