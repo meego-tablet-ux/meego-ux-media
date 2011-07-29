@@ -242,7 +242,8 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          /* if this is a playlist, see if there's a placeholder */
          if(type == MediaItem::MusicPlaylistItem)
              for(int j = 0; j < mediaItemsList.count(); j++)
-                 if((mediaItemsList[j]->isMusicPlaylist())&&(mediaItemsList[j]->m_uri == ((*i)[IDX_MPL_URI])))
+                 if((mediaItemsList[j]->isMusicPlaylist())&&(mediaItemsList[j]->m_urn.isEmpty())&&
+                         (mediaItemsList[j]->m_uri == ((*i)[IDX_MPL_URI])))
                  {
                      mediaItemsList[j]->changeData(recenttime, *i);
                      mediaItemsUrnHash.insert(mediaItemsList[j]->m_urn, mediaItemsList[j]);
