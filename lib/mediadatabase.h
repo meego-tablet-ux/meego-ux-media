@@ -66,7 +66,8 @@ public:
                         PlayStatus = 5,
                         Contents = 6,
                         Title = 7,
-                        Other = 8
+                        UpdatePlaylist = 8,
+                        Other = 9
                       };
 
     enum PrioritySignal { None = 0,
@@ -100,7 +101,7 @@ public slots:
     void recentkeyChanged();
 
 signals:
-    void itemsChanged(const QStringList &ids, int reason);
+    void itemsChanged(const QStringList &ids, int reason, int otherinfo = 0);
     void itemsAdded(const QList<MediaItem *> *list);
     void itemsRemoved(const QStringList &ids);
     void photoItemAdded(int subjectid);
@@ -122,7 +123,7 @@ protected:
     QHash<int, MediaItem *> mediaItemsSidHash;
     QList<MediaItem *> needThumbList;
     void itemAdded(MediaItem *item);
-    void itemChanged(MediaItem *item, int reason);
+    void itemChanged(MediaItem *item, int reason, int otherinfo = 0);
 
     /* tracker calls */
     QDBusInterface *trackerinterface;

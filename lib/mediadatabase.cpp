@@ -817,11 +817,11 @@ void MediaDatabase::itemAdded(MediaItem *item)
     emit itemsAdded(&newItemsList);
 }
 
-void MediaDatabase::itemChanged(MediaItem *item, int reason)
+void MediaDatabase::itemChanged(MediaItem *item, int reason, int otherinfo)
 {
     QStringList newItemsList;
     newItemsList << item->m_id;
-    emit itemsChanged(newItemsList, reason);
+    emit itemsChanged(newItemsList, reason, otherinfo);
 }
 void MediaDatabase::updateMediaList(MediaItem *mediaList, QList<MediaItem *> &newList)
 {

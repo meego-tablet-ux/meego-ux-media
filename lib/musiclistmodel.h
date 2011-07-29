@@ -128,7 +128,7 @@ signals:
 protected slots:
     /* from MusicDatabase signals */
     void itemsAdded(const QList<MediaItem *> *list);
-    void itemsChanged(const QStringList &ids, int reason);
+    void itemsChanged(const QStringList &ids, int reason, int otherinfo);
     void initComplete();
 
 protected:
@@ -136,6 +136,7 @@ protected:
     QList<MediaItem *> unwrapItem(const QList<MediaItem *> &snapshot, MediaItem *item);
     void clearData();
     void connectSignals(bool added, bool changed, bool removed);
+    void updatePlaylist(QString id, int index);
 
     /* properties for this model */
     int m_type;

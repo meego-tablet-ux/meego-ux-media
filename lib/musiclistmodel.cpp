@@ -63,7 +63,7 @@ void MusicListModel::connectSignals(bool added, bool changed, bool removed)
         connect(MusicDatabase::instance(),SIGNAL(itemsAdded(const QList<MediaItem *> *)),this,SLOT(itemsAdded(const QList<MediaItem *> *)));
 
     if(changed)
-        connect(MusicDatabase::instance(),SIGNAL(itemsChanged(const QStringList &, int)),this,SLOT(itemsChanged(const QStringList &, int)));
+        connect(MusicDatabase::instance(),SIGNAL(itemsChanged(const QStringList &, int, int)),this,SLOT(itemsChanged(const QStringList &, int, int)));
 
     if(removed)
         connect(MusicDatabase::instance(),SIGNAL(itemsRemoved(const QStringList &)),this,SLOT(itemsRemoved(const QStringList &)));
@@ -174,18 +174,6 @@ void MusicListModel::setType(const int type)
         for(int i = 0; i < tempList.count(); i++)
             if(tempList[i]->isMusicPlaylist())
                 newItemList << tempList[i];
-        //Prepare the playlist's length information
-        for( int i = 0; i < newItemList.count(); ++i )
-        {
-            QList<MediaItem *> childItems = MusicDatabase::instance()->getItemsByURN(newItemList[i]->children);
-            if( newItemList[i]->m_length == 0 )
-            {
-                for( int j=0;j < childItems.count(); ++j )
-                {
-                   newItemList[i]->m_length += childItems.at(j)->getLength();
-                }
-            }
-        }
     }
     else if(m_type == ListofRecentlyPlayed)
     {
@@ -322,6 +310,29 @@ void MusicListModel::setPlaylist(const QString playlist)
 
     connectSignals(true, true, true);
     emit playlistChanged(m_playlist);
+}
+
+void MusicListModel::updatePlaylist(QString id, int index)
+{
+    if((m_type != MusicPlaylist)||(m_playlist.isEmpty())||(index < 0))
+        return;
+
+    MediaItem *item = MusicDatabase::instance()->getPlaylistItem(m_playlist);
+    if((item == NULL)||(item->m_id != id))
+        return;
+
+    if(index >= item->children.count()||index >= urnSortList.count())
+        return;
+
+    QStringList urns;
+    urnSortList[index] = item->children[index];
+    urns << item->children[index];
+    QList<MediaItem *> newItemList = MusicDatabase::instance()->getItemsByURN(urns);
+
+    if(!newItemList.isEmpty()) {
+        /* formally add the new items */
+        displayNewItems(newItemList);
+    }
 }
 
 void MusicListModel::setURNs(const QStringList urns)
@@ -635,7 +646,7 @@ void MusicListModel::itemsAdded(const QList<MediaItem *> *list)
     }
 }
 
-void MusicListModel::itemsChanged(const QStringList &ids, int reason)
+void MusicListModel::itemsChanged(const QStringList &ids, int reason, int otherinfo)
 {
     int i1=-1, i2=-1;
 
@@ -686,6 +697,10 @@ void MusicListModel::itemsChanged(const QStringList &ids, int reason)
     {
         redisplay();
         return;
+    }
+    else if((m_type == MusicPlaylist)&&(reason == MusicDatabase::UpdatePlaylist))
+    {
+        updatePlaylist(ids[0], otherinfo);
     }
 
     for(int i = 0; i < mediaItemsDisplay.count(); i++)

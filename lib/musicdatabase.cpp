@@ -108,7 +108,8 @@ void MusicDatabase::processSong(MediaItem *item)
                 if(item->m_uri.compare(mediaItemsList[i]->children[j], Qt::CaseInsensitive) == 0)
                 {
                     mediaItemsList[i]->children[j] = item->m_urn;
-                    itemChanged(mediaItemsList[i], Other);
+                    mediaItemsList[i]->m_length += item->m_length;
+                    itemChanged(mediaItemsList[i], UpdatePlaylist, j);
                 }
             }
 
@@ -750,8 +751,13 @@ void MusicDatabase::requestSongItems(int type, QString identifier)
         SqlCmd = TRACKER_SONGS_BYARTIST;
         break;
     case MediaItem::MusicPlaylistItem:
-        SqlCmd = TRACKER_SONGS_BYPLAYLIST;
-        break;
+        /* let's just put whatever's already online in the playqueue */
+        for(int i = 0; i < mediaItemsList.count(); i++)
+            if(mediaItemsList[i]->isMusicPlaylist()&&(mediaItemsList[i]->m_urn == identifier))
+                for(int j = 0; j < mediaItemsList[i]->children.count(); j++)
+                    if(mediaItemsList[i]->children[j].startsWith("urn"))
+                        emit songItemAvailable(mediaItemsList[i]->children[j]);
+        return;
     default:
         return;
     }
