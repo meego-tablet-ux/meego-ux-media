@@ -239,6 +239,18 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
     /* organize new items into musics and albums */
     for (QVector<QStringList>::iterator i = trackerreply.begin(); i != trackerreply.end(); i++)
     {
+         /* if this is a playlist, see if there's a placeholder */
+         if(type == MediaItem::MusicPlaylistItem)
+             for(int j = 0; j < mediaItemsList.count(); j++)
+                 if((mediaItemsList[j]->isMusicPlaylist())&&(mediaItemsList[j]->m_uri == ((*i)[IDX_MPL_URI])))
+                 {
+                     mediaItemsList[j]->changeData(recenttime, *i);
+                     mediaItemsUrnHash.insert(mediaItemsList[j]->m_urn, mediaItemsList[j]);
+                     mediaItemsSidHash.insert(mediaItemsList[j]->m_sid, mediaItemsList[j]);
+                     itemChanged(mediaItemsList[j], Contents);
+                     continue;
+                 }
+
          /* if this item is already in our list, skip it */
          if(mediaItemsUrnHash.contains((*i)[IDX_URN]))
          {
@@ -473,35 +485,38 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
 
     QString homePath = QDir::toNativeSeparators(QDir::homePath()) + "/Music/";
     QString uri;
-    if(item == NULL) /* new playlist */
+
+    if(item == NULL) /* new playlist, create a placeholder item */
     {
         uri = homePath + title + ".m3u";
+        item = new MediaItem(MediaItem::MusicPlaylistItem, "file://" + uri);
+        mediaItemsIdHash.insert(item->m_id, item);
+        mediaItemsList += item;
+        emit itemAdded(item);
     }
-    else /* existing playlist */
+
+    item->children.clear();
+    item->m_length = 0;
+    item->m_tracknum = 0;
+
+    /* if the title has changed, rename the file */
+    if(item->m_title != title)
     {
-        item->children.clear();
-        item->m_length = 0;
-        item->m_tracknum = 0;
+        uri = renamePlaylist(item->m_urn, title);
+    }
+    else
+    {
+        uri = item->m_uri;
+        uri.replace("file://", "");
+    }
 
-        /* if the title has changed, rename the file */
-        if(item->m_title != title)
-        {
-            uri = renamePlaylist(item->m_urn, title);
-        }
-        else
-        {
-            uri = item->m_uri;
-            uri.replace("file://", "");
-        }
-
-        if (list.count() > 0) {
-            generatePlaylistThumbId(item);
-            item->m_thumburi_exists = true;
-        } else {
-            QFile f(MediaItem::thumbPlaylist(item->m_title));
-            f.remove();
-            item->m_thumburi_exists = false;
-        }
+    if (list.count() > 0) {
+        generatePlaylistThumbId(item);
+        item->m_thumburi_exists = true;
+    } else {
+        QFile f(MediaItem::thumbPlaylist(item->m_title));
+        f.remove();
+        item->m_thumburi_exists = false;
     }
 
     QFile fp(uri);
@@ -529,8 +544,7 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
     out.flush();
     fp.close();
 
-    if(item != NULL)
-        itemChanged(item, Contents);
+    itemChanged(item, Contents);
 }
 
 void MusicDatabase::loadPlaylist(MediaItem *item)

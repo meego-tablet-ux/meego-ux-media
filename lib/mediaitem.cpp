@@ -83,6 +83,22 @@ MediaItem::MediaItem(int type, QString uri, QObject *parent) :
         if(thumbExists())
             m_thumburi_exists = true;
     }
+    else if(isMusicPlaylist())
+    {
+        m_uri = (QUrl::fromEncoded(fileFormatted(uri).toAscii())).toString();
+        m_title = m_uri.mid(m_uri.lastIndexOf("/")+1, m_uri.length()-m_uri.lastIndexOf("/"));
+        if(m_title.contains("."))
+            m_title.truncate(m_title.lastIndexOf("."));
+
+        if(!m_title.isEmpty())
+        {
+            m_thumbtype = PlaylistThumb;
+            m_thumburi = thumbPlaylistImageProvider(m_title);
+            m_thumburi_ignore = false;
+            if(thumbExists(thumbPlaylist(m_title)))
+                m_thumburi_exists = true;
+        }
+    }
 }
 
 MediaItem::MediaItem(int type, QObject *parent) :
