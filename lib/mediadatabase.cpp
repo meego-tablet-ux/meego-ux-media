@@ -314,14 +314,6 @@ void MediaDatabase::changeTitleByURN(QString urn, QString title)
 
     if(item != NULL)
     {
-        if(item->isMusicPlaylist())
-        {
-            QString oldthumb = MediaItem::thumbPlaylist(oldtitle);
-            QString newthumb = MediaItem::thumbPlaylist(title);
-            if(!oldtitle.isEmpty()&&QFile::exists(oldthumb))
-                QFile::rename(oldthumb, newthumb);
-            item->m_thumburi = MediaItem::thumbPlaylistImageProvider(title);
-        }
         item->m_title = title;
         broadcastMyChanges(item->m_id, MediaDatabase::Title);
     }

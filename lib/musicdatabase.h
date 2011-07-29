@@ -25,7 +25,6 @@ public:
     void requestItem(int type, QString identifier);
     void savePlaylist(QList<MediaItem *> &list, const QString &title);
     QString renamePlaylist(const QString &urn, const QString &title);
-    QStringList loadPlaylist(const QString &urn);
     MediaItem* getArtistItem(const QString &title);
     MediaItem* getPlaylistItem(const QString &title);
 
@@ -50,11 +49,11 @@ private:
     void processSong(MediaItem *item);
     void trackerAddItems(int type, QVector<QStringList> trackerreply, int priority=0);
     MediaItem* getAlbumItem(QString artist, QString album);
-    void updatePlaylist(MediaItem *item, QList<MediaItem *> &list);
     /* unique title variables */
     QHash<QString, int> titleCountHash;
     void createPlaylistThumb(QList<MediaItem *> &list, const QString &title);
     void generatePlaylistThumbId(MediaItem *item);
+    void loadPlaylist(MediaItem *item);
     void requestSongItems(int type, QString identifier);
     int playlistthumbid;
     QStringList notifyUrns;

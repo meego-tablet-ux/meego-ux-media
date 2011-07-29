@@ -284,11 +284,8 @@ void MusicDatabase::trackerAddItems(int type, QVector<QStringList> trackerreply,
          mediaItemsSidHash.insert(item->m_sid, item);
          if(type == MediaItem::MusicArtistItem)
              artistItemHash.insert(item->m_title, item);
-         if(type == MediaItem::MusicPlaylistItem) {
-             // Get playlist songs
-             item->children = loadPlaylist(item->m_urn);
-             item->m_tracknum = item->children.count();
-         }
+         if(type == MediaItem::MusicPlaylistItem)
+             loadPlaylist(item);
 
          /* if this is an album or artist (from a command line call) get the thumb */
          if(!disable_mediaart&&
@@ -447,6 +444,12 @@ QString MusicDatabase::renamePlaylist(const QString &urn, const QString &title)
         if(item->m_title == title)
             return uri;
 
+        QString oldthumb = MediaItem::thumbPlaylist(item->m_title);
+        QString newthumb = MediaItem::thumbPlaylist(title);
+        if(!item->m_title.isEmpty()&&QFile::exists(oldthumb))
+            QFile::rename(oldthumb, newthumb);
+        item->m_thumburi = MediaItem::thumbPlaylistImageProvider(title);
+
         QString uri2 = uri.mid(0, uri.lastIndexOf("/")+1) + title + ".m3u";
         QFile::rename(uri, uri2);
         item->m_uri = "file://" + uri2;
@@ -490,6 +493,15 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
             uri = item->m_uri;
             uri.replace("file://", "");
         }
+
+        if (list.count() > 0) {
+            generatePlaylistThumbId(item);
+            item->m_thumburi_exists = true;
+        } else {
+            QFile f(MediaItem::thumbPlaylist(item->m_title));
+            f.remove();
+            item->m_thumburi_exists = false;
+        }
     }
 
     QFile fp(uri);
@@ -521,30 +533,11 @@ void MusicDatabase::savePlaylist(QList<MediaItem *> &list, const QString &title)
         itemChanged(item, Contents);
 }
 
-void MusicDatabase::updatePlaylist(MediaItem *item, QList<MediaItem *> &newList)
-{
-    updateMediaList(item, newList);
-
-    if (newList.count() > 0) {
-        createPlaylistThumb(newList, item->m_title);
-        generatePlaylistThumbId(item);
-        item->m_thumburi_exists = true;
-    } else {
-        QFile f(MediaItem::thumbPlaylist(item->m_title));
-        f.remove();
-        item->m_thumburi_exists = false;
-    }
-
-    QStringList temp;
-    temp << item->m_id;
-    emit itemsChanged(temp, MusicDatabase::Contents);
-}
-
-QStringList MusicDatabase::loadPlaylist(const QString &urn)
+void MusicDatabase::loadPlaylist(MediaItem *item)
 {
     QStringList playlistItems;
 
-    QString sql = QString(TRACKER_PLAYLIST_CONTENTS_BY_URN).arg(urn);
+    QString sql = QString(TRACKER_PLAYLIST_CONTENTS_BY_URN).arg(item->m_urn);
     QVector<QStringList> info;
 
     if(trackerCall(info, sql))
@@ -557,7 +550,18 @@ QStringList MusicDatabase::loadPlaylist(const QString &urn)
         }
     }
 
-    return playlistItems;
+    item->children = playlistItems;
+    item->m_tracknum = item->children.count();
+
+    /* see if the songs are already loaded into memory */
+    for(int i = 0; i < mediaItemsList.count(); i++)
+        if(mediaItemsList[i]->isSong())
+            for(int j = 0; j < item->children.count(); j++)
+                if(mediaItemsList[i]->m_uri.compare(item->children[j], Qt::CaseInsensitive) == 0)
+                {
+                    item->children[j] = mediaItemsList[i]->m_urn;
+                    item->m_length += mediaItemsList[i]->m_length;
+                }
 }
 
 void MusicDatabase::trackerPlaylistAdded(int sid)
